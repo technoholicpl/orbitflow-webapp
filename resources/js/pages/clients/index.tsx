@@ -1,24 +1,7 @@
 import { useState } from 'react'
 import { Head } from '@inertiajs/react'
-import StackedLayout from '@/layouts/stackedlayout'
-import { NavigationTree } from '@/types/navigation'
+import DashboardLayout from '@/layouts/DashboardLayout'
 import ClientSheet from '@/components/clientsheet'
-
-const navigationConfig: NavigationTree[] = [
-    { key: 'dashboard', path: '/dashboard', title: 'Dashboard', icon: 'hi-dashboard' },
-    { key: 'clients', path: '/clients', title: 'Clients', icon: 'hi-user-group' },
-    { 
-        key: 'projects', 
-        path: '/projects', 
-        title: 'Projects', 
-        icon: 'hi-project',
-        subMenu: [
-            { key: 'projects.list', path: '/projects', title: 'List View', icon: '' },
-            { key: 'projects.kanban', path: '/projects/kanban', title: 'Kanban', icon: '' },
-        ]
-    },
-    { key: 'time-tracking', path: '/time-tracking', title: 'Time Tracking', icon: 'hi-clock' },
-]
 
 interface Client {
     id: number
@@ -49,7 +32,7 @@ export default function ClientsList({ clients }: ClientsListProps) {
     }
 
     return (
-        <StackedLayout navigationConfig={navigationConfig}>
+        <DashboardLayout title="Clients">
             <Head title="Clients" />
             <div className="flex flex-col gap-8">
                 <header className="flex justify-between items-end">
@@ -124,6 +107,6 @@ export default function ClientsList({ clients }: ClientsListProps) {
                 onOpenChange={setIsSheetOpen} 
                 client={selectedClient} 
             />
-        </StackedLayout>
+        </DashboardLayout>
     )
 }

@@ -6,7 +6,7 @@ import TwoFactorRecoveryCodes from '@/components/two-factor-recovery-codes';
 import TwoFactorSetupModal from '@/components/two-factor-setup-modal';
 import { Button, Tag } from '@/components/ui';
 import { useTwoFactorAuth } from '@/hooks/use-two-factor-auth';
-import AppLayout from '@/layouts/app-layout';
+import DashboardLayout from '@/layouts/DashboardLayout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { disable, enable, show } from '@/routes/two-factor';
 import type { BreadcrumbItem } from '@/types';
@@ -40,7 +40,7 @@ export default function TwoFactor({
     const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <DashboardLayout title="Two-factor authentication">
             <Head title="Two-factor authentication" />
 
             <h1 className="sr-only">Two-factor authentication settings</h1>
@@ -138,7 +138,7 @@ export default function TwoFactor({
                     />
                 </div>
             </SettingsLayout>
-        </AppLayout>
+        </DashboardLayout>
     );
 }
 

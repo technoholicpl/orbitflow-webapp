@@ -13,6 +13,7 @@ import {
     PiFileTextDuotone,
     PiArticleDuotone,
     PiBriefcaseDuotone,
+    PiSpeedometerDuotone,
     PiCheckSquareDuotone,
 } from 'react-icons/pi'
 import type { JSX } from 'react'
@@ -26,7 +27,7 @@ const navigationIcon: NavigationIcons = {
     groupSingleMenu: <PiBookOpenUserDuotone />,
     groupCollapseMenu: <PiBookBookmarkDuotone />,
     groupMenu: <PiBagSimpleDuotone />,
-    dashboard: <PiLayoutDuotone />,
+    dashboard: <PiSpeedometerDuotone />,
     users: <PiUsersDuotone />,
     subscription: <PiCreditCardDuotone />,
     order: <PiShoppingCartDuotone />,

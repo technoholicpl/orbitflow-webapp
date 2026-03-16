@@ -5,7 +5,7 @@ import PasswordController from '@/actions/App/Http/Controllers/Settings/Password
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button, Input, FormItem } from '@/components/ui';
-import AppLayout from '@/layouts/app-layout';
+import DashboardLayout from '@/layouts/DashboardLayout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/user-password';
 import type { BreadcrumbItem } from '@/types';
@@ -22,7 +22,7 @@ export default function Password() {
     const currentPasswordInput = useRef<HTMLInputElement>(null);
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <DashboardLayout title="Password settings">
             <Head title="Password settings" />
 
             <h1 className="sr-only">Password settings</h1>
@@ -132,7 +132,7 @@ export default function Password() {
                     </Form>
                 </div>
             </SettingsLayout>
-        </AppLayout>
+        </DashboardLayout>
     );
 }
 

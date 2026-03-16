@@ -3,6 +3,7 @@ import DashboardLayout from '@/layouts/DashboardLayout'
 import { Card, Button } from '@/components/ui'
 import { Clock, CheckCircle2, ListTodo, Plus, Calendar as CalendarIcon } from 'lucide-react'
 import AdaptiveCard from '@/components/shared/AdaptiveCard'
+import { AnimatedShinyButton } from "@/components/ui/animated-shiny-button"
 
 export default function Dashboard() {
     return (
@@ -21,6 +22,7 @@ export default function Dashboard() {
                         <Button variant="solid" size="sm" icon={<Plus className="size-4" />}>
                             New Task
                         </Button>
+                        <AnimatedShinyButton>Get Started</AnimatedShinyButton>
                     </div>
                 </div>
                 

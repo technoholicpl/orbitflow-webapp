@@ -4,7 +4,7 @@ import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileCo
 import DeleteUser from '@/components/delete-user';
 import Heading from '@/components/heading';
 import { Button, Input, FormItem } from '@/components/ui';
-import AppLayout from '@/layouts/app-layout';
+import DashboardLayout from '@/layouts/DashboardLayout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
@@ -27,7 +27,7 @@ export default function Profile({
     const { auth } = usePage().props;
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <DashboardLayout title="Profile settings">
             <Head title="Profile settings" />
 
             <h1 className="sr-only">Profile settings</h1>
@@ -138,7 +138,7 @@ export default function Profile({
 
                 <DeleteUser />
             </SettingsLayout>
-        </AppLayout>
+        </DashboardLayout>
     );
 }
 
