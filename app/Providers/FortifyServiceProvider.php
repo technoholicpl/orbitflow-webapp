@@ -20,6 +20,16 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Customize the authentication pipeline to use prefix-aware 2FA redirection
+        Fortify::authenticateThrough(function (Request $request) {
+            return array_filter([
+                config('fortify.limiters.login') ? null : \Laravel\Fortify\Actions\EnsureLoginIsNotThrottled::class,
+                \App\Actions\Fortify\RedirectIfTwoFactorAuthenticatable::class,
+                \Laravel\Fortify\Actions\AttemptToAuthenticate::class,
+                \Laravel\Fortify\Actions\PrepareAuthenticatedSession::class,
+            ]);
+        });
+
         // Re-bind LoginResponse to handle dynamic redirections and prevent intended URL leaks
         $this->app->singleton(\Laravel\Fortify\Contracts\LoginResponse::class, function () {
             return new class implements \Laravel\Fortify\Contracts\LoginResponse {
@@ -80,6 +90,64 @@ class FortifyServiceProvider extends ServiceProvider
                 }
             };
         });
+
+        // Re-bind PasswordConfirmedResponse to handle dynamic admin prefix
+        $this->app->singleton(\Laravel\Fortify\Contracts\PasswordConfirmedResponse::class, function () {
+            return new class implements \Laravel\Fortify\Contracts\PasswordConfirmedResponse {
+                public function toResponse($request) {
+                    if ($request->wantsJson()) {
+                        return response()->json(['message' => 'Password confirmed']);
+                    }
+
+                    $isAdmin = $request->isAdmin();
+                    $home = $isAdmin 
+                        ? '/' . config('cp.prefix', 'admin') . '/dashboard' 
+                        : config('fortify.home', '/dashboard');
+
+                    return redirect()->intended($home);
+                }
+            };
+        });
+
+        // Re-bind TwoFactorLoginResponse to handle dynamic admin prefix
+        $this->app->singleton(\Laravel\Fortify\Contracts\TwoFactorLoginResponse::class, function () {
+            return new class implements \Laravel\Fortify\Contracts\TwoFactorLoginResponse {
+                public function toResponse($request) {
+                    if ($request->wantsJson()) {
+                        return response('', 204);
+                    }
+
+                    $isAdmin = $request->isAdmin();
+                    $home = $isAdmin 
+                        ? '/' . config('cp.prefix', 'admin') . '/dashboard' 
+                        : config('fortify.home', '/dashboard');
+
+                    return redirect()->intended($home);
+                }
+            };
+        });
+
+        // Re-bind FailedTwoFactorLoginResponse to handle dynamic admin prefix
+        $this->app->singleton(\Laravel\Fortify\Contracts\FailedTwoFactorLoginResponse::class, function () {
+            return new class implements \Laravel\Fortify\Contracts\FailedTwoFactorLoginResponse {
+                public function toResponse($request) {
+                    [$key, $message] = $request->filled('recovery_code')
+                        ? ['recovery_code', __('The provided two factor recovery code was invalid.')]
+                        : ['code', __('The provided two factor authentication code was invalid.')];
+
+                    if ($request->wantsJson()) {
+                        throw \Illuminate\Validation\ValidationException::withMessages([
+                            $key => [$message],
+                        ]);
+                    }
+
+                    $isAdmin = $request->isAdmin();
+                    $route = $isAdmin ? 'admin.two-factor.login' : 'two-factor.login';
+
+                    return redirect()->route($route)->withErrors([$key => $message]);
+                }
+            };
+        });
     }
 
     /**
@@ -111,8 +179,6 @@ class FortifyServiceProvider extends ServiceProvider
             
             // Fallback to auth/login if admin/auth/login doesn't exist yet, 
             // but let's assume we want separate ones.
-            // Actually, the user has resources/js/Pages/auth/login.tsx.
-            // I should check if admin/auth/login.tsx exists.
             
             return Inertia::render($view, [
                 'canResetPassword' => Features::enabled(Features::resetPasswords()),

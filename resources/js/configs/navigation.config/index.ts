@@ -6,10 +6,10 @@ import {
 
 import type { NavigationTree } from '@/types/navigation'
 
-const adminNavigationConfig: NavigationTree[] = [
+const getAdminNavigationConfig = (prefix: string): NavigationTree[] => [
     {
         key: 'admin.dashboard',
-        path: '/admin/dashboard',
+        path: `/${prefix}/dashboard`,
         title: 'Dashboard',
         translateKey: 'nav.admin.dashboard',
         icon: 'dashboard',
@@ -19,7 +19,7 @@ const adminNavigationConfig: NavigationTree[] = [
     },
     {
         key: 'admin.users',
-        path: '/admin/users',
+        path: `/${prefix}/users`,
         title: 'Users',
         translateKey: 'nav.admin.users',
         icon: 'users',
@@ -29,7 +29,7 @@ const adminNavigationConfig: NavigationTree[] = [
     },
     {
         key: 'admin.subscriptions',
-        path: '/admin/subscriptions',
+        path: `/${prefix}/subscriptions`,
         title: 'Subscriptions',
         translateKey: 'nav.admin.subscriptions',
         icon: 'subscription',
@@ -39,7 +39,7 @@ const adminNavigationConfig: NavigationTree[] = [
     },
     {
         key: 'admin.orders',
-        path: '/admin/orders',
+        path: `/${prefix}/orders`,
         title: 'Orders',
         translateKey: 'nav.admin.orders',
         icon: 'order',
@@ -58,7 +58,7 @@ const adminNavigationConfig: NavigationTree[] = [
         subMenu: [
             {
                 key: 'admin.cms.pages',
-                path: '/admin/pages',
+                path: `/${prefix}/pages`,
                 title: 'Info Pages',
                 translateKey: 'nav.admin.cms.pages',
                 icon: 'pages',
@@ -68,7 +68,7 @@ const adminNavigationConfig: NavigationTree[] = [
             },
             {
                 key: 'admin.cms.blog',
-                path: '/admin/blog',
+                path: `/${prefix}/blog`,
                 title: 'Blog',
                 translateKey: 'nav.admin.cms.blog',
                 icon: 'blog',
@@ -144,6 +144,6 @@ const userNavigationConfig: NavigationTree[] = [
     },
 ]
 
-export { adminNavigationConfig, userNavigationConfig }
+export { getAdminNavigationConfig, userNavigationConfig }
 
 export default userNavigationConfig

@@ -10,6 +10,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('settings/other-browser-sessions', [ProfileController::class, 'destroyOtherBrowserSessions'])
+        ->name('other-browser-sessions.destroy');
+    Route::delete('settings/browser-session/{sessionId}', [ProfileController::class, 'destroySession'])
+        ->name('browser-session.destroy');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

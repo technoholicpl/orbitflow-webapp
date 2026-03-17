@@ -9,8 +9,14 @@ import useResponsive from '@/utils/hooks/useResponsive'
 import { LAYOUT_STACKED_SIDE } from '@/constants/theme.constant'
 import ConfigProvider from '@/components/ui/ConfigProvider'
 import { themeConfig } from '@/configs/theme.config'
-import { adminNavigationConfig } from '@/configs/navigation.config'
+import { getAdminNavigationConfig } from '@/configs/navigation.config'
 import ModeSwitcher from '@/components/template/ThemeConfigurator/ModeSwitcher'
+import { PageProps } from '@inertiajs/core'
+
+interface AuthProps extends PageProps {
+    auth: { user: any };
+    cp_prefix: string;
+}
 
 interface AdminLayoutProps {
     children: ReactNode
@@ -19,7 +25,7 @@ interface AdminLayoutProps {
 
 const AdminLayout = ({ children, title = 'Admin Panel' }: AdminLayoutProps) => {
     const { larger, smaller } = useResponsive()
-    const { auth } = usePage<{ auth: { user: any } }>().props
+    const { auth, cp_prefix } = usePage<AuthProps>().props
 
     return (
         <ConfigProvider
@@ -35,7 +41,11 @@ const AdminLayout = ({ children, title = 'Admin Panel' }: AdminLayoutProps) => {
             >
                 <Head title={title} />
                 <div className="flex flex-auto min-w-0">
-                    {larger.lg && <StackedSideNav navigationTree={adminNavigationConfig} />}
+                    {larger.lg && (
+                        <StackedSideNav 
+                            navigationTree={getAdminNavigationConfig(cp_prefix)} 
+                        />
+                    )}
                     <div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full">
                         <Header
                             className="shadow-sm dark:shadow-2xl"

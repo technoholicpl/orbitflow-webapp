@@ -1,11 +1,16 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, usePage, Link } from '@inertiajs/react';
 import TextLink from '@/components/text-link';
 import { Button, Input, FormItem } from '@/components/ui';
 import AuthLayout from '@/layouts/auth-layout';
-import { login } from '@/routes';
-import { email } from '@/routes/password';
+import { PageProps } from '@inertiajs/core';
+
+interface AuthProps extends PageProps {
+    cp_prefix: string;
+}
 
 export default function ForgotPassword({ status }: { status?: string }) {
+    const { cp_prefix } = usePage<AuthProps>().props;
+
     return (
         <AuthLayout
             title="Forgot password"
@@ -20,7 +25,10 @@ export default function ForgotPassword({ status }: { status?: string }) {
             )}
 
             <div className="space-y-6">
-                <Form {...email.form()}>
+                <Form 
+                    action={cp_prefix ? `/${cp_prefix}/forgot-password` : '/forgot-password'}
+                    method="post"
+                >
                     {({ processing, errors }) => (
                         <>
                             <FormItem
@@ -54,7 +62,12 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
                 <div className="space-x-1 text-center text-sm text-muted-foreground">
                     <span>Or, return to</span>
-                    <TextLink href={login()}>log in</TextLink>
+                    <Link 
+                        href={cp_prefix ? `/${cp_prefix}/login` : '/login'}
+                        className="text-primary hover:underline"
+                    >
+                        log in
+                    </Link>
                 </div>
             </div>
         </AuthLayout>

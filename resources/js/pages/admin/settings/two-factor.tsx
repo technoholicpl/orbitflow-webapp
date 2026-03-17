@@ -1,4 +1,4 @@
-import { useForm, Head } from '@inertiajs/react';
+import { useForm, Head, usePage } from '@inertiajs/react';
 import { ShieldBan, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
@@ -6,29 +6,26 @@ import TwoFactorRecoveryCodes from '@/components/two-factor-recovery-codes';
 import TwoFactorSetupModal from '@/components/two-factor-setup-modal';
 import { Button, Tag } from '@/components/ui';
 import { useTwoFactorAuth } from '@/utils/hooks/use-two-factor-auth';
-import DashboardLayout from '@/layouts/DashboardLayout';
-import SettingsLayout from '@/layouts/settings/layout';
-import { disable, enable, show } from '@/routes/two-factor';
-import type { BreadcrumbItem } from '@/types';
+import AdminLayout from '@/layouts/adminlayout';
+import AdminSettingsLayout from '@/layouts/settings/admin-layout';
+import ConfirmsPassword from '@/components/confirms-password';
+import { PageProps } from '@inertiajs/core';
+
+interface AuthProps extends PageProps {
+    cp_prefix: string;
+}
 
 type Props = {
     requiresConfirmation?: boolean;
     twoFactorEnabled?: boolean;
 };
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Two-factor authentication',
-        href: show().url,
-    },
-];
-
-import ConfirmsPassword from '@/components/confirms-password';
-
-export default function TwoFactor({
+export default function AdminTwoFactor({
     requiresConfirmation = false,
     twoFactorEnabled = false,
 }: Props) {
+    const { cp_prefix } = usePage<AuthProps>().props;
+    
     const {
         qrCodeSvg,
         hasSetupData,
@@ -38,17 +35,21 @@ export default function TwoFactor({
         recoveryCodesList,
         fetchRecoveryCodes,
         errors,
-    } = useTwoFactorAuth();
+    } = useTwoFactorAuth(`/${cp_prefix}`);
     const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
 
     const { post: enable2fa } = useForm();
     const { delete: disable2fa } = useForm();
 
+    // Admin-specific endpoints
+    const enableUrl = `/${cp_prefix}/user/two-factor-authentication`;
+    const disableUrl = `/${cp_prefix}/user/two-factor-authentication`;
+
     return (
-        <DashboardLayout title="Two-factor authentication">
+        <AdminLayout title="Two-factor authentication">
             <Head title="Two-factor authentication" />
 
-            <SettingsLayout>
+            <AdminSettingsLayout>
                 <div className="space-y-6 text-sm">
                     <div>
                         <h4 className="mb-2">2-Step verification</h4>
@@ -77,7 +78,10 @@ export default function TwoFactor({
                             />
 
                             <div className="relative inline pt-4">
-                                <ConfirmsPassword onConfirmed={() => disable2fa(disable().url)}>
+                                <ConfirmsPassword 
+                                    confirmUrl={`/${cp_prefix}/user/confirm-password`}
+                                    onConfirmed={() => disable2fa(disableUrl)}
+                                >
                                     <Button
                                         variant="solid"
                                         className="bg-red-600 hover:bg-red-700 text-white border-none"
@@ -103,7 +107,10 @@ export default function TwoFactor({
 
                             <div className="pt-4">
                                 {hasSetupData ? (
-                                    <ConfirmsPassword onConfirmed={() => setShowSetupModal(true)}>
+                                    <ConfirmsPassword 
+                                        confirmUrl={`/${cp_prefix}/user/confirm-password`}
+                                        onConfirmed={() => setShowSetupModal(true)}
+                                    >
                                         <Button
                                             variant="solid"
                                             type="button"
@@ -113,7 +120,10 @@ export default function TwoFactor({
                                         </Button>
                                     </ConfirmsPassword>
                                 ) : (
-                                    <ConfirmsPassword onConfirmed={() => enable2fa(enable().url, { onSuccess: () => setShowSetupModal(true) })}>
+                                    <ConfirmsPassword 
+                                        confirmUrl={`/${cp_prefix}/user/confirm-password`}
+                                        onConfirmed={() => enable2fa(enableUrl, { onSuccess: () => setShowSetupModal(true) })}
+                                    >
                                         <Button
                                             variant="solid"
                                             type="button"
@@ -137,12 +147,10 @@ export default function TwoFactor({
                         clearSetupData={clearSetupData}
                         fetchSetupData={fetchSetupData}
                         errors={errors}
+                        prefix={`/${cp_prefix}`}
                     />
                 </div>
-            </SettingsLayout>
-        </DashboardLayout>
+            </AdminSettingsLayout>
+        </AdminLayout>
     );
 }
-
-
-

@@ -135,9 +135,11 @@ function TwoFactorSetupStep({
 function TwoFactorVerificationStep({
     onClose,
     onBack,
+    prefix = '',
 }: {
     onClose: () => void;
     onBack: () => void;
+    prefix?: string;
 }) {
     const [code, setCode] = useState<string>('');
     const pinInputContainerRef = useRef<HTMLDivElement>(null);
@@ -151,6 +153,7 @@ function TwoFactorVerificationStep({
     return (
         <Form
             {...confirm.form()}
+            action={prefix + confirm.url()}
             onSuccess={() => onClose()}
             resetOnError
             resetOnSuccess
@@ -232,6 +235,7 @@ type Props = {
     clearSetupData: () => void;
     fetchSetupData: () => Promise<void>;
     errors: string[];
+    prefix?: string;
 };
 
 export default function TwoFactorSetupModal({
@@ -244,6 +248,7 @@ export default function TwoFactorSetupModal({
     clearSetupData,
     fetchSetupData,
     errors,
+    prefix = '',
 }: Props) {
     const [showVerificationStep, setShowVerificationStep] =
         useState<boolean>(false);
@@ -329,6 +334,7 @@ export default function TwoFactorSetupModal({
                         <TwoFactorVerificationStep
                             onClose={onClose}
                             onBack={() => setShowVerificationStep(false)}
+                            prefix={prefix}
                         />
                     ) : (
                         <TwoFactorSetupStep

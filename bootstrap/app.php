@@ -22,12 +22,20 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        $middleware->redirectTo(function ($request) {
-            if ($request->isAdmin()) {
-                return route('admin.login');
+        $middleware->redirectTo(
+            guests: function ($request) {
+                if ($request->isAdmin()) {
+                    return route('admin.login');
+                }
+                return route('login');
+            },
+            users: function ($request) {
+                if ($request->isAdmin()) {
+                    return '/' . config('cp.prefix', 'admin') . '/dashboard';
+                }
+                return config('fortify.home', '/dashboard');
             }
-            return route('login');
-        });
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

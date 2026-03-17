@@ -11,13 +11,20 @@ import StackedSideNavSecondary from './StackedSideNavSecondary'
 import useResponsive from '@/utils/hooks/useResponsive'
 import { useThemeStore } from '@/store/themeStore'
 import { useRouteKeyStore } from '@/store/routeKeyStore'
-import navigationConfig from '@/configs/navigation.config'
+import { getAdminNavigationConfig, userNavigationConfig } from '@/configs/navigation.config'
 import appConfig from '@/configs/app.config'
 import type { User } from '@/types'
 import isEmpty from 'lodash/isEmpty'
 import useTranslation from '@/utils/hooks/useTranslation'
 import type { TranslationFn } from '@/types/common'
 import { NavigationTree } from '@/types/navigation'
+import { PageProps } from '@inertiajs/core'
+
+interface AuthProps extends PageProps {
+    auth: { user: User };
+    cp_prefix: string;
+    isAdmin: boolean;
+}
 
 const stackedSideNavDefaultStyle = {
     width: SPLITTED_SIDE_NAV_MINI_WIDTH,
@@ -25,11 +32,17 @@ const stackedSideNavDefaultStyle = {
 
 const StackedSideNav = ({
     translationSetup = appConfig.activeNavTranslation,
-    navigationTree = navigationConfig,
+    navigationTree: manualNavigationTree,
 }: {
     translationSetup?: boolean
     navigationTree?: NavigationTree[]
 }) => {
+    const { props } = usePage<AuthProps>()
+    const { auth, cp_prefix, isAdmin } = props
+    
+    const navigationTree = manualNavigationTree || (isAdmin ? getAdminNavigationConfig(cp_prefix) : userNavigationConfig)
+    const userAuthority = auth?.user?.authority
+
     const { t } = useTranslation(!translationSetup)
 
     const [selectedMenu, setSelectedMenu] = useState<SelectedMenuItem>({})
@@ -39,9 +52,6 @@ const StackedSideNav = ({
     const direction = useThemeStore((state) => state.direction)
 
     const currentRouteKey = useRouteKeyStore((state) => state.currentRouteKey)
-
-    const { auth } = usePage<{ auth: { user: User } }>().props
-    const userAuthority = auth?.user?.authority
 
     const { larger } = useResponsive()
 

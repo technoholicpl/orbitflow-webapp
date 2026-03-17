@@ -12,8 +12,6 @@ type DropdownList = {
     icon: JSX.Element
 }
 
-const dropdownItemList: DropdownList[] = []
-
 interface AuthProps extends PageProps {
     auth: {
         user: {
@@ -21,17 +19,25 @@ interface AuthProps extends PageProps {
             email: string;
             avatar?: string;
         }
-    }
+    };
+    cp_prefix: string;
+    isAdmin: boolean;
 }
 
 const _UserDropdown = () => {
-    const { auth } = usePage<AuthProps>().props;
+    const { auth, cp_prefix, isAdmin } = usePage<AuthProps>().props;
     const { user } = auth;
 
+    const dropdownItemList: DropdownList[] = [
+        {
+            label: 'Profile',
+            path: isAdmin ? `/${cp_prefix}/settings/profile` : '/settings/profile',
+            icon: <PiUserDuotone />,
+        },
+    ]
+
     const handleSignOut = () => {
-        // Determine if we are in admin area or user area by checking pathname
-        const isAdmin = window.location.pathname.startsWith('/admin') || window.location.pathname.startsWith('/cp');
-        router.post(isAdmin ? '/admin/logout' : '/logout');
+        router.post(isAdmin ? `/${cp_prefix}/logout` : '/logout');
     }
 
     const avatarProps = {
@@ -77,6 +83,7 @@ const _UserDropdown = () => {
                     </Link>
                 </Dropdown.Item>
             ))}
+            <Dropdown.Item variant="divider" />
             <Dropdown.Item
                 eventKey="Sign Out"
                 className="gap-2"

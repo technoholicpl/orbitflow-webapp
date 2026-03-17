@@ -1,7 +1,11 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, usePage } from '@inertiajs/react';
 import { Button, Input, FormItem } from '@/components/ui';
 import AuthLayout from '@/layouts/auth-layout';
-import { update } from '@/routes/password';
+import { PageProps } from '@inertiajs/core';
+
+interface AuthProps extends PageProps {
+    cp_prefix: string;
+}
 
 type Props = {
     token: string;
@@ -9,6 +13,8 @@ type Props = {
 };
 
 export default function ResetPassword({ token, email }: Props) {
+    const { cp_prefix } = usePage<AuthProps>().props;
+
     return (
         <AuthLayout
             title="Reset password"
@@ -17,7 +23,8 @@ export default function ResetPassword({ token, email }: Props) {
             <Head title="Reset password" />
 
             <Form
-                {...update.form()}
+                action={cp_prefix ? `/${cp_prefix}/reset-password` : '/reset-password'}
+                method="post"
                 transform={(data) => ({ ...data, token, email })}
                 resetOnSuccess={['password', 'password_confirmation']}
             >

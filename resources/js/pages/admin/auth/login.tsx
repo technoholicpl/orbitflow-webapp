@@ -1,12 +1,19 @@
-import { Form, Head } from '@inertiajs/react';
-import { Button, Input, FormItem } from '@/components/ui';
+import { Form, Head, usePage, Link } from '@inertiajs/react';
+import { Button, Input, FormItem, Checkbox } from '@/components/ui';
 import AuthLayout from '@/layouts/auth-layout';
+import { PageProps } from '@inertiajs/core';
+
+interface AuthProps extends PageProps {
+    cp_prefix: string;
+}
 
 type Props = {
     status?: string;
 };
 
 export default function Login({ status }: Props) {
+    const { cp_prefix } = usePage<AuthProps>().props;
+
     return (
         <AuthLayout
             title="Admin access"
@@ -15,7 +22,7 @@ export default function Login({ status }: Props) {
             <Head title="Admin Log in" />
 
             <Form
-                action="/admin/login"
+                action={`/${cp_prefix}/login`}
                 method="post"
                 resetOnSuccess={['password']}
                 className="flex flex-col gap-6"
@@ -48,6 +55,18 @@ export default function Login({ status }: Props) {
                                 placeholder="Password"
                             />
                         </FormItem>
+
+                        <div className="flex items-center justify-between">
+                            <Checkbox name="remember" id="remember">
+                                Remember me
+                            </Checkbox>
+                            <Link
+                                href={`/${cp_prefix}/forgot-password`}
+                                className="text-sm font-medium text-primary hover:underline"
+                            >
+                                Forgot password?
+                            </Link>
+                        </div>
 
                         <Button 
                             variant="solid" 

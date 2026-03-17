@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, usePage } from '@inertiajs/react';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { useMemo, useState } from 'react';
 import InputError from '@/components/input-error';
@@ -13,8 +13,14 @@ import {
 import { OTP_MAX_LENGTH } from '@/utils/hooks/use-two-factor-auth';
 import AuthLayout from '@/layouts/auth-layout';
 import { store } from '@/routes/two-factor/login';
+import { PageProps } from '@inertiajs/core';
+
+interface AuthProps extends PageProps {
+    cp_prefix: string;
+}
 
 export default function TwoFactorChallenge() {
+    const { cp_prefix } = usePage<AuthProps>().props;
     const [showRecoveryInput, setShowRecoveryInput] = useState<boolean>(false);
     const [code, setCode] = useState<string>('');
 
@@ -56,6 +62,7 @@ export default function TwoFactorChallenge() {
             <div className="space-y-6">
                 <Form
                     {...store.form()}
+                    action={cp_prefix ? `/${cp_prefix}${store.url()}` : store.url()}
                     className="space-y-4"
                     resetOnError
                     resetOnSuccess={!showRecoveryInput}

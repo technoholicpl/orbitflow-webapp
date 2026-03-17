@@ -42,42 +42,38 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
     }
 
     return (
-        <div className="px-4 py-6">
-            <Heading
-                title="Settings"
-                description="Manage your profile and account settings"
-            />
-
-            <div className="flex flex-col lg:flex-row lg:space-x-12">
-                <aside className="w-full max-w-xl lg:w-48">
-                    <nav
-                        className="flex flex-col space-y-1 space-x-0"
-                        aria-label="Settings"
-                    >
-                        {sidebarNavItems.map((item, index) => (
-                            <Button
+        <div className="flex flex-col lg:flex-row lg:space-x-12">
+            <aside className="w-full max-w-xl lg:w-48">
+                <nav
+                    className="flex flex-col space-y-1 space-x-0"
+                    aria-label="Settings"
+                >
+                    {sidebarNavItems.map((item, index) => {
+                        const active = isCurrentOrParentUrl(item.href as any);
+                        return (
+                            <Link
                                 key={`${item.href}-${index}`}
-                                size="sm"
-                                variant="default"
-                                asElement={Link}
-                                className={cn('w-full justify-start', {
-                                    'bg-muted': isCurrentOrParentUrl(item.href as any),
-                                })}
-                                {...({ href: item.href } as any)}
+                                href={item.href}
+                                className={cn(
+                                    'flex items-center gap-2 px-3 py-2 rounded-md transition-colors text-sm font-medium',
+                                    active 
+                                        ? 'bg-primary/10 text-primary dark:bg-primary-mild/20 dark:text-primary-mild' 
+                                        : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
+                                )}
                             >
                                 {item.title}
-                            </Button>
-                        ))}
-                    </nav>
-                </aside>
+                            </Link>
+                        );
+                    })}
+                </nav>
+            </aside>
 
-                <div className="my-6 lg:hidden h-px w-full bg-border" />
+            <div className="my-6 lg:hidden h-px w-full bg-border" />
 
-                <div className="flex-1 md:max-w-2xl">
-                    <section className="max-w-xl space-y-12">
-                        {children}
-                    </section>
-                </div>
+            <div className="flex-1 md:max-w-2xl">
+                <section className="space-y-12">
+                    {children}
+                </section>
             </div>
         </div>
     );
