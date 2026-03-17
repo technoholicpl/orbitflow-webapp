@@ -11,9 +11,9 @@ import {
 } from '@/constants/navigation.constant'
 import useMenuActive from '@/utils/hooks/useMenuActive'
 import useTranslation from '@/utils/hooks/useTranslation'
-import { Direction } from '@/@types/theme'
-import type { NavigationTree } from '@/@types/navigation'
-import type { TraslationFn } from '@/@types/common'
+import { Direction } from '@/types/theme'
+import type { NavigationTree } from '@/types/navigation'
+import type { TranslationFn } from '@/types/common'
 
 export interface VerticalMenuContentProps {
     collapsed?: boolean
@@ -84,7 +84,7 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
                                         ? cascade >= 1
                                         : cascade <= MAX_CASCADE_LEVEL
                                 }
-                                t={t as TraslationFn}
+                                t={t as TranslationFn}
                                 onLinkClick={handleLinkClick}
                             />
                         )}
@@ -100,7 +100,7 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
                                 dotIndent={nextCascade >= MAX_CASCADE_LEVEL}
                                 renderAsIcon={nextCascade <= 1}
                                 userAuthority={userAuthority}
-                                t={t as TraslationFn}
+                                t={t as TranslationFn}
                                 onLinkClick={onMenuItemClick}
                             >
                                 {nav.subMenu &&

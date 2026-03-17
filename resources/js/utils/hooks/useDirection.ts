@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useThemeStore } from '@/store/themeStore'
-import type { Direction } from '@/@types/theme'
+import type { Direction } from '@/types/theme'
 
 function useDirection(): [
     direction: Direction,

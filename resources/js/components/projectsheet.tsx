@@ -33,7 +33,7 @@ export default function ProjectSheet({ project, isOpen, onOpenChange, clients }:
         }
     }, [project, isOpen])
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
         setTimeout(() => {
@@ -80,64 +80,67 @@ export default function ProjectSheet({ project, isOpen, onOpenChange, clients }:
                         variant="solid"
                         className="flex-1" 
                         loading={loading}
-                        onClick={handleSubmit}
+                        type="submit"
+                        form="project-form"
                     >
                         {isEdit ? 'Save Changes' : 'Create Project'}
                     </Button>
                 </div>
             }
         >
-            <div className="text-gray-400 font-medium italic mb-6">
-                {isEdit ? 'Update existing project details.' : 'Fill in the information below to create a new project.'}
-            </div>
-            
-            <div className="flex flex-col gap-6">
-                <FormItem label="Project Name">
-                    <Input 
-                        id="name" 
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)} 
-                        placeholder="Enter project name..."
-                        required
-                    />
-                </FormItem>
-
-                <FormItem label="Client">
-                    <Select 
-                        placeholder="Select a client"
-                        options={clientOptions}
-                        value={clientOptions.find(opt => opt.value === clientId)}
-                        onChange={(opt: any) => setClientId(opt?.value || '')}
-                    />
-                </FormItem>
-
-                <FormItem label="Description">
-                    <textarea 
-                        id="description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        className="flex min-h-[120px] w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
-                        placeholder="Describe the project goals and scope..."
-                    />
-                </FormItem>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <FormItem label="Status">
-                        <Select 
-                            options={statusOptions}
-                            value={statusOptions.find(opt => opt.value === status)}
-                            onChange={(opt: any) => setStatus(opt?.value || 'new')}
-                        />
-                    </FormItem>
-                    <FormItem label="Priority">
-                        <Select 
-                            options={priorityOptions}
-                            value={priorityOptions.find(opt => opt.value === priority)}
-                            onChange={(opt: any) => setPriority(opt?.value || 'medium')}
-                        />
-                    </FormItem>
+            <form id="project-form" onSubmit={handleSubmit}>
+                <div className="text-gray-400 font-medium italic mb-6">
+                    {isEdit ? 'Update existing project details.' : 'Fill in the information below to create a new project.'}
                 </div>
-            </div>
+                
+                <div className="flex flex-col gap-6">
+                    <FormItem label="Project Name">
+                        <Input 
+                            id="name" 
+                            value={name} 
+                            onChange={(e) => setName(e.target.value)} 
+                            placeholder="Enter project name..."
+                            required
+                        />
+                    </FormItem>
+
+                    <FormItem label="Client">
+                        <Select 
+                            placeholder="Select a client"
+                            options={clientOptions}
+                            value={clientOptions.find(opt => opt.value === clientId)}
+                            onChange={(opt: any) => setClientId(opt?.value || '')}
+                        />
+                    </FormItem>
+
+                    <FormItem label="Description">
+                        <textarea 
+                            id="description"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            className="flex min-h-[120px] w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+                            placeholder="Describe the project goals and scope..."
+                        />
+                    </FormItem>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <FormItem label="Status">
+                            <Select 
+                                options={statusOptions}
+                                value={statusOptions.find(opt => opt.value === status)}
+                                onChange={(opt: any) => setStatus(opt?.value || 'new')}
+                            />
+                        </FormItem>
+                        <FormItem label="Priority">
+                            <Select 
+                                options={priorityOptions}
+                                value={priorityOptions.find(opt => opt.value === priority)}
+                                onChange={(opt: any) => setPriority(opt?.value || 'medium')}
+                            />
+                        </FormItem>
+                    </div>
+                </div>
+            </form>
         </Drawer>
     )
 }

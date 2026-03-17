@@ -4,7 +4,7 @@ import { PiGearDuotone } from 'react-icons/pi'
 import SidePanelContent, { SidePanelContentProps } from './SidePanelContent'
 import withHeaderItem from '@/utils/hoc/withHeaderItem'
 import { useThemeStore } from '@/store/themeStore'
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps } from '@/types/common'
 
 type SidePanelProps = SidePanelContentProps & CommonProps
 

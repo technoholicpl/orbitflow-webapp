@@ -1,4 +1,4 @@
-import reoderArray from './reoderArray'
+import reorderArray from './reorderArray'
 import type { DraggableLocation } from '@hello-pangea/dnd'
 
 export const reorderDragable = <T extends Record<string, unknown[]>>({
@@ -16,7 +16,7 @@ export const reorderDragable = <T extends Record<string, unknown[]>>({
 
     // moving to same list
     if (source.droppableId === destination.droppableId) {
-        const reordered = reoderArray(current, source.index, destination.index)
+        const reordered = reorderArray(current, source.index, destination.index)
         const result = {
             ...quoteMap,
             [source.droppableId]: reordered,

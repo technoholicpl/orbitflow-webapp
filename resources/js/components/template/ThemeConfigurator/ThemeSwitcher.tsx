@@ -1,4 +1,4 @@
-import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import { TbCheck } from 'react-icons/tb'
 import presetThemeSchemaConfig from '@/configs/preset-theme-schema.config'
 import { useThemeStore } from '@/store/themeStore'
@@ -13,7 +13,7 @@ const ThemeSwitcher = () => {
             {Object.entries(presetThemeSchemaConfig).map(([key, value]) => (
                 <button
                     key={key}
-                    className={classNames(
+                    className={cn(
                         'h-8 w-8 rounded-full flex items-center justify-center border-2 border-white',
                         schema === key && 'ring-2 ring-primary',
                     )}

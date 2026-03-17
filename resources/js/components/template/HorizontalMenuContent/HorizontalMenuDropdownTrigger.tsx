@@ -1,6 +1,6 @@
-import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import HorizontalMenuNavLink from './HorizontalMenuNavLink'
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps } from '@/types/common'
 import type { HorizontalMenuNavLinkProps } from './HorizontalMenuNavLink'
 import type { ButtonHTMLAttributes, Ref } from 'react'
 
@@ -30,7 +30,7 @@ const HorizontalMenuDropdownTrigger = (
 ) => {
     const { className, active, asElement = 'button', ...rest } = props
     const commonProps = {
-        className: classNames(
+        className: cn(
             'font-semibold inline-flex h-9 w-max items-center justify-center rounded-lg bg-background px-4 py-2 dark:text-gray-300 dark:hover:text-gray-100 text-gray-900 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors',
             className,
             active &&

@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import withHeaderItem from '@/utils/hoc/withHeaderItem'
 import { useLocaleStore } from '@/store/localeStore'
 import { HiCheck } from 'react-icons/hi'
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps } from '@/types/common'
 
 const languageList = [{ label: 'English', value: 'en', flag: 'US' }]
 

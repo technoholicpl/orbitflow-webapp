@@ -1,6 +1,6 @@
-﻿import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Input from '@/components/ui/Input'
-import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import type { ChangeEvent, KeyboardEvent, ClipboardEvent } from 'react'
 
 interface OTPInputProps {
@@ -98,7 +98,7 @@ const OTPInput = ({
                     <Input
                         key={index}
                         ref={setRef(index)}
-                        className={classNames(
+                        className={cn(
                             'text-center text-lg h-[58px] w-[58px]',
                             inputClass,
                         )}

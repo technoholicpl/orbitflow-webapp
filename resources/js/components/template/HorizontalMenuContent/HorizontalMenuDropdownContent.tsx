@@ -3,20 +3,20 @@ import Avatar from '@/components/ui/Avatar'
 import Dropdown from '@/components/ui/Dropdown'
 import HorizontalMenuNavLink from './HorizontalMenuNavLink'
 import AuthorityCheck from '@/components/shared/AuthorityCheck'
-import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import {
     NAV_ITEM_TYPE_COLLAPSE,
     NAV_ITEM_TYPE_ITEM,
 } from '@/constants/navigation.constant'
 import navigationIcon from '@/configs/navigation-icon.config'
 import { TbCircle } from 'react-icons/tb'
-import type { CommonProps, TraslationFn } from '@/@types/common'
-import type { NavigationTree, HorizontalMenuMeta } from '@/@types/navigation'
+import type { CommonProps, TranslationFn } from '@/types/common'
+import type { NavigationTree, HorizontalMenuMeta } from '@/types/navigation'
 import type { ReactNode, HTMLProps } from 'react'
 
 interface LayoutProps extends CommonProps {
     navigationTree: NavigationTree[]
-    t: TraslationFn
+    t: TranslationFn
     onDropdownClose: () => void
     routeKey: string
     routeParentKey?: string
@@ -58,7 +58,7 @@ const MenuItem = ({
 }: CommonProps & { active?: boolean } & HTMLProps<HTMLDivElement>) => {
     return (
         <div
-            className={classNames(
+            className={cn(
                 'cursor-pointer font-semibold px-3 rounded-lg flex items-center w-full whitespace-nowrap gap-x-2 transition-colors duration-150 hover:text-gray-900 hover:bg-gray-100 dark:hover:text-gray-100 dark:hover:bg-gray-800',
                 active && 'bg-gray-100 dark:bg-gray-800',
                 className,
@@ -113,7 +113,7 @@ const MenuLink = ({
         <MenuItem className="py-2 px-2 gap-3" active={active}>
             <div>
                 <Avatar
-                    className={classNames(
+                    className={cn(
                         'bg-white dark:bg-transparent p-2 border-2 border-gray-200 dark:border-gray-600',
                         active
                             ? 'text-primary'
@@ -151,7 +151,7 @@ const ColumnsLayout = (
     return (
         <div className="flex max-w-[1400px] w-full">
             <div
-                className={classNames(
+                className={cn(
                     'grid gap-y-6 gap-x-8 p-6 flex-1',
                     gridClasses[columns]?.grid,
                 )}
@@ -215,7 +215,7 @@ const ColumnsLayout = (
             </div>
             {navigationTree.some((nav) => nav.type === NAV_ITEM_TYPE_ITEM) && (
                 <div
-                    className={classNames(
+                    className={cn(
                         'ltr:border-l rtl:border-r border-gray-200 dark:border-gray-800 min-w-[280px] p-4 flex flex-col',
                     )}
                 >
@@ -270,7 +270,7 @@ const DefaultLayout = ({
         const nextCascade = cascade + 1
 
         return (
-            <div className={classNames(cascade === 0 && 'p-3')}>
+            <div className={cn(cascade === 0 && 'p-3')}>
                 {navTree.map((nav) => (
                     <AuthorityCheck
                         key={nav.key}
@@ -359,7 +359,7 @@ const TabLayout = ({
                                         >
                                             <div>
                                                 <Avatar
-                                                    className={classNames(
+                                                    className={cn(
                                                         'bg-white dark:bg-transparent p-2 border-2 border-gray-200 dark:border-gray-600',
                                                         nav.key === routeKey
                                                             ? 'text-primary'
@@ -407,7 +407,7 @@ const TabLayout = ({
             ) && (
                 <div className="ltr:border-l rtl:border-r border-gray-200 dark:border-gray-800 p-6">
                     <div
-                        className={classNames(
+                        className={cn(
                             'grid gap-x-8 flex-1',
                             gridClasses[columns]?.grid,
                             gridClasses[columns]?.width,
@@ -428,7 +428,7 @@ const TabLayout = ({
                                         onClick={() => onDropdownClose()}
                                     >
                                         <div
-                                            className={classNames(
+                                            className={cn(
                                                 'flex items-center gap-2 h-[42px] heading-text group-hover:text-primary',
                                                 routeKey === nav.key &&
                                                     'text-primary',

@@ -1,6 +1,6 @@
-﻿import { Link } from "@inertiajs/react"
+import { Link } from "@inertiajs/react"
 import classNames from 'classnames'
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps } from '@/types/common'
 import type { AnchorHTMLAttributes } from 'react'
 
 export interface HorizontalMenuNavLinkProps

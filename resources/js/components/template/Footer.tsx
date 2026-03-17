@@ -1,5 +1,5 @@
 import Container from '@/components/shared/Container'
-import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import appConfig from '@/configs/app.config'
 import { PAGE_CONTAINER_GUTTER_X } from '@/constants/theme.constant'
 
@@ -45,7 +45,7 @@ export default function Footer({
 }: FooterProps) {
     return (
         <footer
-            className={classNames(
+            className={cn(
                 `footer flex flex-auto items-center h-16 ${PAGE_CONTAINER_GUTTER_X}`,
                 className,
             )}

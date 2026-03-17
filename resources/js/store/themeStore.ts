@@ -1,7 +1,7 @@
 import { themeConfig } from '@/configs/theme.config'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Theme, LayoutType, Direction } from '@/@types/theme'
+import type { Theme, LayoutType, Direction } from '@/types/theme'
 
 type ThemeState = Theme
 

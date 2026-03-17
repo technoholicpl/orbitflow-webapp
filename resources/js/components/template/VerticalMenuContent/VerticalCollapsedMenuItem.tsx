@@ -2,14 +2,14 @@ import Menu from '@/components/ui/Menu'
 import Dropdown from '@/components/ui/Dropdown'
 import VerticalMenuIcon from './VerticalMenuIcon'
 import AuthorityCheck from '@/components/shared/AuthorityCheck'
-import type { CommonProps, TraslationFn } from '@/@types/common'
-import type { Direction } from '@/@types/theme'
-import type { NavigationTree } from '@/@types/navigation'
+import type { CommonProps, TranslationFn } from '@/types/common'
+import type { Direction } from '@/types/theme'
+import type { NavigationTree } from '@/types/navigation'
 
 interface DefaultItemProps extends CommonProps {
     nav: NavigationTree
     onLinkClick?: (link: { key: string; title: string; path: string }) => void
-    t: TraslationFn
+    t: TranslationFn
     indent?: boolean
     dotIndent?: boolean
     userAuthority: string[]

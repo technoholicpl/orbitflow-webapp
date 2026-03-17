@@ -1,5 +1,5 @@
 import { useState, useMemo, useContext, useCallback, useEffect } from 'react'
-import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import RadioGroupContext from './context'
 import type { CommonProps } from '../@types/common'
 import type { InputHTMLAttributes, Ref } from 'react'
@@ -97,7 +97,7 @@ const Radio = (props: RadioProps) => {
     const radioColorClass = disabled && 'disabled'
     const labelDisabledClass = disabled && 'disabled'
 
-    const labelClass = classNames('radio-label', labelDisabledClass, className)
+    const labelClass = cn('radio-label', labelDisabledClass, className)
 
     return (
         <label ref={labelRef} className={labelClass}>
@@ -105,7 +105,7 @@ const Radio = (props: RadioProps) => {
                 <input
                     ref={ref}
                     type="radio"
-                    className={classNames(
+                    className={cn(
                         radioDefaultClass,
                         radioColorClass,
                         radioClass,
@@ -127,7 +127,7 @@ const Radio = (props: RadioProps) => {
                 </svg>
             </span>
             {children ? (
-                <span className={classNames(disabled ? 'opacity-50' : '')}>
+                <span className={cn(disabled ? 'opacity-50' : '')}>
                     {children}
                 </span>
             ) : null}

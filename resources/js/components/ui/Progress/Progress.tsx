@@ -1,4 +1,4 @@
-import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import Line from './Line'
 import Circle from './Circle'
 import { SIZES, DIRECTIONS } from '../utils/constants'
@@ -56,7 +56,7 @@ const Progress = (props: ProgressProps) => {
           ? 'bg-primary'
           : 'text-primary'
 
-    const progressClass = classNames(
+    const progressClass = cn(
         'progress',
         className,
         variant === 'circle' ? 'circle' : 'line',

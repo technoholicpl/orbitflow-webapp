@@ -5,7 +5,7 @@ import {
     PageContainerFooter,
 } from '@/components/template/PageContainer'
 import type { PageContainerProps } from '@/components/template/PageContainer'
-import { LayoutType } from '@/@types/theme'
+import { LayoutType } from '@/types/theme'
 import type { ReactNode } from 'react'
 
 export type PageContainerReassembleProps = {

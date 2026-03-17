@@ -5,7 +5,7 @@ import useThemeSchema from '@/utils/hooks/useThemeSchema'
 import useLocale from '@/utils/hooks/useLocale'
 import useDirection from '@/utils/hooks/useDirection'
 import { MODE_DARK, MODE_LIGHT } from '@/constants/theme.constant'
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps } from '@/types/common'
 
 const Theme = (props: CommonProps) => {
     useThemeSchema()

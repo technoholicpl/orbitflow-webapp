@@ -1,10 +1,10 @@
 import ScrollBar from '@/components/ui/ScrollBar'
-import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import { HEADER_HEIGHT, DIR_LTR, DIR_RTL } from '@/constants/theme.constant'
 import VerticalMenuContent from '@/components/template/VerticalMenuContent'
 import { HiOutlineArrowSmLeft, HiOutlineArrowSmRight } from 'react-icons/hi'
-import type { NavigationTree } from '@/@types/navigation'
-import type { Direction } from '@/@types/theme'
+import type { NavigationTree } from '@/types/navigation'
+import type { Direction } from '@/types/theme'
 
 type StackedSideNavSecondaryProps = {
     className?: string
@@ -35,7 +35,7 @@ const StackedSideNavSecondary = (props: StackedSideNavSecondaryProps) => {
     }
 
     return (
-        <div className={classNames('h-full', className)} {...rest}>
+        <div className={cn('h-full', className)} {...rest}>
             <div
                 className={`flex items-center justify-between gap-4 pl-6 pr-4`}
                 style={{ height: HEADER_HEIGHT }}

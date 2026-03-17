@@ -4,9 +4,9 @@ import AuthorityCheck from '@/components/shared/AuthorityCheck'
 import VerticalMenuIcon from './VerticalMenuIcon'
 import { Link } from "@inertiajs/react"
 import Dropdown from '@/components/ui/Dropdown'
-import type { CommonProps } from '@/@types/common'
-import type { Direction } from '@/@types/theme'
-import type { NavigationTree } from '@/@types/navigation'
+import type { CommonProps } from '@/types/common'
+import type { Direction } from '@/types/theme'
+import type { NavigationTree } from '@/types/navigation'
 
 const { MenuItem } = Menu
 

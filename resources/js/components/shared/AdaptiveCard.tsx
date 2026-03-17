@@ -1,4 +1,4 @@
-import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import { Card } from '@/components/ui'
 import { useContext } from 'react'
 import { LayoutContext } from '@/utils/hooks/useLayout'
@@ -14,11 +14,11 @@ const AdaptiveCard = (props: AdaptableCardProps) => {
 
     return (
         <Card
-            className={classNames(
+            className={cn(
                 className,
                 adaptiveCardActive && 'border-none dark:bg-transparent',
             )}
-            bodyClass={classNames(bodyClass, adaptiveCardActive && 'p-0')}
+            bodyClass={cn(bodyClass, adaptiveCardActive && 'p-0')}
             {...rest}
         />
     )

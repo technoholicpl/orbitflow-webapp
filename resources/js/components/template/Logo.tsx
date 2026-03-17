@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import appConfig from '@/configs/app.config'
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps } from '@/types/common'
 
 interface LogoProps extends CommonProps {
     type?: 'full' | 'streamline'

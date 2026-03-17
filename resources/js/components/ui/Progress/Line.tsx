@@ -1,4 +1,4 @@
-import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import { SIZES } from '../utils/constants'
 import type { CommonProps } from '../@types/common'
 
@@ -12,7 +12,7 @@ interface LineProps extends CommonProps {
 const Line = (props: LineProps) => {
     const { percent, size, children, strokeColor, trailClass } = props
 
-    const progressBackgroundClass = classNames(
+    const progressBackgroundClass = cn(
         'progress-bg',
         size === SIZES.SM ? 'h-1.5' : 'h-2',
         strokeColor,
@@ -21,7 +21,7 @@ const Line = (props: LineProps) => {
     return (
         <>
             <div className="progress-wrapper">
-                <div className={classNames('progress-inner', trailClass)}>
+                <div className={cn('progress-inner', trailClass)}>
                     <div
                         className={progressBackgroundClass}
                         style={{ width: `${percent}%` }}

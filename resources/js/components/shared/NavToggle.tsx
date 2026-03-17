@@ -1,5 +1,5 @@
 import { HiOutlineMenuAlt2, HiOutlineMenu } from 'react-icons/hi'
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps } from '@/types/common'
 
 export interface NavToggleProps extends CommonProps {
     toggled?: boolean

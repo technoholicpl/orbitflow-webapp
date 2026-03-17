@@ -1,6 +1,6 @@
-﻿import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import { Link } from "@inertiajs/react"
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps } from '@/types/common'
 import type { ComponentPropsWithoutRef } from 'react'
 
 interface ActionLink extends CommonProps, ComponentPropsWithoutRef<'a'> {
@@ -22,7 +22,7 @@ const ActionLink = (props: ActionLink) => {
     } = props
 
     const classNameProps = {
-        className: classNames(
+        className: cn(
             themeColor && 'text-primary',
             'hover:underline',
             className,

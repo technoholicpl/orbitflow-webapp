@@ -1,5 +1,5 @@
-﻿import { useState, useRef, useEffect } from 'react'
-import classNames from '@/utils/classNames'
+import { useState, useRef, useEffect } from 'react'
+import { cn } from '@/lib/utils'
 import withHeaderItem from '@/utils/hoc/withHeaderItem'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
@@ -46,14 +46,14 @@ const ListItem = (props: {
     return (
         <Link href={url} onClick={onNavigate}>
             <div
-                className={classNames(
+                className={cn(
                     'flex items-center justify-between rounded-xl p-3 cursor-pointer user-select',
                     'hover:bg-gray-100 dark:hover:bg-gray-700',
                 )}
             >
                 <div className="flex items-center gap-2">
                     <div
-                        className={classNames(
+                        className={cn(
                             'rounded-lg border-2 border-gray-200 shadow-xs text-xl group-hover:shadow-sm h-10 w-10 flex items-center justify-center bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100',
                         )}
                     >
@@ -62,7 +62,7 @@ const ListItem = (props: {
                     <div className="text-gray-900 dark:text-gray-300">
                         <Highlighter
                             autoEscape
-                            highlightClassName={classNames(
+                            highlightClassName={cn(
                                 'text-primary',
                                 'underline bg-transparent font-semibold dark:text-white',
                             )}
@@ -141,7 +141,7 @@ const _Search = ({ className }: { className?: string }) => {
     return (
         <>
             <div
-                className={classNames(className, 'text-2xl')}
+                className={cn(className, 'text-2xl')}
                 onClick={handleSearchOpen}
             >
                 <PiMagnifyingGlassDuotone />

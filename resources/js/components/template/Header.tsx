@@ -1,7 +1,7 @@
-import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import { HEADER_HEIGHT } from '@/constants/theme.constant'
 import type { ReactNode } from 'react'
-import type { CommonProps } from '@/@types/common'
+import type { CommonProps } from '@/types/common'
 
 interface HeaderProps extends CommonProps {
     headerStart?: ReactNode
@@ -22,9 +22,9 @@ const Header = (props: HeaderProps) => {
     } = props
 
     return (
-        <header className={classNames('header', className)}>
+        <header className={cn('header', className)}>
             <div
-                className={classNames(
+                className={cn(
                     'header-wrapper',
                     container && 'container mx-auto',
                     wrapperClass,

@@ -15,7 +15,7 @@ import TopBarClassicSvg from '@/assets/svg/TopBarClassicSvg'
 import FrameLessSideSvg from '@/assets/svg/FrameLessSideSvg'
 import ContentOverlaySvg from '@/assets/svg/ContentOverlaySvg'
 import BlankSvg from '@/assets/svg/BlankSvg'
-import type { LayoutType } from '@/@types/theme'
+import type { LayoutType } from '@/types/theme'
 
 const layouts = [
     {

@@ -4,7 +4,7 @@ import {
     NAV_ITEM_TYPE_COLLAPSE,
 } from '@/constants/navigation.constant'
 
-import type { NavigationTree } from '@/@types/navigation'
+import type { NavigationTree } from '@/types/navigation'
 
 const adminNavigationConfig: NavigationTree[] = [
     {

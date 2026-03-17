@@ -13,9 +13,9 @@ import navigationIcon from '@/configs/navigation-icon.config'
 import useMenuActive from '@/utils/hooks/useMenuActive'
 import isEmpty from 'lodash/isEmpty'
 import { Link } from "@inertiajs/react"
-import type { NavigationTree } from '@/@types/navigation'
-import type { Direction, Mode } from '@/@types/theme'
-import type { CommonProps } from '@/@types/common'
+import type { NavigationTree } from '@/types/navigation'
+import type { Direction, Mode } from '@/types/theme'
+import type { CommonProps } from '@/types/common'
 
 export type SelectedMenuItem = {
     key?: string

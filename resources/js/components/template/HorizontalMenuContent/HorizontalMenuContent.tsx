@@ -5,9 +5,9 @@ import AuthorityCheck from '@/components/shared/AuthorityCheck'
 import useTranslation from '@/utils/hooks/useTranslation'
 import useMenuActive from '@/utils/hooks/useMenuActive'
 import { TbChevronDown } from 'react-icons/tb'
-import { Direction } from '@/@types/theme'
-import type { NavigationTree } from '@/@types/navigation'
-import type { TraslationFn } from '@/@types/common'
+import { Direction } from '@/types/theme'
+import type { NavigationTree } from '@/types/navigation'
+import type { TranslationFn } from '@/types/common'
 
 type HorizontalMenuContentProps = {
     routeKey: string
@@ -59,7 +59,7 @@ const HorizontalMenuContent = (props: HorizontalMenuContentProps) => {
                                 <HorizontalMenuDropdownContent
                                     style={styles}
                                     navigationTree={nav.subMenu}
-                                    t={t as TraslationFn}
+                                    t={t as TranslationFn}
                                     layoutMeta={nav?.meta?.horizontalMenu}
                                     routeKey={routeKey}
                                     routeParentKey={activedRoute?.parentKey}

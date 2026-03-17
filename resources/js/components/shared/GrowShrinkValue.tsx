@@ -1,4 +1,4 @@
-import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import { HiArrowUp, HiArrowDown } from 'react-icons/hi'
 import type { ReactNode, Ref } from 'react'
 
@@ -32,11 +32,11 @@ const GrowShrinkValue = (props: GrowShrinkTagProps) => {
     return (
         <span
             ref={ref}
-            className={classNames(
+            className={cn(
                 'flex items-center',
                 value > 0
-                    ? classNames('text-success', positiveClass)
-                    : classNames('text-error', negativeClass),
+                    ? cn('text-success', positiveClass)
+                    : cn('text-error', negativeClass),
                 className,
             )}
         >

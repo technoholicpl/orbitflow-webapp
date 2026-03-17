@@ -16,8 +16,8 @@ import appConfig from '@/configs/app.config'
 import type { User } from '@/types'
 import isEmpty from 'lodash/isEmpty'
 import useTranslation from '@/utils/hooks/useTranslation'
-import type { TraslationFn } from '@/@types/common'
-import { NavigationTree } from '@/@types/navigation'
+import type { TranslationFn } from '@/types/common'
+import { NavigationTree } from '@/types/navigation'
 
 const stackedSideNavDefaultStyle = {
     width: SPLITTED_SIDE_NAV_MINI_WIDTH,
@@ -93,7 +93,7 @@ const StackedSideNav = ({
                         navigationTree={navigationTree}
                         userAuthority={userAuthority || []}
                         selectedMenu={selectedMenu}
-                        t={t as TraslationFn}
+                        t={t as TranslationFn}
                         onChange={handleChange}
                         onSetActiveKey={handleSetActiveKey}
                     />

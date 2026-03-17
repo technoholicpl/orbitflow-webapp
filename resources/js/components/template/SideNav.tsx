@@ -1,5 +1,5 @@
 import { Link, usePage } from "@inertiajs/react"
-import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import ScrollBar from '@/components/ui/ScrollBar'
 import Logo from '@/components/template/Logo'
 import VerticalMenuContent from '@/components/template/VerticalMenuContent'
@@ -15,7 +15,7 @@ import {
     HEADER_HEIGHT,
     LOGO_X_GUTTER,
 } from '@/constants/theme.constant'
-import type { Mode } from '@/@types/theme'
+import type { Mode } from '@/types/theme'
 
 type SideNavProps = {
     translationSetup?: boolean
@@ -56,7 +56,7 @@ const SideNav = ({
     return (
         <div
             style={sideNavCollapse ? sideNavCollapseStyle : sideNavStyle}
-            className={classNames(
+            className={cn(
                 'side-nav',
                 background && 'side-nav-bg',
                 !sideNavCollapse && 'side-nav-expand',
@@ -72,7 +72,7 @@ const SideNav = ({
                     imgClass="max-h-10"
                     mode={mode || defaultMode}
                     type={sideNavCollapse ? 'streamline' : 'full'}
-                    className={classNames(
+                    className={cn(
                         sideNavCollapse && 'ltr:ml-[11.5px] ltr:mr-[11.5px]',
                         sideNavCollapse
                             ? SIDE_NAV_CONTENT_GUTTER
@@ -80,7 +80,7 @@ const SideNav = ({
                     )}
                 />
             </Link>
-            <div className={classNames('side-nav-content', contentClass)}>
+            <div className={cn('side-nav-content', contentClass)}>
                 <ScrollBar style={{ height: '100%' }} direction={direction}>
                     <VerticalMenuContent
                         collapsed={sideNavCollapse}

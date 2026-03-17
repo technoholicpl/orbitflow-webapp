@@ -2,13 +2,13 @@ import { Suspense } from 'react'
 import Container from '@/components/shared/Container'
 import Footer from '@/components/template/Footer'
 import useLayout from '@/utils/hooks/useLayout'
-import classNames from '@/utils/classNames'
+import { cn } from '@/lib/utils'
 import {
     PAGE_CONTAINER_GUTTER_X,
     PAGE_CONTAINER_GUTTER_Y,
 } from '@/constants/theme.constant'
-import type { CommonProps } from '@/@types/common'
-import type { Meta, PageHeaderProps } from '@/@types/routes'
+import type { CommonProps } from '@/types/common'
+import type { Meta, PageHeaderProps } from '@/types/routes'
 import type { FooterPageContainerType } from '@/components/template/Footer'
 import type { ReactNode, ElementType, ComponentPropsWithRef } from 'react'
 
@@ -56,7 +56,7 @@ export const PageContainerHeader = ({
 
     return (
         <div
-            className={classNames(
+            className={cn(
                 contained && 'container mx-auto',
                 'flex items-center justify-between mb-4',
                 gutterLess && 'mt-4',
@@ -92,7 +92,7 @@ export const PageContainerBody = ({
     className,
 }: PageContainerBodyProps) => {
     return pageContainerType === 'contained' ? (
-        <Container className={classNames('h-full', className)}>
+        <Container className={cn('h-full', className)}>
             {children}
         </Container>
     ) : (
@@ -146,7 +146,7 @@ const PageContainer = (props: PageContainerProps) => {
                 })
             ) : (
                 <div
-                    className={classNames(
+                    className={cn(
                         defaultClass,
                         pageBackgroundType === 'plain' &&
                             'bg-white dark:bg-gray-900',
@@ -154,7 +154,7 @@ const PageContainer = (props: PageContainerProps) => {
                 >
                     <main className="h-full">
                         <div
-                            className={classNames(
+                            className={cn(
                                 pageContainerDefaultClass,
                                 pageContainerType !== 'gutterless' &&
                                     pageContainerGutterClass,
