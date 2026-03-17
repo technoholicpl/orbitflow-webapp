@@ -1,6 +1,6 @@
 import Container from '@/components/shared/Container'
 import classNames from '@/utils/classNames'
-import { APP_NAME } from '@/constants/app.constant'
+import appConfig from '@/configs/app.config'
 import { PAGE_CONTAINER_GUTTER_X } from '@/constants/theme.constant'
 
 export type FooterPageContainerType = 'gutterless' | 'contained'
@@ -15,7 +15,7 @@ const FooterContent = () => {
         <div className="flex items-center justify-between flex-auto w-full">
             <span>
                 Copyright &copy; {`${new Date().getFullYear()}`}{' '}
-                <span className="font-semibold">{`${APP_NAME}`}</span> All
+                <span className="font-semibold">{`${appConfig.appName}`}</span> All
                 rights reserved.
             </span>
             <div className="">

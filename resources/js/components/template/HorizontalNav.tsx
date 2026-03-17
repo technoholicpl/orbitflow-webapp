@@ -1,8 +1,9 @@
+import { usePage } from '@inertiajs/react'
 import HorizontalMenuContent from './HorizontalMenuContent'
 import { useRouteKeyStore } from '@/store/routeKeyStore'
-import { useSessionUser } from '@/store/authStore'
 import appConfig from '@/configs/app.config'
 import navigationConfig from '@/configs/navigation.config'
+import type { User } from '@/types'
 
 const HorizontalNav = ({
     translationSetup = appConfig.activeNavTranslation,
@@ -10,8 +11,9 @@ const HorizontalNav = ({
     translationSetup?: boolean
 }) => {
     const currentRouteKey = useRouteKeyStore((state) => state.currentRouteKey)
+    const { auth } = usePage<{ auth: { user: User } }>().props
 
-    const userAuthority = useSessionUser((state) => state.user.authority)
+    const userAuthority = auth?.user?.authority
 
     return (
         <HorizontalMenuContent

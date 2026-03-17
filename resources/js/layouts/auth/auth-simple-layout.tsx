@@ -1,13 +1,13 @@
 import { Link } from '@inertiajs/react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { home } from '@/routes';
-import type { AuthLayoutProps } from '@/types';
+import type { CommonLayoutProps } from '@/types/ui';
 
 export default function AuthSimpleLayout({
     children,
     title,
     description,
-}: AuthLayoutProps) {
+}: CommonLayoutProps & { title?: string; description?: string }) {
     return (
         <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
             <div className="w-full max-w-sm">

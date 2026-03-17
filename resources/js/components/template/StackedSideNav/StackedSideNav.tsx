@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/react'
 import { useState } from 'react'
 import {
     SPLITTED_SIDE_NAV_MINI_WIDTH,
@@ -10,9 +11,9 @@ import StackedSideNavSecondary from './StackedSideNavSecondary'
 import useResponsive from '@/utils/hooks/useResponsive'
 import { useThemeStore } from '@/store/themeStore'
 import { useRouteKeyStore } from '@/store/routeKeyStore'
-import { useSessionUser } from '@/store/authStore'
 import navigationConfig from '@/configs/navigation.config'
 import appConfig from '@/configs/app.config'
+import type { User } from '@/types'
 import isEmpty from 'lodash/isEmpty'
 import useTranslation from '@/utils/hooks/useTranslation'
 import type { TraslationFn } from '@/@types/common'
@@ -39,7 +40,8 @@ const StackedSideNav = ({
 
     const currentRouteKey = useRouteKeyStore((state) => state.currentRouteKey)
 
-    const userAuthority = useSessionUser((state) => state.user.authority)
+    const { auth } = usePage<{ auth: { user: User } }>().props
+    const userAuthority = auth?.user?.authority
 
     const { larger } = useResponsive()
 

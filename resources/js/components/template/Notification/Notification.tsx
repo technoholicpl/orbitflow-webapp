@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import classNames from 'classnames'
 import withHeaderItem from '@/utils/hoc/withHeaderItem'
 import Dropdown from '@/components/ui/Dropdown'
@@ -9,10 +9,6 @@ import Button from '@/components/ui/Button'
 import NotificationAvatar from './NotificationAvatar'
 import NotificationToggle from './NotificationToggle'
 import { HiOutlineMailOpen } from 'react-icons/hi'
-import {
-    apiGetNotificationList,
-    apiGetNotificationCount,
-} from '@/services/CommonService'
 import isLastChild from '@/utils/isLastChild'
 import useResponsive from '@/utils/hooks/useResponsive'
 import { router } from '@inertiajs/react'
@@ -45,13 +41,8 @@ const _Notification = ({ className }: { className?: string }) => {
     const { larger } = useResponsive()
 
     const getNotificationCount = async () => {
-        const resp = await apiGetNotificationCount()
-        if (resp.count > 0) {
-            setNoResult(false)
-            setUnreadNotification(true)
-        } else {
-            setNoResult(true)
-        }
+        // Mocking count for now
+        setNoResult(true)
     }
 
     useEffect(() => {
@@ -61,9 +52,11 @@ const _Notification = ({ className }: { className?: string }) => {
     const onNotificationOpen = async () => {
         if (notificationList.length === 0) {
             setLoading(true)
-            const resp = await apiGetNotificationList()
-            setLoading(false)
-            setNotificationList(resp)
+            // Mocking empty list
+            setTimeout(() => {
+                setLoading(false)
+                setNotificationList([])
+            }, 500)
         }
     }
 

@@ -12,9 +12,9 @@ import {
     Dialog,
     Spinner,
 } from '@/components/ui';
-import { useAppearance } from '@/hooks/use-appearance';
-import { useClipboard } from '@/hooks/use-clipboard';
-import { OTP_MAX_LENGTH } from '@/hooks/use-two-factor-auth';
+import { useAppearance } from '@/utils/hooks/use-appearance';
+import { useClipboard } from '@/utils/hooks/use-clipboard';
+import { OTP_MAX_LENGTH } from '@/utils/hooks/use-two-factor-auth';
 import { confirm } from '@/routes/two-factor';
 
 function GridScanIcon() {

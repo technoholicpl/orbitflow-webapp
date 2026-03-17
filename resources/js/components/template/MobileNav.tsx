@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/react'
 import { useState, Suspense, lazy } from 'react'
 import classNames from 'classnames'
 import Drawer from '@/components/ui/Drawer'
@@ -8,7 +9,7 @@ import navigationConfig from '@/configs/navigation.config'
 import appConfig from '@/configs/app.config'
 import { useThemeStore } from '@/store/themeStore'
 import { useRouteKeyStore } from '@/store/routeKeyStore'
-import { useSessionUser } from '@/store/authStore'
+import type { User } from '@/types'
 
 const VerticalMenuContent = lazy(
     () => import('@/components/template/VerticalMenuContent'),
@@ -42,7 +43,8 @@ const MobileNav = ({
     const direction = useThemeStore((state) => state.direction)
     const currentRouteKey = useRouteKeyStore((state) => state.currentRouteKey)
 
-    const userAuthority = useSessionUser((state) => state.user.authority)
+    const { auth } = usePage<{ auth: { user: User } }>().props
+    const userAuthority = auth?.user?.authority
 
     return (
         <>

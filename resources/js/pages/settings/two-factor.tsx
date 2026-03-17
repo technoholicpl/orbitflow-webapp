@@ -5,7 +5,7 @@ import Heading from '@/components/heading';
 import TwoFactorRecoveryCodes from '@/components/two-factor-recovery-codes';
 import TwoFactorSetupModal from '@/components/two-factor-setup-modal';
 import { Button, Tag } from '@/components/ui';
-import { useTwoFactorAuth } from '@/hooks/use-two-factor-auth';
+import { useTwoFactorAuth } from '@/utils/hooks/use-two-factor-auth';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { disable, enable, show } from '@/routes/two-factor';

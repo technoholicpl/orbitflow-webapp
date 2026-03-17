@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { APP_NAME } from '@/constants/app.constant'
+import appConfig from '@/configs/app.config'
 import type { CommonProps } from '@/@types/common'
 
 interface LogoProps extends CommonProps {
@@ -32,7 +32,7 @@ const Logo = (props: LogoProps) => {
             <img
                 className={imgClass}
                 src={`${LOGO_SRC_PATH}logo-${mode}-${type}.png`}
-                alt={`${APP_NAME} logo`}
+                alt={`${appConfig.appName} logo`}
             />
         </div>
     )

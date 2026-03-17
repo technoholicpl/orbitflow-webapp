@@ -1,13 +1,13 @@
+import { Link, usePage } from "@inertiajs/react"
 import classNames from '@/utils/classNames'
 import ScrollBar from '@/components/ui/ScrollBar'
 import Logo from '@/components/template/Logo'
 import VerticalMenuContent from '@/components/template/VerticalMenuContent'
 import { useThemeStore } from '@/store/themeStore'
-import { useSessionUser } from '@/store/authStore'
 import { useRouteKeyStore } from '@/store/routeKeyStore'
 import navigationConfig from '@/configs/navigation.config'
 import appConfig from '@/configs/app.config'
-import { Link } from "@inertiajs/react"
+import type { User } from '@/types'
 import {
     SIDE_NAV_WIDTH,
     SIDE_NAV_COLLAPSED_WIDTH,
@@ -50,7 +50,8 @@ const SideNav = ({
 
     const currentRouteKey = useRouteKeyStore((state) => state.currentRouteKey)
 
-    const userAuthority = useSessionUser((state) => state.user.authority)
+    const { auth } = usePage<{ auth: { user: User } }>().props
+    const userAuthority = auth?.user?.authority
 
     return (
         <div

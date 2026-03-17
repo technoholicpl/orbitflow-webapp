@@ -10,7 +10,7 @@ import {
     InputOTPGroup,
     InputOTPSlot,
 } from '@/components/ui';
-import { OTP_MAX_LENGTH } from '@/hooks/use-two-factor-auth';
+import { OTP_MAX_LENGTH } from '@/utils/hooks/use-two-factor-auth';
 import AuthLayout from '@/layouts/auth-layout';
 import { store } from '@/routes/two-factor/login';
 

@@ -1,63 +1,38 @@
-import { useEffect, useState } from 'react'
-
-const twBreakpoint: Record<'2xl' | 'xl' | 'lg' | 'md' | 'sm' | 'xs', string> = {
-    '2xl': '1536',
-    xl: '1280',
-    lg: '1024',
-    md: '768',
-    sm: '640',
-    xs: '576',
-}
-
-const breakpointInt = (str = '') => {
-    return parseInt(str.replace('px', ''))
-}
-
-const breakpoint = {
-    '2xl': breakpointInt(twBreakpoint['2xl']), // 1536
-    xl: breakpointInt(twBreakpoint.xl), // 1280
-    lg: breakpointInt(twBreakpoint.lg), // 1024
-    md: breakpointInt(twBreakpoint.md), // 768
-    sm: breakpointInt(twBreakpoint.sm), // 640
-    xs: breakpointInt(twBreakpoint.xs), // 576
-}
+import { useState, useEffect } from 'react'
 
 const useResponsive = () => {
-    const getAllSizes = (comparator = 'smaller') => {
-        const currentWindowWidth = window.innerWidth
-        return Object.fromEntries(
-            Object.entries(breakpoint).map(([key, value]) => [
-                key,
-                comparator === 'larger'
-                    ? currentWindowWidth > value
-                    : currentWindowWidth < value,
-            ]),
-        )
-    }
-
-    const getResponsiveState = () => {
-        const currentWindowWidth = window.innerWidth
-        return {
-            windowWidth: currentWindowWidth,
-            larger: getAllSizes('larger'),
-            smaller: getAllSizes('smaller'),
-        }
-    }
-
-    const [responsive, setResponsive] = useState(getResponsiveState())
-
-    const resizeHandler = () => {
-        const responsiveState = getResponsiveState()
-        setResponsive(responsiveState)
-    }
+    const [windowSize, setWindowSize] = useState({
+        width: typeof window !== 'undefined' ? window.innerWidth : 0,
+        height: typeof window !== 'undefined' ? window.innerHeight : 0,
+    })
 
     useEffect(() => {
-        window.addEventListener('resize', resizeHandler)
-        return () => window.removeEventListener('resize', resizeHandler)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [responsive.windowWidth])
+        const handleResize = () => {
+            setWindowSize({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            })
+        }
 
-    return responsive
+        window.addEventListener('resize', handleResize)
+        return () => window.removeEventListener('resize', handleResize)
+    }, [])
+
+    const larger = {
+        sm: windowSize.width >= 640,
+        md: windowSize.width >= 768,
+        lg: windowSize.width >= 1024,
+        xl: windowSize.width >= 1280,
+    }
+
+    const smaller = {
+        sm: windowSize.width < 640,
+        md: windowSize.width < 768,
+        lg: windowSize.width < 1024,
+        xl: windowSize.width < 1280,
+    }
+
+    return { windowSize, larger, smaller }
 }
 
 export default useResponsive

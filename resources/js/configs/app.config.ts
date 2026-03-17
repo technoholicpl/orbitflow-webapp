@@ -1,4 +1,5 @@
 export type AppConfig = {
+    appName: string
     apiPrefix: string
     authenticatedEntryPath: string
     unAuthenticatedEntryPath: string
@@ -6,16 +7,19 @@ export type AppConfig = {
     accessTokenPersistStrategy: 'localStorage' | 'sessionStorage' | 'cookies'
     enableMock: boolean
     activeNavTranslation: boolean
+    redirectUrlKey: string
 }
 
 const appConfig: AppConfig = {
+    appName: import.meta.env.VITE_APP_NAME || 'Laravel',
     apiPrefix: '/api',
     authenticatedEntryPath: '/home',
     unAuthenticatedEntryPath: '/sign-in',
     locale: 'en',
     accessTokenPersistStrategy: 'cookies',
-    enableMock: true,
+    enableMock: false,
     activeNavTranslation: false,
+    redirectUrlKey: 'redirectUrl',
 }
 
 export default appConfig
