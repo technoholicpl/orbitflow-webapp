@@ -122,6 +122,16 @@ const userNavigationConfig: NavigationTree[] = [
         authority: ['user'],
         subMenu: [],
     },
+    {
+        key: 'user.clients',
+        path: '/clients',
+        title: 'Clients',
+        translateKey: 'nav.user.clients',
+        icon: 'users',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: ['user'],
+        subMenu: [],
+    },
      {
         key: 'user.projects',
         path: '',

@@ -31,14 +31,48 @@ class ClientController extends Controller
     {
         $validated = $request->validate([
             'type' => 'required|in:business,individual',
-            'company_name' => 'required_if:type,business',
-            'first_name' => 'required_if:type,individual',
-            'last_name' => 'required_if:type,individual',
-            'email' => 'nullable|email',
-            'phone' => 'nullable|string',
+            'company_name' => 'required_if:type,business|nullable|string|max:255',
+            'tax_id' => 'nullable|string|max:50',
+            'first_name' => 'required_if:type,individual|nullable|string|max:255',
+            'last_name' => 'required_if:type,individual|nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:50',
+            'website' => 'nullable|string|max:255',
+            'note' => 'nullable|string',
+            'brands' => 'nullable|array',
+            'brands.*.name' => 'required|string|max:255',
+            'brands.*.description' => 'nullable|string',
+            'brands.*.website' => 'nullable|string|max:255',
         ]);
 
-        $request->user()->currentWorkspace->clients()->create($validated);
+        $user = $request->user();
+        $workspace = null;
+
+        if ($user instanceof \App\Models\User) {
+            $workspace = $user->currentWorkspace;
+        } else if ($user instanceof \App\Models\Admin) {
+            // For admins, we pick the first workspace as a fallback for now
+            // In a real scenario, we might want to allow them to pick one or handle it differently
+            $workspace = \App\Models\Workspace::first();
+        }
+
+        if (!$workspace) {
+            return response()->json(['message' => 'No active workspace found'], 422);
+        }
+        
+        $client = $workspace->clients()->create(collect($validated)->except('brands')->toArray());
+
+        if (!empty($validated['brands'])) {
+            foreach ($validated['brands'] as $brandData) {
+                $client->brands()->create(array_merge($brandData, [
+                    'workspace_id' => $workspace->id
+                ]));
+            }
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Client created successfully', 'client' => $client]);
+        }
 
         return redirect()->route('clients.index');
     }

@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { useState } from 'react'
-import ClientSheet from '@/components/clientsheet';
+import ClientCreateDrawer from '@/components/shared/ClientCreateDrawer';
 import DashboardLayout from '@/layouts/DashboardLayout'
 
 interface Client {
@@ -11,6 +11,11 @@ interface Client {
     is_active: boolean
     phone?: string
     address?: string
+    first_name?: string
+    last_name?: string
+    website?: string
+    note?: string
+    brands?: any[]
 }
 
 interface ClientsListProps {
@@ -18,17 +23,17 @@ interface ClientsListProps {
 }
 
 export default function ClientsList({ clients }: ClientsListProps) {
-    const [isSheetOpen, setIsSheetOpen] = useState(false)
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [selectedClient, setSelectedClient] = useState<Client | undefined>(undefined)
 
     const handleNewClient = () => {
         setSelectedClient(undefined)
-        setIsSheetOpen(true)
+        setIsDrawerOpen(true)
     }
 
     const handleEditClient = (client: Client) => {
         setSelectedClient(client)
-        setIsSheetOpen(true)
+        setIsDrawerOpen(true)
     }
 
     return (
@@ -65,9 +70,11 @@ export default function ClientsList({ clients }: ClientsListProps) {
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-xs font-black text-indigo-600 uppercase border-2 border-indigo-100 dark:border-indigo-800">
-                                                {client.company_name.substring(0, 2)}
+                                                {client.company_name ? client.company_name.substring(0, 2) : client.first_name?.substring(0, 1)}
                                             </div>
-                                            <span className="font-black text-gray-800 dark:text-gray-100 uppercase tracking-tight text-lg">{client.company_name}</span>
+                                            <span className="font-black text-gray-800 dark:text-gray-100 uppercase tracking-tight text-lg">
+                                                {client.type === 'business' ? client.company_name : `${client.first_name} ${client.last_name}`}
+                                            </span>
                                         </div>
                                     </td>
                                     <td className="px-8 py-6">
@@ -102,9 +109,9 @@ export default function ClientsList({ clients }: ClientsListProps) {
                 </div>
             </div>
 
-            <ClientSheet
-                isOpen={isSheetOpen}
-                onOpenChange={setIsSheetOpen}
+            <ClientCreateDrawer
+                isOpen={isDrawerOpen}
+                onClose={() => setIsDrawerOpen(false)}
                 client={selectedClient}
             />
         </DashboardLayout>

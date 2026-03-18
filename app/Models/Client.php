@@ -42,6 +42,11 @@ class Client extends Model
         return $this->hasMany(Project::class);
     }
 
+    public function brands(): HasMany
+    {
+        return $this->hasMany(Brand::class);
+    }
+
     public function getNameAttribute(): ?string
     {
         if ($this->type === 'business') {

@@ -11,6 +11,7 @@ import ConfigProvider from '@/components/ui/ConfigProvider';
 import { themeConfig } from '@/configs/theme.config';
 import { userNavigationConfig } from '@/configs/navigation.config';
 import ModeSwitcher from '@/components/template/ThemeConfigurator/ModeSwitcher';
+import GlobalQuickActions from '@/components/template/GlobalQuickActions';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -42,6 +43,7 @@ export default function DashboardLayout({ children, title = 'Dashboard' }: Dashb
                             headerStart={<>{smaller.lg && <MobileNav />}</>}
                             headerEnd={
                                 <div className="flex items-center gap-4">
+                                    <GlobalQuickActions />
                                     <ModeSwitcher />
                                     <UserProfileDropdown hoverable={false} />
                                 </div>
