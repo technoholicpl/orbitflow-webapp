@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 class Admin extends Authenticatable
 {
-    use HasFactory, Notifiable, SoftDeletes, HasUlids, TwoFactorAuthenticatable;
+    use HasFactory, Notifiable, SoftDeletes, HasUlids, TwoFactorAuthenticatable, HasRoles;
 
     public function uniqueIds(): array
     {

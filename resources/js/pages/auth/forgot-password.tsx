@@ -1,8 +1,7 @@
+import type { PageProps } from '@inertiajs/core';
 import { Form, Head, usePage, Link } from '@inertiajs/react';
-import TextLink from '@/components/text-link';
 import { Button, Input, FormItem } from '@/components/ui';
 import AuthLayout from '@/layouts/auth-layout';
-import { PageProps } from '@inertiajs/core';
 
 interface AuthProps extends PageProps {
     cp_prefix: string;
@@ -25,7 +24,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
             )}
 
             <div className="space-y-6">
-                <Form 
+                <Form
                     action={cp_prefix ? `/${cp_prefix}/forgot-password` : '/forgot-password'}
                     method="post"
                 >
@@ -62,7 +61,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
                 <div className="space-x-1 text-center text-sm text-muted-foreground">
                     <span>Or, return to</span>
-                    <Link 
+                    <Link
                         href={cp_prefix ? `/${cp_prefix}/login` : '/login'}
                         className="text-primary hover:underline"
                     >

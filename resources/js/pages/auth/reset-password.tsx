@@ -1,7 +1,7 @@
+import type { PageProps } from '@inertiajs/core';
 import { Form, Head, usePage } from '@inertiajs/react';
 import { Button, Input, FormItem } from '@/components/ui';
 import AuthLayout from '@/layouts/auth-layout';
-import { PageProps } from '@inertiajs/core';
 
 interface AuthProps extends PageProps {
     cp_prefix: string;

@@ -1,8 +1,8 @@
 import { Form, Head } from '@inertiajs/react';
+import Logo from '@/components/template/Logo';
 import TextLink from '@/components/text-link';
 import { Button, Checkbox, Input, FormItem } from '@/components/ui';
 import AuthLayout from '@/layouts/auth-layout';
-import Logo from '@/components/template/Logo';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
@@ -45,8 +45,8 @@ export default function Login({
                 {({ processing, errors }) => (
                     <>
                         <div className="grid gap-4">
-                            <FormItem 
-                                label="Email" 
+                            <FormItem
+                                label="Email"
                                 invalid={!!errors.email}
                                 errorMessage={errors.email}
                             >
@@ -60,8 +60,8 @@ export default function Login({
                                 />
                             </FormItem>
 
-                            <FormItem 
-                                label="Password" 
+                            <FormItem
+                                label="Password"
                                 invalid={!!errors.password}
                                 errorMessage={errors.password}
                                 extra={
@@ -112,7 +112,7 @@ export default function Login({
                                 </p>
                                 <div className="border-t border-gray-200 dark:border-gray-800 flex-1 mt-[1px]" />
                             </div>
-                            
+
                             <div className="flex items-center gap-2">
                                 <Button className="flex-1" type="button" variant="default">
                                     <div className="flex items-center justify-center gap-2">

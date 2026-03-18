@@ -1,3 +1,4 @@
+import type { PageProps } from '@inertiajs/core';
 import { Form, Head, usePage } from '@inertiajs/react';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { useMemo, useState } from 'react';
@@ -10,10 +11,9 @@ import {
     InputOTPGroup,
     InputOTPSlot,
 } from '@/components/ui';
-import { OTP_MAX_LENGTH } from '@/utils/hooks/use-two-factor-auth';
 import AuthLayout from '@/layouts/auth-layout';
 import { store } from '@/routes/two-factor/login';
-import { PageProps } from '@inertiajs/core';
+import { OTP_MAX_LENGTH } from '@/utils/hooks/use-two-factor-auth';
 
 interface AuthProps extends PageProps {
     cp_prefix: string;

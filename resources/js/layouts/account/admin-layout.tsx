@@ -2,10 +2,11 @@ import type { PageProps } from '@inertiajs/core';
 import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
 import {
+    PiUserCircleDuotone,
+    PiLockKeyDuotone,
     PiShieldCheckDuotone,
-    PiPaletteDuotone,
 } from 'react-icons/pi';
-import { AdaptiveCard } from '@/components/shared';
+import AdaptiveCard from '@/components/shared/AdaptiveCard';
 import { cn } from '@/lib/utils';
 
 interface SidebarNavItem {
@@ -14,7 +15,7 @@ interface SidebarNavItem {
     icon: React.ElementType;
 }
 
-interface SettingsLayoutProps {
+interface AccountLayoutProps {
     children: React.ReactNode;
 }
 
@@ -22,27 +23,32 @@ interface AuthProps extends PageProps {
     cp_prefix: string;
 }
 
-export default function AdminSettingsLayout({ children }: SettingsLayoutProps) {
+export default function AdminAccountLayout({ children }: AccountLayoutProps) {
     const { url, props } = usePage<AuthProps>();
     const { cp_prefix } = props;
 
     const sidebarNavItems: SidebarNavItem[] = [
         {
-            title: 'Appearance',
-            href: `/${cp_prefix}/settings/appearance`,
-            icon: PiPaletteDuotone,
+            title: 'Profile',
+            href: `/${cp_prefix}/account/profile`,
+            icon: PiUserCircleDuotone,
         },
         {
-            title: 'Admins',
-            href: `/${cp_prefix}/settings/admins`,
+            title: 'Password',
+            href: `/${cp_prefix}/account/password`,
+            icon: PiLockKeyDuotone,
+        },
+        {
+            title: '2-Step verification',
+            href: `/${cp_prefix}/account/two-factor`,
             icon: PiShieldCheckDuotone,
         },
     ];
 
     return (
-        <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
+        <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
             <aside className="lg:w-1/5">
-                <nav className="flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1">
+                <nav className="flex space-x-2 lg:flex-col lg:space-y-1 lg:space-x-0">
                     {sidebarNavItems.map((item) => {
                         const isActive = url.startsWith(item.href);
                         return (
@@ -50,7 +56,7 @@ export default function AdminSettingsLayout({ children }: SettingsLayoutProps) {
                                 key={item.href}
                                 href={item.href}
                                 className={cn(
-                                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-muted',
+                                    'hover:bg-muted flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all',
                                     isActive
                                         ? 'bg-muted text-primary'
                                         : 'text-muted-foreground',
@@ -63,6 +69,7 @@ export default function AdminSettingsLayout({ children }: SettingsLayoutProps) {
                     })}
                 </nav>
             </aside>
+
             <AdaptiveCard className="flex-1 lg:max-w-2xl">
                 <div >{children}</div>
             </AdaptiveCard>

@@ -2,24 +2,30 @@ import { Link } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
 import { AdaptiveCard } from '@/components/shared';
 import { cn } from '@/lib/utils';
-import { edit as editAppearance } from '@/routes/appearance';
-import workspace from '@/routes/workspace';
+import { edit } from '@/routes/profile';
+import { show } from '@/routes/two-factor';
+import { edit as editPassword } from '@/routes/user-password';
 import { useCurrentUrl } from '@/utils/hooks/use-current-url';
 
 const sidebarNavItems = [
     {
-        title: 'Appearance',
-        href: editAppearance().url,
+        title: 'Profile',
+        href: edit().url,
         icon: null,
     },
     {
-        title: 'Members',
-        href: workspace.members.index().url,
+        title: 'Password',
+        href: editPassword().url,
+        icon: null,
+    },
+    {
+        title: 'Two-factor auth',
+        href: show().url,
         icon: null,
     },
 ];
 
-export default function SettingsLayout({ children }: PropsWithChildren) {
+export default function AccountLayout({ children }: PropsWithChildren) {
     const { isCurrentOrParentUrl } = useCurrentUrl();
 
     // When server-side rendering, we only render the layout on the client...
@@ -32,7 +38,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
             <aside className="w-full max-w-xl lg:w-48">
                 <nav
                     className="flex flex-col space-y-1 space-x-0"
-                    aria-label="Settings"
+                    aria-label="Account"
                 >
                     {sidebarNavItems.map((item, index) => {
                         const active = isCurrentOrParentUrl(item.href as any);
@@ -56,7 +62,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
             <div className="bg-border my-6 h-px w-full lg:hidden" />
             <AdaptiveCard className="flex-1 md:max-w-2xl">
-                <div className="flex-1 md:max-w-2xl">
+                <div>
                     <section className="space-y-12">{children}</section>
                 </div>
             </AdaptiveCard>

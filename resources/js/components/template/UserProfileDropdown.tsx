@@ -31,7 +31,7 @@ const _UserDropdown = () => {
     const dropdownItemList: DropdownList[] = [
         {
             label: 'Profile',
-            path: isAdmin ? `/${cp_prefix}/settings/profile` : '/settings/profile',
+            path: isAdmin ? `/${cp_prefix}/account/profile` : '/account/profile',
             icon: <PiUserDuotone />,
         },
     ]

@@ -1,7 +1,8 @@
+import type { PageProps } from '@inertiajs/core';
 import { Form, Head, usePage, Link } from '@inertiajs/react';
 import { Button, Input, FormItem, Checkbox } from '@/components/ui';
 import AuthLayout from '@/layouts/auth-layout';
-import { PageProps } from '@inertiajs/core';
+
 
 interface AuthProps extends PageProps {
     cp_prefix: string;
@@ -29,8 +30,8 @@ export default function Login({ status }: Props) {
             >
                 {({ processing, errors }) => (
                     <div className="grid gap-4">
-                        <FormItem 
-                            label="Email" 
+                        <FormItem
+                            label="Email"
                             invalid={!!errors.email}
                             errorMessage={errors.email}
                         >
@@ -38,13 +39,13 @@ export default function Login({ status }: Props) {
                                 id="email"
                                 type="email"
                                 name="email"
-                                placeholder="admin@example.com"
+                                placeholder="admin@orbitflow.com"
                                 autoFocus
                             />
                         </FormItem>
 
-                        <FormItem 
-                            label="Password" 
+                        <FormItem
+                            label="Password"
                             invalid={!!errors.password}
                             errorMessage={errors.password}
                         >
@@ -68,10 +69,10 @@ export default function Login({ status }: Props) {
                             </Link>
                         </div>
 
-                        <Button 
-                            variant="solid" 
-                            type="submit" 
-                            className="mt-2 w-full" 
+                        <Button
+                            variant="solid"
+                            type="submit"
+                            className="mt-2 w-full"
                             loading={processing}
                         >
                             Acccess Admin Panel

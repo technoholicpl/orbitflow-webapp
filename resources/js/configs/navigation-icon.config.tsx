@@ -15,6 +15,7 @@ import {
     PiBriefcaseDuotone,
     PiSpeedometerDuotone,
     PiCheckSquareDuotone,
+    PiGearDuotone,
 } from 'react-icons/pi'
 import type { JSX } from 'react'
 
@@ -35,7 +36,8 @@ const navigationIcon: NavigationIcons = {
     pages: <PiFileTextDuotone />,
     blog: <PiArticleDuotone />,
     project: <PiBriefcaseDuotone />,
-    task: <PiCheckSquareDuotone />,
+    task: <PiCheckSquareDuotone />, 
+    settings: <PiGearDuotone />,
 }
 
 export default navigationIcon

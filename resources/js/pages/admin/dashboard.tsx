@@ -1,8 +1,8 @@
-import { Head } from '@inertiajs/react'
-import AdminLayout from '@/layouts/adminlayout'
-import { Card, Badge, Button, Tag } from '@/components/ui'
-import { Users, CreditCard, Layers, Activity, ArrowUpRight, ArrowDownRight } from 'lucide-react'
-import AdaptiveCard from '@/components/shared/AdaptiveCard'
+import { Head } from '@inertiajs/react';
+import { Users, CreditCard, Layers, Activity, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import AdaptiveCard from '@/components/shared/AdaptiveCard';
+import { Card, Button, Tag } from '@/components/ui';
+import AdminLayout from '@/layouts/adminlayout';
 
 export default function AdminDashboard() {
     return (
@@ -88,8 +88,8 @@ export default function AdminDashboard() {
                     </AdaptiveCard>
                 </div>
 
-                <Card 
-                    header={{ 
+                <Card
+                    header={{
                         content: 'Latest Registered Users',
                         extra: <Button variant="plain" size="sm" className="text-xs">View All</Button>
                     }}

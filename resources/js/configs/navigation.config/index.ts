@@ -78,7 +78,38 @@ const getAdminNavigationConfig = (prefix: string): NavigationTree[] => [
             },
         ],
     },
-]
+    {
+        key: 'admin.settings',
+        path: '',
+        title: 'Settings',
+        translateKey: 'nav.admin.settings',
+        icon: 'settings',
+        type: NAV_ITEM_TYPE_TITLE,
+        authority: ['admin'],
+        subMenu: [
+            {
+                key: 'admin.settings.appearance',
+                path: `/${prefix}/settings/appearance`,
+                title: 'Appearance',
+                translateKey: 'nav.admin.settings.appearance',
+                icon: 'appearance',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: ['admin'],
+                subMenu: [],
+            },
+            {
+                key: 'admin.settings.admins',
+                path: `/${prefix}/settings/admins`,
+                title: 'Admins',
+                translateKey: 'nav.admin.settings.admins',
+                icon: 'admins',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: ['admin'],
+                subMenu: [],
+            },
+        ],
+    },
+];
 
 const userNavigationConfig: NavigationTree[] = [
     {
@@ -141,6 +172,37 @@ const userNavigationConfig: NavigationTree[] = [
         type: NAV_ITEM_TYPE_ITEM,
         authority: ['user'],
         subMenu: [],
+    },
+     {
+        key: 'user.settings',
+        path: '',
+        title: 'Settings',
+        translateKey: 'nav.user.settings',
+        icon: 'settings',
+        type: NAV_ITEM_TYPE_TITLE,
+        authority: ['user'],
+        subMenu: [
+            {
+                key: 'user.settings.appearance',
+                path: `/appearance`,
+                title: 'Appearance',
+                translateKey: 'nav.admin.settings.appearance',
+                icon: 'appearance',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: ['user'],
+                subMenu: [],
+            },
+            {
+                key: 'user.settings.members',
+                path: `/settings/members`,
+                title: 'Members',
+                translateKey: 'nav.user.settings.members',
+                icon: 'users',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: ['user'],
+                subMenu: [],
+            },
+        ],
     },
 ]
 
