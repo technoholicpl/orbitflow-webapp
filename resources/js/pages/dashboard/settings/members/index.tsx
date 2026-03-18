@@ -217,7 +217,7 @@ export default function WorkspaceMembers({
                                 <div className="flex items-center space-x-4">
                                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/20">
                                         {member.avatar_url ? (
-                                            <img src={member.avatar_url} alt={member.name} className="h-full w-full object-cover" />
+                                            <img src={`/storage/${member.avatar_url}`} alt={member.name} className="h-full w-full object-cover" />
                                         ) : (
                                             <span className="text-sm font-bold text-primary">
                                                 {member.name.charAt(0).toUpperCase()}

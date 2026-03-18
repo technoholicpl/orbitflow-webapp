@@ -17,7 +17,7 @@ interface AuthProps extends PageProps {
         user: {
             name: string;
             email: string;
-            avatar?: string;
+            avatar_url?: string;
         }
     };
     cp_prefix: string;
@@ -41,7 +41,7 @@ const _UserDropdown = () => {
     }
 
     const avatarProps = {
-        ...(user?.avatar ? { src: user.avatar } : { icon: <PiUserDuotone /> }),
+        ...(user?.avatar_url ? { src: `/storage/${user.avatar_url}` } : { icon: <PiUserDuotone /> }),
     }
 
     return (

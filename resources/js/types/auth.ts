@@ -3,6 +3,7 @@ export type User = {
     name: string;
     email: string;
     avatar?: string;
+    avatar_url?: string;
     email_verified_at: string | null;
     two_factor_enabled?: boolean;
     created_at: string;
@@ -36,6 +37,7 @@ export type SignInResponse = {
         userName: string
         authority: string[]
         avatar: string
+        avatar_url?: string
         email: string
     }
 }

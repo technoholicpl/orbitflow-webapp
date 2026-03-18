@@ -36,6 +36,14 @@ class ProfileController extends Controller
 
         $admin->fill($request->validated());
 
+        if ($request->hasFile('avatar')) {
+            if ($admin->avatar_url) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($admin->avatar_url);
+            }
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $admin->avatar_url = $path;
+        }
+
         if ($admin->isDirty('email')) {
             $admin->email_verified_at = null;
         }
