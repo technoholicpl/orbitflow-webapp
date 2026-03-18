@@ -9,6 +9,7 @@ use App\Models\Client;
 use App\Models\Project;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\PermissionRegistrar;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,13 +18,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Initialize Roles and Permissions
+        $this->call(RolesAndPermissionsSeeder::class);
+
         // Seed Admins
-        Admin::create([
+        $admin = Admin::create([
             'name' => 'OrbitFlow SuperAdmin',
             'email' => 'admin@orbitflow.com',
             'password' => Hash::make('password'),
             'is_superadmin' => true,
         ]);
+
+        // Assign global admin role
+        app(PermissionRegistrar::class)->setPermissionsTeamId(null);
+        $admin->assignRole('administrator');
 
         // Seed Users
         $user = User::create([
@@ -45,6 +53,10 @@ class DatabaseSeeder extends Seeder
         $user->workspaces()->attach($workspace->id, ['role' => 'owner']);
         $user->update(['current_workspace_id' => $workspace->id]);
 
+        // Assign workspace-scoped role
+        app(PermissionRegistrar::class)->setPermissionsTeamId($workspace->id);
+        $user->assignRole('Owner');
+
         // Create initial Clients
         $client = Client::create([
             'workspace_id' => $workspace->id,
@@ -63,7 +75,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'in progress',
             'priority' => 'high',
             'deadline' => now()->addMonths(2),
-            'total_time' => 7200,
+            'spent_time' => 7200,
         ]);
 
         Project::create([
@@ -74,7 +86,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'new',
             'priority' => 'medium',
             'deadline' => now()->addMonths(3),
-            'total_time' => 0,
+            'spent_time' => 0,
         ]);
     }
 }

@@ -15,7 +15,9 @@ class RolesAndPermissionsSeeder extends Seeder
     public function run(): void
     {
         // Reset cached roles and permissions
-        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+        $registrar = app(PermissionRegistrar::class);
+        $registrar->forgetCachedPermissions();
+        $registrar->setPermissionsTeamId(null);
 
         // --- Admin Roles (Global) ---
         // Guard: admins
