@@ -6,11 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\TimeEntry;
 use App\Models\UserCurrentJob;
 use App\Http\Resources\TimeEntryResource;
+use App\Services\TimeEntryService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class TimeEntryController extends Controller
 {
+    protected $timeEntryService;
+
+    public function __construct(TimeEntryService $timeEntryService)
+    {
+        $this->timeEntryService = $timeEntryService;
+    }
+
     public function current(Request $request)
     {
         $job = UserCurrentJob::where('user_id', $request->user()->id)
@@ -23,7 +31,6 @@ class TimeEntryController extends Controller
 
         $timeEntry = $job->timeEntry;
         
-        // Add needs_recovery flag similar to web middleware
         $hardTimeout = $request->user()->timer_hard_timeout ?? 12;
         $timeEntry->needs_recovery = !$timeEntry->recovery_dismissed && 
             ($timeEntry->started_at->diffInHours(Carbon::now('UTC')) >= $hardTimeout);
@@ -39,48 +46,18 @@ class TimeEntryController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        // Stop existing timer if any
-        UserCurrentJob::where('user_id', $request->user()->id)->delete();
-
-        $timeEntry = TimeEntry::create([
-            'user_id' => $request->user()->id,
-            'workspace_id' => $request->user()->current_workspace_id,
-            'project_id' => $validated['project_id'],
-            'task_id' => $validated['task_id'] ?? null,
-            'description' => $validated['description'] ?? null,
-            'started_at' => Carbon::now('UTC'),
-            'is_manual' => false,
-        ]);
-
-        UserCurrentJob::create([
-            'user_id' => $request->user()->id,
-            'time_entry_id' => $timeEntry->id,
-        ]);
+        $timeEntry = $this->timeEntryService->startTimer($request->user(), $validated);
 
         return new TimeEntryResource($timeEntry);
     }
 
     public function stop(Request $request)
     {
-        $job = UserCurrentJob::where('user_id', $request->user()->id)->first();
+        $timeEntry = $this->timeEntryService->stopTimer($request->user());
 
-        if (!$job) {
+        if (!$timeEntry) {
             return response()->json(['message' => 'Brak aktywnego timera.'], 404);
         }
-
-        $timeEntry = $job->timeEntry;
-        $now = Carbon::now('UTC');
-        $duration = max(0, $now->timestamp - $timeEntry->started_at->timestamp);
-
-        $timeEntry->update([
-            'ended_at' => $now,
-            'duration' => $duration,
-        ]);
-
-        $job->delete();
-
-        // Update project spent time
-        $this->updateProjectSpentTime($timeEntry->project_id);
 
         return new TimeEntryResource($timeEntry);
     }
@@ -95,23 +72,7 @@ class TimeEntryController extends Controller
             'ended_at' => 'required|date|after:started_at',
         ]);
 
-        $start = Carbon::parse($validated['started_at']);
-        $end = Carbon::parse($validated['ended_at']);
-        $duration = $end->timestamp - $start->timestamp;
-
-        $timeEntry = TimeEntry::create([
-            'user_id' => $request->user()->id,
-            'workspace_id' => $request->user()->current_workspace_id,
-            'project_id' => $validated['project_id'],
-            'task_id' => $validated['task_id'] ?? null,
-            'description' => $validated['description'] ?? null,
-            'started_at' => $start,
-            'ended_at' => $end,
-            'duration' => $duration,
-            'is_manual' => true,
-        ]);
-
-        $this->updateProjectSpentTime($timeEntry->project_id);
+        $timeEntry = $this->timeEntryService->storeManualEntry($request->user(), $validated);
 
         return new TimeEntryResource($timeEntry);
     }
@@ -124,44 +85,15 @@ class TimeEntryController extends Controller
 
         $validated = $request->validate([
             'action' => 'required|in:fix_yesterday,manual,delete,ignore',
-            'end_time' => 'nullable|string', // ISO string suggested
+            'end_time' => 'nullable|string',
         ]);
 
-        switch ($validated['action']) {
-            case 'fix_yesterday':
-                $remindEvery = $request->user()->timer_remind_every ?? 8;
-                $endedAt = Carbon::parse($timeEntry->started_at)->addHours($remindEvery);
-                $duration = $remindEvery * 3600;
-                $timeEntry->update(['ended_at' => $endedAt, 'duration' => $duration]);
-                UserCurrentJob::where('time_entry_id', $timeEntry->id)->delete();
-                break;
+        $timeEntry = $this->timeEntryService->handleRecovery($request->user(), $timeEntry, $validated);
 
-            case 'manual':
-                if (!$validated['end_time']) return response()->json(['message' => 'Czas zakończenia jest wymagany.'], 422);
-                $endedAt = Carbon::parse($validated['end_time'], 'UTC');
-                $duration = max(0, $endedAt->timestamp - $timeEntry->started_at->timestamp);
-                $timeEntry->update(['ended_at' => $endedAt, 'duration' => $duration]);
-                UserCurrentJob::where('time_entry_id', $timeEntry->id)->delete();
-                break;
-
-            case 'delete':
-                UserCurrentJob::where('time_entry_id', $timeEntry->id)->delete();
-                $timeEntry->delete();
-                return response()->json(['message' => 'Usunięto pomyślnie.']);
-
-            case 'ignore':
-                $timeEntry->update(['recovery_dismissed' => true]);
-                break;
+        if (!$timeEntry) {
+            return response()->json(['message' => 'Usunięto pomyślnie.']);
         }
 
-        $this->updateProjectSpentTime($timeEntry->project_id);
-
         return new TimeEntryResource($timeEntry);
-    }
-
-    protected function updateProjectSpentTime($projectId)
-    {
-        $totalSeconds = TimeEntry::where('project_id', $projectId)->sum('duration');
-        \App\Models\Project::where('id', $projectId)->update(['spent_time' => (int)$totalSeconds]);
     }
 }

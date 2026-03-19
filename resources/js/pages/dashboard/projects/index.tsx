@@ -5,7 +5,7 @@ import WorkTime from '@/components/WorkTime'
 import DashboardLayout from '@/layouts/DashboardLayout';
 import TimeEntryModal from '@/components/shared/TimeEntryModal';
 import { HiPlus, HiClock, HiPlay, HiStop } from 'react-icons/hi';
-import { Button } from '@/components/ui';
+import { Button, Notification, toast } from '@/components/ui';
 import dayjs from 'dayjs';
 import { cn } from '@/lib/utils';
 
@@ -34,10 +34,24 @@ export default function ProjectsList({ projects, clients }: ProjectsListProps) {
 
     const handleToggleTimer = (project: Project) => {
         if (current_timer?.project_id === project.id) {
-            router.post(`/time-entries/${current_timer.id}/stop`);
+            router.post(`/time-entries/${current_timer.id}/stop`, {}, { 
+                onSuccess: () => {
+                    toast.push(
+                        <Notification title="Licznik zatrzymany" type="info" />
+                    );
+                },
+                showProgress: false 
+            });
         } else {
             router.post('/time-entries', {
                 project_id: project.id
+            }, { 
+                onSuccess: () => {
+                    toast.push(
+                        <Notification title="Licznik uruchomiony" type="success" />
+                    );
+                },
+                showProgress: false 
             });
         }
     }

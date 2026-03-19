@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import utc from 'dayjs/plugin/utc';
 import { cn } from '@/lib/utils';
-import { Button, Dropdown } from '@/components/ui';
+import { Button, Dropdown, Notification, toast } from '@/components/ui';
 import {
     useFloating,
     autoUpdate,
@@ -119,7 +119,11 @@ const GlobalTimer = () => {
         }, {
             onSuccess: () => {
                 setIsPopoverOpen(false);
-            }
+                toast.push(
+                    <Notification title="Licznik uruchomiony" type="success" />
+                );
+            },
+            showProgress: false
         });
     };
 
@@ -127,8 +131,11 @@ const GlobalTimer = () => {
         if (!current_timer) return;
         router.post(`/time-entries/${current_timer.id}/stop`, {}, {
             onSuccess: () => {
-                // Done
-            }
+                toast.push(
+                    <Notification title="Licznik zatrzymany" type="info" />
+                );
+            },
+            showProgress: false
         });
     };
 
@@ -159,7 +166,8 @@ const GlobalTimer = () => {
         }, {
             onSuccess: () => {
                 setIsRecoveryOpen(false);
-            }
+            },
+            showProgress: false
         });
     };
 
