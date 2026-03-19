@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Workspace;
 use App\Models\Client;
 use App\Models\Project;
+use App\Models\ActionType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\PermissionRegistrar;
@@ -32,6 +33,18 @@ class DatabaseSeeder extends Seeder
         // Assign global admin role
         app(PermissionRegistrar::class)->setPermissionsTeamId(null);
         $admin->assignRole('administrator');
+        
+        // Seed default ActionTypes
+        $defaultActions = [
+            ['name' => 'Project', 'description' => 'General project management', 'color' => '#3b82f6', 'icon' => 'Activity', 'system' => true],
+            ['name' => 'Coding', 'description' => 'Development and programming', 'color' => '#10b981', 'icon' => 'Code', 'system' => true],
+            ['name' => 'Modification', 'description' => 'Changes and updates', 'color' => '#f59e0b', 'icon' => 'Settings', 'system' => true],
+            ['name' => 'Bug', 'description' => 'Fixing issues and errors', 'color' => '#ef4444', 'icon' => 'AlertCircle', 'system' => true],
+        ];
+
+        foreach ($defaultActions as $action) {
+            ActionType::firstOrCreate(['name' => $action['name']], $action);
+        }
 
         // Seed Users
         $user = User::create([

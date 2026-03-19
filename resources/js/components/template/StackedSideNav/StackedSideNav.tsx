@@ -40,7 +40,8 @@ const StackedSideNav = ({
     const { props } = usePage<AuthProps>()
     const { auth, cp_prefix, isAdmin } = props
     
-    const navigationTree = manualNavigationTree || (isAdmin ? getAdminNavigationConfig(cp_prefix) : userNavigationConfig)
+    const navConfig = isAdmin ? getAdminNavigationConfig(cp_prefix) : userNavigationConfig
+    const navigationTree = manualNavigationTree || navConfig.items
     const userAuthority = auth?.user?.authority
 
     const { t } = useTranslation(!translationSetup)
@@ -106,6 +107,7 @@ const StackedSideNav = ({
                         t={t as TranslationFn}
                         onChange={handleChange}
                         onSetActiveKey={handleSetActiveKey}
+                        sideNavFooter={navConfig.footer}
                     />
                     <div
                         className={`stacked-side-nav-secondary ${navColor(

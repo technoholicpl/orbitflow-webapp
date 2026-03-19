@@ -15,9 +15,11 @@ class Task extends Model
     protected $fillable = [
         'workspace_id',
         'project_id',
+        'workspace_action_id',
         'name',
         'description',
         'estimated_time',
+        'spent_time',
         'done_at',
     ];
 
@@ -36,8 +38,18 @@ class Task extends Model
         return $this->belongsTo(Project::class);
     }
 
+    public function workspaceAction(): BelongsTo
+    {
+        return $this->belongsTo(WorkspaceAction::class);
+    }
+
     public function timeEntries(): HasMany
     {
         return $this->hasMany(TimeEntry::class);
+    }
+
+    public function labels(): \Illuminate\Database\Eloquent\Relations\MorphToMany
+    {
+        return $this->morphToMany(Label::class, 'labelable');
     }
 }

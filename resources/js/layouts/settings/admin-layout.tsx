@@ -4,6 +4,7 @@ import React from 'react';
 import {
     PiShieldCheckDuotone,
     PiPaletteDuotone,
+    PiGearDuotone,
 } from 'react-icons/pi';
 import { AdaptiveCard } from '@/components/shared';
 import { cn } from '@/lib/utils';
@@ -36,6 +37,11 @@ export default function AdminSettingsLayout({ children }: SettingsLayoutProps) {
             title: 'Admins',
             href: `/${cp_prefix}/settings/admins`,
             icon: PiShieldCheckDuotone,
+        },
+        {
+            title: 'Action Types',
+            href: `/${cp_prefix}/settings/action-types`,
+            icon: PiGearDuotone,
         },
     ];
 

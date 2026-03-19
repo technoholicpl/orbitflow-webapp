@@ -11,6 +11,10 @@ export default function ProjectTimer({ projectId, initialSeconds = 0, onStop }: 
     const [seconds, setSeconds] = useState(initialSeconds)
 
     useEffect(() => {
+        setSeconds(initialSeconds)
+    }, [initialSeconds])
+
+    useEffect(() => {
         let interval: any
         if (isTracking) {
             interval = setInterval(() => {

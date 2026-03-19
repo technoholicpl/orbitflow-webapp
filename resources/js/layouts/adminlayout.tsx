@@ -43,7 +43,7 @@ const AdminLayout = ({ children, title = 'Admin Panel' }: AdminLayoutProps) => {
                 <div className="flex flex-auto min-w-0">
                     {larger.lg && (
                         <StackedSideNav 
-                            navigationTree={getAdminNavigationConfig(cp_prefix)} 
+                            navigationTree={getAdminNavigationConfig(cp_prefix).items} 
                         />
                     )}
                     <div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full">

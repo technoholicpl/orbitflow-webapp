@@ -37,4 +37,14 @@ class Workspace extends Model
     {
         return $this->hasMany(Project::class);
     }
+
+    public function labels(): BelongsToMany
+    {
+        return $this->belongsToMany(Label::class, 'workspace_label');
+    }
+
+    public function actionTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(ActionType::class, 'workspace_actions');
+    }
 }

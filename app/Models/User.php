@@ -44,6 +44,11 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Workspace::class, 'current_workspace_id');
     }
+
+    public function projects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, 'project_user');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

@@ -17,7 +17,7 @@ const HorizontalNav = ({
 
     return (
         <HorizontalMenuContent
-            navigationTree={navigationConfig}
+            navigationTree={navigationConfig.items}
             routeKey={currentRouteKey}
             userAuthority={userAuthority || []}
             translationSetup={translationSetup}

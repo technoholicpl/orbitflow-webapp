@@ -13,8 +13,8 @@ export type AppConfig = {
 const appConfig: AppConfig = {
     appName: import.meta.env.VITE_APP_NAME || 'Laravel',
     apiPrefix: '/api',
-    authenticatedEntryPath: '/home',
-    unAuthenticatedEntryPath: '/sign-in',
+    authenticatedEntryPath: '/dashboard',
+    unAuthenticatedEntryPath: '/login',
     locale: 'en',
     accessTokenPersistStrategy: 'cookies',
     enableMock: false,

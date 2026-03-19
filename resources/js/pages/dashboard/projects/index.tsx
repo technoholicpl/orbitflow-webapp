@@ -1,9 +1,13 @@
-import { Head } from '@inertiajs/react'
+import { Head, usePage, router } from '@inertiajs/react'
 import { useState } from 'react';
-import ProjectSheet from '@/components/projectsheet'
-import ProjectTimer from '@/components/projecttimer'
+import ProjectCreateDrawer from '@/components/shared/ProjectCreateDrawer'
 import WorkTime from '@/components/WorkTime'
 import DashboardLayout from '@/layouts/DashboardLayout';
+import TimeEntryModal from '@/components/shared/TimeEntryModal';
+import { HiPlus, HiClock, HiPlay, HiStop } from 'react-icons/hi';
+import { Button } from '@/components/ui';
+import dayjs from 'dayjs';
+import { cn } from '@/lib/utils';
 
 interface Project {
     id: number
@@ -23,8 +27,25 @@ interface ProjectsListProps {
 }
 
 export default function ProjectsList({ projects, clients }: ProjectsListProps) {
+    const { current_timer } = usePage<any>().props
     const [isSheetOpen, setIsSheetOpen] = useState(false)
+    const [isTimeModalOpen, setIsTimeModalOpen] = useState(false)
     const [selectedProject, setSelectedProject] = useState<Project | undefined>(undefined)
+
+    const handleToggleTimer = (project: Project) => {
+        if (current_timer?.project_id === project.id) {
+            router.post(`/time-entries/${current_timer.id}/stop`);
+        } else {
+            router.post('/time-entries', {
+                project_id: project.id
+            });
+        }
+    }
+
+    const handleAddTime = (project: Project) => {
+        setSelectedProject(project)
+        setIsTimeModalOpen(true)
+    }
 
     const handleNewProject = () => {
         setSelectedProject(undefined)
@@ -74,6 +95,12 @@ export default function ProjectsList({ projects, clients }: ProjectsListProps) {
                                     >
                                         Edit
                                     </button>
+                                    <button
+                                        onClick={() => handleAddTime(project)}
+                                        className="text-[10px] font-black uppercase text-gray-400 hover:text-blue-600 tracking-tighter flex items-center gap-1"
+                                    >
+                                        <HiPlus className="text-xs" /> Time
+                                    </button>
                                     <span className="text-xs text-gray-300 font-medium italic">#{project.id}</span>
                                 </div>
                             </div>
@@ -84,7 +111,20 @@ export default function ProjectsList({ projects, clients }: ProjectsListProps) {
                             </div>
 
                             <div className="flex flex-col gap-4">
-                                <ProjectTimer projectId={project.id} initialSeconds={project.total_time || 0} />
+                                <div className="flex items-center gap-2">
+                                    <Button 
+                                        size="sm"
+                                        variant={current_timer?.project_id === project.id ? 'solid' : 'default'}
+                                        onClick={() => handleToggleTimer(project)}
+                                        icon={current_timer?.project_id === project.id ? <HiStop /> : <HiPlay />}
+                                        className={cn(
+                                            "w-full uppercase font-black tracking-widest text-[10px]",
+                                            current_timer?.project_id === project.id && "bg-rose-500 hover:bg-rose-600 text-white border-transparent"
+                                        )}
+                                    >
+                                        {current_timer?.project_id === project.id ? 'Stop' : 'Start'}
+                                    </Button>
+                                </div>
 
                                 <div className="flex items-center justify-between pb-4 border-b dark:border-gray-800">
                                     <div className="flex items-center gap-2">
@@ -121,11 +161,16 @@ export default function ProjectsList({ projects, clients }: ProjectsListProps) {
                 </div>
             </div>
 
-            <ProjectSheet
+            <ProjectCreateDrawer
                 isOpen={isSheetOpen}
-                onOpenChange={setIsSheetOpen}
+                onClose={() => setIsSheetOpen(false)}
                 project={selectedProject}
-                clients={clients}
+            />
+
+            <TimeEntryModal 
+                isOpen={isTimeModalOpen}
+                onClose={() => setIsTimeModalOpen(false)}
+                project={selectedProject}
             />
         </DashboardLayout>
     )

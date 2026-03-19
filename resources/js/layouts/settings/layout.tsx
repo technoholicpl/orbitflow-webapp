@@ -17,6 +17,16 @@ const sidebarNavItems = [
         href: workspace.members.index().url,
         icon: null,
     },
+    {
+        title: 'Labels',
+        href: workspace.labels.index().url,
+        icon: null,
+    },
+    {
+        title: 'Action Types',
+        href: workspace.actionTypes.index().url,
+        icon: null,
+    },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {

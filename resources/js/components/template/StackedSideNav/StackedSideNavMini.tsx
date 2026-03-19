@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, ReactNode } from 'react'
 import Logo from '@/components/template/Logo'
 import Menu from '@/components/ui/Menu'
 import ScrollBar from '@/components/ui/ScrollBar'
@@ -39,6 +39,7 @@ interface StackedSideNavMiniProps extends CommonProps {
         key: string,
         fallback?: string | Record<string, string | number>,
     ) => string
+    sideNavFooter?: ReactNode
 }
 
 const StackedSideNavMini = (props: StackedSideNavMiniProps) => {
@@ -53,6 +54,7 @@ const StackedSideNavMini = (props: StackedSideNavMiniProps) => {
         mode,
         selectedMenu,
         t,
+        sideNavFooter,
         ...rest
     } = props
 
@@ -96,10 +98,10 @@ const StackedSideNavMini = (props: StackedSideNavMiniProps) => {
               : [includedRouteTree.key]
 
     return (
-        <div {...rest}>
+        <div {...rest} className={`flex flex-col h-full ${rest.className || ''}`}>
             <Link
                 href={appConfig.authenticatedEntryPath}
-                className="stacked-mini-nav-header flex items-center justify-center"
+                className="stacked-mini-nav-header flex items-center justify-center shrink-0"
                 style={{ height: HEADER_HEIGHT }}
             >
                 <Logo
@@ -109,60 +111,64 @@ const StackedSideNavMini = (props: StackedSideNavMiniProps) => {
                     className={SIDE_NAV_CONTENT_GUTTER}
                 />
             </Link>
-            <ScrollBar autoHide direction={direction}>
-                <Menu
-                    className="px-4 pb-4"
-                    defaultActiveKeys={defaultActiveKeys}
-                >
-                    {navigationTree.map((nav) => (
-                        <AuthorityCheck
-                            key={nav.key}
-                            authority={nav.authority}
-                            userAuthority={userAuthority}
-                        >
-                            <div title={t(nav.translateKey, nav.title)}>
-                                {nav.subMenu && nav.subMenu.length > 0 ? (
-                                    <Menu.MenuItem
-                                        eventKey={nav.key}
-                                        className="mb-2"
-                                        onSelect={() =>
-                                            handleMenuItemSelect({
-                                                key: nav.key,
-                                                title: nav.title,
-                                                menu: nav.subMenu,
-                                                translateKey: nav.translateKey,
-                                            })
-                                        }
-                                    >
-                                        <div className="text-2xl">
-                                            {navigationIcon[nav.icon]}
-                                        </div>
-                                    </Menu.MenuItem>
-                                ) : (
-                                    <Link
-                                        href={nav.path}
-                                        className="flex items-center h-full w-full"
-                                        onClick={() =>
-                                            handleLinkMenuItemSelect({
-                                                key: nav.key,
-                                            })
-                                        }
-                                    >
+            <div className="flex-1 overflow-hidden">
+                <ScrollBar autoHide direction={direction}>
+                    <Menu
+                        className="px-4 pb-4"
+                        defaultActiveKeys={defaultActiveKeys}
+                    >
+                        {navigationTree.map((nav) => (
+                            <AuthorityCheck
+                                key={nav.key}
+                                authority={nav.authority}
+                                userAuthority={userAuthority}
+                            >
+                                <div title={t(nav.translateKey, nav.title)}>
+                                    {nav.subMenu && nav.subMenu.length > 0 ? (
                                         <Menu.MenuItem
                                             eventKey={nav.key}
                                             className="mb-2"
+                                            onSelect={() =>
+                                                handleMenuItemSelect({
+                                                    key: nav.key,
+                                                    title: nav.title,
+                                                    menu: nav.subMenu,
+                                                    translateKey: nav.translateKey,
+                                                })
+                                            }
                                         >
                                             <div className="text-2xl">
                                                 {navigationIcon[nav.icon]}
                                             </div>
                                         </Menu.MenuItem>
-                                    </Link>
-                                )}
-                            </div>
-                        </AuthorityCheck>
-                    ))}
-                </Menu>
-            </ScrollBar>
+                                    ) : (
+                                        <Link
+                                            href={nav.path}
+                                            className="flex items-center h-full w-full"
+                                            onClick={() =>
+                                                handleLinkMenuItemSelect({
+                                                    key: nav.key,
+                                                })
+                                            }
+                                        >
+                                            <Menu.MenuItem
+                                                eventKey={nav.key}
+                                                className="mb-2"
+                                            >
+                                                <div className="text-2xl">
+                                                    {navigationIcon[nav.icon]}
+                                                </div>
+                                            </Menu.MenuItem>
+                                        </Link>
+                                    )}
+                                </div>
+                            </AuthorityCheck>
+                        ))}
+                    </Menu>
+                </ScrollBar>
+            </div>
+            
+            {sideNavFooter && sideNavFooter}
         </div>
     )
 }

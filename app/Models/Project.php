@@ -15,6 +15,8 @@ class Project extends Model
     protected $fillable = [
         'workspace_id',
         'client_id',
+        'brand_id',
+        'workspace_action_id',
         'name',
         'description',
         'status',
@@ -23,6 +25,8 @@ class Project extends Model
         'count_by_hours',
         'deadline',
     ];
+
+    protected $appends = ['total_time'];
 
     protected $casts = [
         'spent_time' => 'integer',
@@ -48,5 +52,30 @@ class Project extends Model
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
+    }
+
+    public function workspaceAction(): BelongsTo
+    {
+        return $this->belongsTo(WorkspaceAction::class);
+    }
+
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function labels(): \Illuminate\Database\Eloquent\Relations\MorphToMany
+    {
+        return $this->morphToMany(Label::class, 'labelable');
+    }
+
+    public function members(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'project_user');
+    }
+
+    public function getTotalTimeAttribute()
+    {
+        return $this->spent_time;
     }
 }

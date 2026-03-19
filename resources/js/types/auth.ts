@@ -1,9 +1,20 @@
+export type Workspace = {
+    id: number;
+    name: string;
+    description?: string;
+    owner_id: number;
+    created_at: string;
+    updated_at: string;
+}
+
 export type User = {
     id: number;
     name: string;
     email: string;
     avatar?: string;
     avatar_url?: string;
+    current_workspace_id: number;
+    workspaces?: Workspace[];
     email_verified_at: string | null;
     two_factor_enabled?: boolean;
     created_at: string;

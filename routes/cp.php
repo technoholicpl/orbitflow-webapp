@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\Account\PasswordController;
 use App\Http\Controllers\Admin\Account\ProfileController;
 use App\Http\Controllers\Admin\Account\TwoFactorAuthenticationController;
 use App\Http\Controllers\Admin\AdminManagementController;
+use App\Http\Controllers\Admin\ActionTypeController as AdminActionTypeController;
 use App\Http\Controllers\Admin\Auth\ConfirmablePasswordController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -61,6 +62,11 @@ Route::middleware(['web'])
                 Route::get('admins', [AdminManagementController::class, 'index'])->name('admins.index');
                 Route::patch('admins/{admin}/role', [AdminManagementController::class, 'updateRole'])->name('admins.role.update');
                 Route::delete('admins/{admin}', [AdminManagementController::class, 'destroy'])->name('admins.destroy');
+
+                Route::get('action-types', [AdminActionTypeController::class, 'index'])->name('action-types.index');
+                Route::post('action-types', [AdminActionTypeController::class, 'store'])->name('action-types.store');
+                Route::patch('action-types/{id}', [AdminActionTypeController::class, 'update'])->name('action-types.update');
+                Route::delete('action-types/{id}', [AdminActionTypeController::class, 'destroy'])->name('action-types.destroy');
             });
 
             // Users & Subscriptions

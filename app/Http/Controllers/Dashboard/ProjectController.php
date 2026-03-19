@@ -13,7 +13,7 @@ class ProjectController extends Controller
         $workspace = $request->user()->currentWorkspace;
 
         $projects = Project::where('workspace_id', $workspace->id)
-            ->with(['client'])
+            ->with(['client', 'labels', 'members'])
             ->orderByRaw("status = 'in progress' DESC")
             ->orderBy('created_at', 'DESC')
             ->get();
@@ -39,15 +39,46 @@ class ProjectController extends Controller
     {
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
+            'brand_id' => 'nullable|exists:brands,id',
+            'workspace_action_id' => 'nullable|exists:workspace_actions,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'priority' => 'required|in:low,normal,high,urgent',
             'deadline' => 'nullable|date',
+            'label_ids' => 'nullable|array',
+            'label_ids.*' => 'integer|exists:labels,id',
+            'new_labels' => 'nullable|array',
+            'new_labels.*' => 'string|max:255',
+            'member_ids' => 'nullable|array',
+            'member_ids.*' => 'exists:users,id',
         ]);
 
-        $request->user()->currentWorkspace->projects()->create($validated);
+        $project = $request->user()->currentWorkspace->projects()->create($validated);
 
-        return redirect()->route('projects.index');
+        // Handle existing labels
+        if ($request->filled('label_ids')) {
+            $project->labels()->sync($request->label_ids);
+        }
+
+        // Handle new labels
+        if ($request->filled('new_labels')) {
+            foreach ($request->new_labels as $labelName) {
+                $label = \App\Models\Label::firstOrCreate(
+                    ['name' => $labelName],
+                    ['slug' => \Illuminate\Support\Str::slug($labelName)]
+                );
+                // Associate label with workspace if needed
+                $request->user()->currentWorkspace->labels()->syncWithoutDetaching([$label->id]);
+                $project->labels()->attach($label->id);
+            }
+        }
+
+        // Handle members
+        if ($request->filled('member_ids')) {
+            $project->members()->sync($request->member_ids);
+        }
+
+        return redirect()->route('projects.index')->with('message', 'Project created successfully');
     }
 
     public function show(Project $project)
@@ -58,6 +89,51 @@ class ProjectController extends Controller
         ]);
     }
 
+    public function update(Request $request, Project $project)
+    {
+        $validated = $request->validate([
+            'client_id' => 'required|exists:clients,id',
+            'brand_id' => 'nullable|exists:brands,id',
+            'workspace_action_id' => 'nullable|exists:workspace_actions,id',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'priority' => 'required|in:low,normal,high,urgent',
+            'deadline' => 'nullable|date',
+            'label_ids' => 'nullable|array',
+            'label_ids.*' => 'integer|exists:labels,id',
+            'new_labels' => 'nullable|array',
+            'new_labels.*' => 'string|max:255',
+            'member_ids' => 'nullable|array',
+            'member_ids.*' => 'exists:users,id',
+        ]);
+
+        $project->update($validated);
+
+        // Handle existing labels
+        if ($request->has('label_ids')) {
+            $project->labels()->sync($request->label_ids);
+        }
+
+        // Handle new labels
+        if ($request->filled('new_labels')) {
+            foreach ($request->new_labels as $labelName) {
+                $label = \App\Models\Label::firstOrCreate(
+                    ['name' => $labelName],
+                    ['slug' => \Illuminate\Support\Str::slug($labelName)]
+                );
+                $request->user()->currentWorkspace->labels()->syncWithoutDetaching([$label->id]);
+                $project->labels()->attach($label->id);
+            }
+        }
+
+        // Handle members
+        if ($request->has('member_ids')) {
+            $project->members()->sync($request->member_ids);
+        }
+
+        return back()->with('message', 'Project updated successfully');
+    }
+
     public function updateStatus(Request $request, Project $project)
     {
         $validated = $request->validate([
@@ -65,7 +141,13 @@ class ProjectController extends Controller
         ]);
 
         $project->update($validated);
-
         return back();
+    }
+
+    public function getTasks(Project $project)
+    {
+        return response()->json(
+            $project->tasks()->orderBy('name')->get(['id', 'name'])
+        );
     }
 }

@@ -64,7 +64,7 @@ const MobileNav = ({
                     {isOpen && (
                         <VerticalMenuContent
                             collapsed={false}
-                            navigationTree={navigationConfig}
+                            navigationTree={navigationConfig.items}
                             routeKey={currentRouteKey}
                             userAuthority={userAuthority as string[]}
                             direction={direction}

@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('time_entries', function (Blueprint $table) {
             $table->id();
             $table->foreignId('workspace_id')->constrained()->onDelete('cascade');
-            $table->foreignId('project_id')->constrained()->onDelete('cascade');
+            $table->foreignId('project_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('task_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('description')->nullable();
             $table->timestamp('started_at');

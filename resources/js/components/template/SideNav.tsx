@@ -84,7 +84,7 @@ const SideNav = ({
                 <ScrollBar style={{ height: '100%' }} direction={direction}>
                     <VerticalMenuContent
                         collapsed={sideNavCollapse}
-                        navigationTree={navigationConfig}
+                        navigationTree={navigationConfig.items}
                         routeKey={currentRouteKey}
                         direction={direction}
                         translationSetup={translationSetup}

@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('workspace_id')->constrained()->onDelete('cascade');
-            $table->foreignId('project_id')->constrained()->onDelete('cascade');
+            $table->foreignId('project_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('workspace_action_id')->nullable()->constrained('workspace_actions')->nullOnDelete();
             $table->string('name', 500);
             $table->text('description')->nullable();
             $table->integer('estimated_time')->nullable(); // in minutes
+            $table->integer('spent_time')->nullable(); // in minutes
             $table->timestamp('done_at')->nullable();
             $table->timestamps();
             $table->softDeletes();

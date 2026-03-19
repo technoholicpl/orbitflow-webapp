@@ -39,11 +39,44 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user' => $request->user(),
+                'user' => ($request->user() && $request->user() instanceof \App\Models\User) 
+                    ? $request->user()->load('workspaces') 
+                    : $request->user(),
             ],
             'cp_prefix' => config('cp.prefix', 'admin'),
             'isAdmin' => $request->isAdmin(),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'workspace_clients' => ($request->user() && $request->user()->current_workspace_id)
+                ? \App\Models\Client::where('workspace_id', $request->user()->current_workspace_id)
+                    ->with('brands')
+                    ->get()
+                : [],
+            'workspace_actions' => ($request->user() && $request->user()->current_workspace_id)
+                ? \App\Models\WorkspaceAction::where('workspace_id', $request->user()->current_workspace_id)
+                    ->with('actionType')
+                    ->get()
+                : [],
+            'workspace_labels' => ($request->user() && $request->user()->current_workspace_id)
+                ? \App\Models\Label::whereHas('workspaces', function($query) use ($request) {
+                    $query->where('workspace_id', $request->user()->current_workspace_id);
+                })->get()
+                : [],
+            'workspace_users' => ($request->user() && $request->user()->current_workspace_id)
+                ? \App\Models\User::whereHas('workspaces', function($query) use ($request) {
+                    $query->where('workspace_id', $request->user()->current_workspace_id);
+                })->get()
+                : [],
+            'workspace_projects' => ($request->user() && $request->user()->current_workspace_id)
+                ? \App\Models\Project::where('workspace_id', $request->user()->current_workspace_id)
+                    ->orderBy('name')
+                    ->get()
+                : [],
+            'current_timer' => ($request->user())
+                ? \App\Models\TimeEntry::whereHas('currentJob')
+                    ->where('user_id', $request->user()->id)
+                    ->with(['project.client', 'project.brand', 'task'])
+                    ->first()
+                : null,
         ];
     }
 }

@@ -13,6 +13,7 @@ class TimeEntry extends Model
     protected $fillable = [
         'workspace_id',
         'project_id',
+        'task_id',
         'user_id',
         'description',
         'started_at',
@@ -41,5 +42,15 @@ class TimeEntry extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function task(): BelongsTo
+    {
+        return $this->belongsTo(Task::class);
+    }
+
+    public function currentJob(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(UserCurrentJob::class, 'time_entry_id');
     }
 }
