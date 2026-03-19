@@ -27,10 +27,21 @@ class CreateNewUser implements CreatesNewUsers
         ])->validate();
 
         return DB::transaction(function () use ($input) {
+            $token = session('pending_invitation_token');
+            $invitation = null;
+            if ($token) {
+                $invitation = \App\Models\Invitation::where('token', $token)
+                    ->where('email', $input['email'])
+                    ->where('expires_at', '>', now())
+                    ->whereNull('accepted_at')
+                    ->first();
+            }
+
             $user = User::create([
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'password' => $input['password'],
+                'email_verified_at' => $invitation ? now() : null,
                 'email_verification_code' => str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT),
                 'email_verification_expires_at' => now()->addHour(),
             ]);
@@ -38,8 +49,10 @@ class CreateNewUser implements CreatesNewUsers
             // Workspace creation is now handled by the onboarding wizard after email verification.
             // $this->createWorkspace($user);
 
-            // Send verification email
-            $user->notify(new \App\Notifications\EmailVerificationNotification($user->email_verification_code));
+            if (!$invitation) {
+                // Only send verification email if not auto-verified
+                $user->notify(new \App\Notifications\EmailVerificationNotification($user->email_verification_code));
+            }
 
             return $user;
         });

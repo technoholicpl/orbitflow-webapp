@@ -34,7 +34,12 @@ class SocialAuthController extends Controller
             ->first();
 
         if ($linkedAccount) {
-            Auth::login($linkedAccount->user);
+            $user = $linkedAccount->user;
+            // Update avatar if not set
+            if (!$user->avatar_url && $providerUser->getAvatar()) {
+                $user->update(['avatar_url' => $providerUser->getAvatar()]);
+            }
+            Auth::login($user);
             return redirect()->intended(config('fortify.home'));
         }
 
@@ -45,9 +50,12 @@ class SocialAuthController extends Controller
             $user = User::create([
                 'name' => $providerUser->getName() ?? $providerUser->getNickname() ?? 'Użytkownik',
                 'email' => $email,
+                'avatar_url' => $providerUser->getAvatar(),
                 'password' => bcrypt(Str::random(24)),
                 'email_verified_at' => now(), // Social login is pre-verified
             ]);
+        } elseif (!$user->avatar_url && $providerUser->getAvatar()) {
+            $user->update(['avatar_url' => $providerUser->getAvatar()]);
         }
 
         LinkedSocialAccount::create([
@@ -60,6 +68,14 @@ class SocialAuthController extends Controller
         ]);
 
         Auth::login($user);
+
+        // Handle pending invitation if any
+        $token = session('pending_invitation_token');
+        if ($token) {
+            $invitationService = app(\App\Services\InvitationService::class);
+            $invitationService->acceptTokenForUser($user, $token);
+            session()->forget('pending_invitation_token');
+        }
 
         return redirect()->intended(config('fortify.home'));
     }

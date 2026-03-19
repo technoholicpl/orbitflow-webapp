@@ -43,14 +43,15 @@ Route::middleware(['web'])->group(function () {
             ->name('verification.send');
     });
 
+    Route::get('/invitations/accept/{token}', [\App\Http\Controllers\InvitationController::class, 'accept'])
+        ->name('invitations.accept');
+
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/onboarding', [\App\Http\Controllers\Dashboard\OnboardingController::class, 'index'])
             ->name('onboarding.index');
         Route::post('/onboarding', [\App\Http\Controllers\Dashboard\OnboardingController::class, 'store'])
             ->name('onboarding.store');
 
-        Route::get('/invitations/accept/{token}', [\App\Http\Controllers\InvitationController::class, 'accept'])
-            ->name('invitations.accept');
         Route::post('/invitations/reject/{token}', [\App\Http\Controllers\InvitationController::class, 'reject'])
             ->name('invitations.reject');
     });

@@ -40,8 +40,13 @@ const _UserDropdown = () => {
         router.post(isAdmin ? `/${cp_prefix}/logout` : '/logout');
     }
 
+    const avatarUrl = user?.avatar_url
+    const isExternalAvatar = avatarUrl?.startsWith('http')
     const avatarProps = {
-        ...(user?.avatar_url ? { src: `/storage/${user.avatar_url}` } : { icon: <PiUserDuotone /> }),
+        ...(avatarUrl 
+            ? { src: isExternalAvatar ? avatarUrl : `/storage/${avatarUrl}` } 
+            : { icon: <PiUserDuotone /> }
+        ),
     }
 
     return (

@@ -25,6 +25,8 @@ const WorkspaceSwitcher = () => {
         });
     }
 
+    const currentWorkspace = workspaces.find(w => w.id === currentWorkspaceId)
+
     if (isAdmin || workspaces.length === 0) {
         return null
     }
@@ -37,10 +39,9 @@ const WorkspaceSwitcher = () => {
                     <div className="cursor-pointer group relative">
                         <Avatar
                             shape="circle"
-                            src={user?.avatar_url}
-                            className="ring-2 ring-transparent group-hover:ring-indigo-500 transition-all"
+                            className="ring-2 ring-transparent group-hover:ring-indigo-500 transition-all bg-indigo-600 text-white"
                         >
-                            {user?.name?.charAt(0).toUpperCase()}
+                            {currentWorkspace?.name?.charAt(0).toUpperCase()}
                         </Avatar>
                         <Badge 
                             className="absolute -top-1 -right-1 border-2 border-white dark:border-gray-900" 

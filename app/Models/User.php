@@ -40,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'timer_remind_every',
         'email_verification_code',
         'email_verification_expires_at',
+        'email_verified_at',
     ];
 
     public function socialAccounts(): \Illuminate\Database\Eloquent\Relations\HasMany
