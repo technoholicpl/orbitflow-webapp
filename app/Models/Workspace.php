@@ -47,4 +47,9 @@ class Workspace extends Model
     {
         return $this->belongsToMany(ActionType::class, 'workspace_actions');
     }
+
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(Invitation::class);
+    }
 }

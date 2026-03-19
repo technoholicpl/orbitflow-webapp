@@ -36,8 +36,24 @@ class WorkspaceMemberController extends Controller
         $availableRoles = Role::where('guard_name', 'web')->pluck('name');
         $availablePermissions = Permission::where('guard_name', 'web')->pluck('name');
 
+        $invitations = $workspace->invitations()
+            ->whereNull('accepted_at')
+            ->where('expires_at', '>', now())
+            ->get()
+            ->map(function($invitation) {
+                return [
+                    'id' => $invitation->id,
+                    'email' => $invitation->email,
+                    'role' => ucfirst($invitation->role),
+                    'created_at' => $invitation->created_at->diffForHumans(),
+                    'token' => $invitation->token,
+                    'is_pending' => true,
+                ];
+            });
+
         return Inertia::render('dashboard/settings/members/index', [
             'members' => $members,
+            'invitations' => $invitations,
             'availableRoles' => $availableRoles,
             'availablePermissions' => $availablePermissions,
             'workspaceName' => $workspace->name,
@@ -45,37 +61,94 @@ class WorkspaceMemberController extends Controller
     }
 
     /**
-     * Add a member to the workspace.
-     * (Simplified version: direct add by email if user exists)
+     * Send an invitation to join the workspace.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:users,email',
+            'email' => 'required|email',
             'role' => 'required|string|exists:roles,name',
         ]);
 
         $workspace = $request->user()->currentWorkspace;
-        $userToAdd = User::where('email', $request->email)->first();
+        $user = $request->user();
 
-        if ($workspace->users()->where('user_id', $userToAdd->id)->exists()) {
-            return back()->withErrors(['email' => 'User is already a member of this workspace.']);
+        // Check if already a member
+        if ($workspace->users()->where('email', $request->email)->exists()) {
+            return back()->withErrors(['email' => 'Ten użytkownik jest już członkiem tej przestrzeni.']);
         }
 
-        DB::transaction(function () use ($workspace, $userToAdd, $request) {
-            $workspace->users()->attach($userToAdd, ['role' => strtolower($request->role)]);
+        // Check if already invited (and not expired)
+        if (\App\Models\Invitation::where('workspace_id', $workspace->id)
+            ->where('email', $request->email)
+            ->whereNull('accepted_at')
+            ->where('expires_at', '>', now())
+            ->exists()) {
+            return back()->withErrors(['email' => 'Zaproszenie zostało już wysłane do tego użytkownika.']);
+        }
 
-            // Assign Spatie Role
-            setPermissionsTeamId($workspace->id);
-            $userToAdd->assignRole($request->role);
+        $invitation = \App\Models\Invitation::create([
+            'workspace_id' => $workspace->id,
+            'inviter_id' => $user->id,
+            'email' => $request->email,
+            'token' => \Illuminate\Support\Str::random(40),
+            'role' => $request->role,
+            'expires_at' => now()->addDays(7),
+        ]);
 
-            // Set current workspace if not set
-            if (!$userToAdd->current_workspace_id) {
-                $userToAdd->update(['current_workspace_id' => $workspace->id]);
-            }
-        });
+        // Send notification
+        $invitedUser = User::where('email', $request->email)->first();
+        if ($invitedUser) {
+            $invitedUser->notify(new \App\Notifications\WorkspaceInvitation($invitation));
+        } else {
+            \Illuminate\Support\Facades\Notification::route('mail', $request->email)
+                ->notify(new \App\Notifications\WorkspaceInvitation($invitation));
+        }
 
-        return back()->with('status', 'Member added successfully.');
+        return back()->with('status', 'Zaproszenie zostało wysłane pomyślnie.');
+    }
+
+    /**
+     * Cancel a pending invitation.
+     */
+    public function cancelInvitation($id)
+    {
+        $workspace = auth()->user()->currentWorkspace;
+        $invitation = \App\Models\Invitation::where('workspace_id', $workspace->id)
+            ->where('id', $id)
+            ->firstOrFail();
+
+        $invitation->delete();
+
+        return back()->with('status', 'Zaproszenie zostało anulowane.');
+    }
+
+    /**
+     * Resend a pending invitation.
+     */
+    public function resendInvitation($id)
+    {
+        $workspace = auth()->user()->currentWorkspace;
+        $invitation = \App\Models\Invitation::where('workspace_id', $workspace->id)
+            ->where('id', $id)
+            ->firstOrFail();
+
+        // Refresh token and expiry
+        $invitation->update([
+            'token' => \Illuminate\Support\Str::random(40),
+            'expires_at' => now()->addDays(7),
+        ]);
+
+        // Send notification again
+        $invitedUser = User::where('email', $invitation->email)->first();
+        if ($invitedUser) {
+            $invitedUser->notify(new \App\Notifications\WorkspaceInvitation($invitation));
+        } else {
+            \Illuminate\Support\Facades\Notification::route('mail', $invitation->email)
+                ->notify(new \App\Notifications\WorkspaceInvitation($invitation));
+        }
+
+        return back()->with('status', 'Zaproszenie zostało wysłane ponownie.');
     }
 
     /**

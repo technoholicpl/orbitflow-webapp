@@ -113,17 +113,20 @@ export default function Login({
                                 <div className="border-t border-gray-200 dark:border-gray-800 flex-1 mt-[1px]" />
                             </div>
 
-                            <div className="flex items-center gap-2">
-                                <Button className="flex-1" type="button" variant="default">
+                            <div className="grid grid-cols-3 gap-2">
+                                <Button className="w-full" type="button" variant="default" onClick={() => window.location.href = '/auth/social/google'}>
                                     <div className="flex items-center justify-center gap-2">
                                         <img className="h-[20px] w-[20px]" src="/img/others/google.png" alt="Google" />
-                                        <span>Google</span>
                                     </div>
                                 </Button>
-                                <Button className="flex-1" type="button" variant="default">
+                                <Button className="w-full" type="button" variant="default" onClick={() => window.location.href = '/auth/social/github'}>
                                     <div className="flex items-center justify-center gap-2">
                                         <img className="h-[20px] w-[20px]" src="/img/others/github.png" alt="Github" />
-                                        <span>Github</span>
+                                    </div>
+                                </Button>
+                                <Button className="w-full" type="button" variant="default" onClick={() => window.location.href = '/auth/social/facebook'}>
+                                    <div className="flex items-center justify-center gap-2">
+                                        <img className="h-[20px] w-[20px]" src="/img/others/facebook.png" alt="Facebook" />
                                     </div>
                                 </Button>
                             </div>

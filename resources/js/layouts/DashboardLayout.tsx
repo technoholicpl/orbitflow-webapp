@@ -13,6 +13,7 @@ import { userNavigationConfig } from '@/configs/navigation.config';
 import ModeSwitcher from '@/components/template/ThemeConfigurator/ModeSwitcher';
 import GlobalQuickActions from '@/components/template/GlobalQuickActions';
 import GlobalTimer from '@/components/GlobalTimer';
+import NotificationDropdown from '@/components/template/NotificationDropdown';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -48,8 +49,9 @@ export default function DashboardLayout({ children, title = 'Dashboard' }: Dashb
                                 </div>
                             }
                             headerEnd={
-                                <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2 sm:gap-4">
                                     <GlobalQuickActions />
+                                    <NotificationDropdown />
                                     <ModeSwitcher />
                                     <UserProfileDropdown hoverable={false} />
                                 </div>

@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,10 +13,10 @@ use Laravel\Sanctum\HasApiTokens;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable, HasRoles, MustVerifyEmailTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -37,7 +38,14 @@ class User extends Authenticatable
         'timer_hard_timeout',
         'timer_auto_stop_at',
         'timer_remind_every',
+        'email_verification_code',
+        'email_verification_expires_at',
     ];
+
+    public function socialAccounts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(LinkedSocialAccount::class);
+    }
 
     public function workspaces(): BelongsToMany
     {
@@ -53,6 +61,18 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Project::class, 'project_user');
     }
+
+    /**
+     * Override the default email verification notification.
+     */
+    public function sendEmailVerificationNotification()
+    {
+        // By overriding this to be empty, we prevent the default Laravel
+        // verification email from being sent automatically by the MustVerifyEmail trait.
+        // We handle our custom 6-digit code notification in the CreateNewUser action
+        // and EmailVerificationController.
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -74,6 +94,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'email_verification_expires_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];

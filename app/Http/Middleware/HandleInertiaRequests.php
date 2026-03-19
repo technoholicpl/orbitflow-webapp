@@ -86,6 +86,9 @@ class HandleInertiaRequests extends Middleware
                     return $timer;
                 })()
                 : null,
+            'notifications' => ($request->user())
+                ? $request->user()->unreadNotifications()->get()
+                : [],
         ];
     }
 }

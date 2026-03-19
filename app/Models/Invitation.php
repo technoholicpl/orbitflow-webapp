@@ -9,6 +9,7 @@ class Invitation extends Model
 {
     protected $fillable = [
         'workspace_id',
+        'inviter_id',
         'email',
         'token',
         'role',
@@ -24,5 +25,10 @@ class Invitation extends Model
     public function workspace(): BelongsTo
     {
         return $this->belongsTo(Workspace::class);
+    }
+
+    public function inviter(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'inviter_id');
     }
 }

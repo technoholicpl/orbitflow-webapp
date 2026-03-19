@@ -31,33 +31,17 @@ class CreateNewUser implements CreatesNewUsers
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'password' => $input['password'],
+                'email_verification_code' => str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT),
+                'email_verification_expires_at' => now()->addHour(),
             ]);
 
-            $this->createWorkspace($user);
+            // Workspace creation is now handled by the onboarding wizard after email verification.
+            // $this->createWorkspace($user);
+
+            // Send verification email
+            $user->notify(new \App\Notifications\EmailVerificationNotification($user->email_verification_code));
 
             return $user;
         });
-    }
-
-    /**
-     * Create a personal workspace for the user.
-     */
-    protected function createWorkspace(User $user): void
-    {
-        $workspace = Workspace::create([
-            'name' => $user->name . "'s Workspace",
-            'slug' => str()->slug($user->name . "-workspace-" . uniqid()),
-            'owner_id' => $user->id,
-        ]);
-
-        $user->workspaces()->attach($workspace, ['role' => 'owner']);
-
-        $user->forceFill([
-            'current_workspace_id' => $workspace->id,
-        ])->save();
-
-        // Assign Spatie Role for this workspace
-        setPermissionsTeamId($workspace->id);
-        $user->assignRole('Owner');
     }
 }

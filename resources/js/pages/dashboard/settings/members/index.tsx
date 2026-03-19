@@ -1,6 +1,6 @@
 import { Head, useForm, router } from '@inertiajs/react';
 import axios from 'axios';
-import {  Plus, Trash2, Shield } from 'lucide-react';
+import {  Plus, Trash2, Shield, Mail, RotateCcw } from 'lucide-react';
 import React, { useState } from 'react';
 import Heading from '@/components/heading';
 import {
@@ -27,8 +27,18 @@ interface Member {
     is_owner: boolean;
 }
 
+interface Invitation {
+    id: number;
+    email: string;
+    role: string;
+    created_at: string;
+    token: string;
+    is_pending: boolean;
+}
+
 interface Props {
     members?: Member[];
+    invitations?: Invitation[];
     availableRoles?: string[];
     availablePermissions?: string[];
     workspaceName?: string;
@@ -36,6 +46,7 @@ interface Props {
 
 export default function WorkspaceMembers({
     members = [],
+    invitations = [],
     availableRoles = [],
     availablePermissions = [],
     workspaceName = ''
@@ -87,7 +98,7 @@ export default function WorkspaceMembers({
 
     const handleRemoveMember = (id: number) => {
         if (confirm('Are you sure you want to remove this member?')) {
-            deleteForm.delete(workspace.members.destroy(id).url, {
+            deleteForm.delete(`/settings/members/${id}`, {
                 onSuccess: () => {
                     toast.push(
                         <Notification title="Success" type="success">
@@ -97,6 +108,32 @@ export default function WorkspaceMembers({
                 },
             });
         }
+    };
+
+    const handleCancelInvitation = (id: number) => {
+        if (confirm('Czy na pewno chcesz anulować to zaproszenie?')) {
+            router.delete(`/settings/invitations/${id}`, {
+                onSuccess: () => {
+                    toast.push(
+                        <Notification title="Sukces" type="success">
+                            Zaproszenie zostało anulowane.
+                        </Notification>
+                    );
+                },
+            });
+        }
+    };
+
+    const handleResendInvitation = (id: number) => {
+        router.post(`/settings/invitations/${id}/resend`, {}, {
+            onSuccess: () => {
+                toast.push(
+                    <Notification title="Sukces" type="success">
+                        Zaproszenie zostało wysłane ponownie.
+                    </Notification>
+                );
+            },
+        });
     };
 
     const openPermissions = async (member: Member) => {
@@ -199,7 +236,7 @@ export default function WorkspaceMembers({
                                     <label className="text-sm font-medium">Initial Role</label>
                                     <Select
                                         options={roleOptions}
-                                        value={roleOptions.find(opt => opt.value === data.role)}
+                                        value={roleOptions.find(opt => opt.value.toLowerCase() === data.role.toLowerCase())}
                                         onChange={(opt: any) => setData('role', opt.value)}
                                     />
                                     {errors.role && <p className="text-xs text-red-500">{errors.role}</p>}
@@ -241,7 +278,7 @@ export default function WorkspaceMembers({
                                                 <Select
                                                     size="sm"
                                                     options={roleOptions.filter(opt => opt.value !== 'Owner')}
-                                                    value={roleOptions.find(opt => opt.value === member.role)}
+                                                    value={roleOptions.find(opt => opt.value.toLowerCase() === member.role?.toLowerCase())}
                                                     onChange={(opt: any) => handleUpdateRole(member.id, opt.value)}
                                                     isDisabled={updateForm.processing}
                                                 />
@@ -263,6 +300,42 @@ export default function WorkspaceMembers({
                                             />
                                         </>
                                     )}
+                                </div>
+                            </div>
+                        ))}
+
+                        {invitations.map((invitation) => (
+                            <div key={`inv-${invitation.id}`} className="flex items-center justify-between py-4 opacity-70">
+                                <div className="flex items-center space-x-4">
+                                    <div className="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-dashed border-gray-300 dark:border-gray-600">
+                                        <Mail className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-sm font-bold text-gray-400 italic">Oczekuje na akceptację...</p>
+                                        </div>
+                                        <p className="text-xs text-gray-500">{invitation.email}</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center space-x-3">
+                                    <span className="inline-flex items-center rounded-full bg-gray-100 dark:bg-gray-800 px-2.5 py-0.5 text-xs font-medium text-gray-500 border border-gray-200 dark:border-gray-700">
+                                        {invitation.role}
+                                    </span>
+                                    <Button
+                                        variant="plain"
+                                        size="xs"
+                                        icon={<RotateCcw className="h-3.5 w-3.5" />}
+                                        onClick={() => handleResendInvitation(invitation.id)}
+                                        title="Wyślij ponownie"
+                                    />
+                                    <Button
+                                        variant="plain"
+                                        size="xs"
+                                        className="text-red-500 hover:text-red-600"
+                                        icon={<Trash2 className="h-3.5 w-3.5" />}
+                                        onClick={() => handleCancelInvitation(invitation.id)}
+                                    />
                                 </div>
                             </div>
                         ))}

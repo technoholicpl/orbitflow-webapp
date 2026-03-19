@@ -72,6 +72,9 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('members/{id}/permissions', [WorkspaceMemberController::class, 'updatePermissions'])->name('members.permissions.update');
         Route::get('members/{id}/permissions', [WorkspaceMemberController::class, 'getPermissions'])->name('members.permissions.get');
 
+        Route::delete('invitations/{id}', [WorkspaceMemberController::class, 'cancelInvitation'])->name('invitations.cancel');
+        Route::post('invitations/{id}/resend', [WorkspaceMemberController::class, 'resendInvitation'])->name('invitations.resend');
+
         Route::get('labels', [LabelController::class, 'index'])->name('labels.index');
         Route::post('labels', [LabelController::class, 'store'])->name('labels.store');
         // Id can be passed as a route parameter for update/destroy

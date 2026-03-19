@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleAppearance::class,
             HandleInertiaRequests::class,
             \App\Http\Middleware\SetCurrentWorkspace::class,
+            \App\Http\Middleware\EnsureHasWorkspace::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
