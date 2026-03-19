@@ -31,6 +31,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('time-entries', [\App\Http\Controllers\Dashboard\TimeEntryController::class, 'store'])->name('time-entries.store');
     Route::post('time-entries/manual', [\App\Http\Controllers\Dashboard\TimeEntryController::class, 'manualStore'])->name('time-entries.manual');
     Route::post('time-entries/{timeEntry}/stop', [\App\Http\Controllers\Dashboard\TimeEntryController::class, 'stop'])->name('time-entries.stop');
+    Route::post('time-entries/{timeEntry}/recovery', [\App\Http\Controllers\Dashboard\TimeEntryController::class, 'recoveryAction'])->name('time-entries.recovery');
 
     // Appearance
     Route::inertia('dashboard/settings/appearance', 'dashboard/settings/appearance')->name('appearance.edit');

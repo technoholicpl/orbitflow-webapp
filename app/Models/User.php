@@ -33,6 +33,9 @@ class User extends Authenticatable
         'current_workspace_id',
         'work_day_starts_at',
         'work_day_ends_at',
+        'timer_hard_timeout',
+        'timer_auto_stop_at',
+        'timer_remind_every',
     ];
 
     public function workspaces(): BelongsToMany

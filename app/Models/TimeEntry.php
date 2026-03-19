@@ -20,6 +20,8 @@ class TimeEntry extends Model
         'ended_at',
         'duration',
         'is_manual',
+        'recovery_dismissed',
+        'last_reminded_at',
     ];
 
     protected $casts = [
@@ -27,6 +29,8 @@ class TimeEntry extends Model
         'ended_at' => 'datetime',
         'duration' => 'integer',
         'is_manual' => 'boolean',
+        'recovery_dismissed' => 'boolean',
+        'last_reminded_at' => 'datetime',
     ];
 
     public function workspace(): BelongsTo

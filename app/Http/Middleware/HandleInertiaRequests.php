@@ -72,10 +72,19 @@ class HandleInertiaRequests extends Middleware
                     ->get()
                 : [],
             'current_timer' => ($request->user())
-                ? \App\Models\TimeEntry::whereHas('currentJob')
-                    ->where('user_id', $request->user()->id)
-                    ->with(['project.client', 'project.brand', 'task'])
-                    ->first()
+                ? (function() use ($request) {
+                    $timer = \App\Models\TimeEntry::whereHas('currentJob')
+                        ->where('user_id', $request->user()->id)
+                        ->with(['project.client', 'project.brand', 'task'])
+                        ->first();
+                    
+                    if ($timer) {
+                        $timer->needs_recovery = !$timer->recovery_dismissed && ($timer->started_at->diffInHours(\Carbon\Carbon::now('UTC')) >= ($request->user()->timer_hard_timeout ?? 12));
+                       // $timer->needs_recovery = !$timer->recovery_dismissed && ($timer->started_at->diffInMinutes(\Carbon\Carbon::now('UTC')) >= 2); // For testing: uncomment this and comment the line above
+                    }
+                    
+                    return $timer;
+                })()
                 : null,
         ];
     }

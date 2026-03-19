@@ -25,11 +25,13 @@ dayjs.extend(duration);
 dayjs.extend(utc);
 
 const GlobalTimer = () => {
-    const { current_timer, workspace_projects } = usePage<any>().props;
+    const { current_timer, workspace_projects, auth } = usePage<any>().props;
     const [seconds, setSeconds] = useState(0);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [isInfoOpen, setIsInfoOpen] = useState(false);
     const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
+    const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
+    const [recoveryEndTime, setRecoveryEndTime] = useState('');
 
     // Floating UI for Info Popover
     const { refs, floatingStyles, context } = useFloating({
@@ -72,6 +74,37 @@ const GlobalTimer = () => {
         return () => clearInterval(interval);
     }, [current_timer]);
 
+    const originalTitleRef = React.useRef<string | null>(null);
+
+    // Update Tab Title
+    useEffect(() => {
+        if (current_timer && !current_timer.needs_recovery) {
+            if (originalTitleRef.current === null) {
+                originalTitleRef.current = document.title;
+            }
+            const taskName = current_timer.task?.name || current_timer.project?.name;
+            document.title = `[${formatTime(seconds)}] ${taskName}`;
+        } else {
+            if (originalTitleRef.current !== null) {
+                document.title = originalTitleRef.current;
+                originalTitleRef.current = null;
+            }
+        }
+        
+        // Cleanup on unmount
+        return () => {
+            if (originalTitleRef.current !== null) {
+                document.title = originalTitleRef.current;
+            }
+        };
+    }, [current_timer, seconds]);
+
+    useEffect(() => {
+        if (current_timer?.needs_recovery) {
+            setIsRecoveryOpen(true);
+        }
+    }, [current_timer]);
+
     const formatTime = (totalSeconds: number) => {
         const d = dayjs.duration(totalSeconds, 'seconds');
         const h = Math.floor(d.asHours());
@@ -112,8 +145,89 @@ const GlobalTimer = () => {
 
     const activeProject = current_timer?.project;
 
+    const handleRecovery = (action: string) => {
+        let finalEndTime: string | null = null;
+        if (action === 'manual' && recoveryEndTime) {
+            const [hours, minutes] = recoveryEndTime.split(':');
+            // Use current day as base for manual local time entry
+            finalEndTime = dayjs().hour(parseInt(hours)).minute(parseInt(minutes)).second(0).toISOString();
+        }
+
+        router.post(`/time-entries/${current_timer.id}/recovery`, {
+            action,
+            end_time: action === 'manual' ? finalEndTime : null
+        }, {
+            onSuccess: () => {
+                setIsRecoveryOpen(false);
+            }
+        });
+    };
+
     return (
         <div className="flex items-center">
+            {/* Recovery Modal */}
+            {isRecoveryOpen && current_timer && (
+                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-[#161b22] border border-gray-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="p-8 space-y-6">
+                            <div className="text-center space-y-2">
+                                <div className="text-4xl mb-4">Ups! 🌙</div>
+                                <h3 className="text-xl font-black text-white tracking-tight">
+                                    Wygląda na to, że timer działał całą noc.
+                                </h3>
+                                <p className="text-gray-400 text-sm">
+                                    Twój licznik dla zadania <span className="text-emerald-400 font-bold">{current_timer.task?.name || current_timer.project?.name}</span> wystartował {dayjs(current_timer.started_at).format('DD.MM o HH:mm')} i działa od {Math.floor(seconds / 3600)} godzin. Co chcesz z nim zrobić?
+                                </p>
+                            </div>
+
+                            <div className="space-y-3">
+                                <button 
+                                    onClick={() => handleRecovery('fix_yesterday')}
+                                    className="w-full p-4 rounded-2xl bg-gray-800/50 border border-gray-700 hover:border-emerald-500/50 hover:bg-emerald-500/5 text-left transition-all group"
+                                >
+                                    <div className="font-bold text-white group-hover:text-emerald-400">Zapisz tylko {auth.user?.timer_remind_every ?? 8} godzin pracy</div>
+                                    <div className="text-xs text-gray-500">System ustawi zakończenie na {dayjs(current_timer.started_at).add(auth.user?.timer_remind_every ?? 8, 'hour').format('HH:mm')} tego samego dnia.</div>
+                                </button>
+
+                                <div className="p-4 rounded-2xl bg-gray-800/50 border border-gray-700 space-y-3">
+                                    <div className="font-bold text-white">Wpisz ręcznie godzinę zakończenia</div>
+                                    <div className="flex gap-2">
+                                        <input 
+                                            type="time" 
+                                            value={recoveryEndTime}
+                                            onChange={(e) => setRecoveryEndTime(e.target.value)}
+                                            className="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                                        />
+                                        <button 
+                                            onClick={() => handleRecovery('manual')}
+                                            disabled={!recoveryEndTime}
+                                            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold rounded-xl transition-all active:scale-95"
+                                        >
+                                            Zastosuj
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <button 
+                                    onClick={() => handleRecovery('delete')}
+                                    className="w-full p-4 rounded-2xl bg-gray-800/20 border border-red-950/30 hover:border-red-500/50 hover:bg-red-500/5 text-left transition-all group"
+                                >
+                                    <div className="font-bold text-red-400">Skasuj ten wpis całkowicie</div>
+                                    <div className="text-xs text-gray-500 italic">To była pomyłka, nie zaliczaj tego czasu.</div>
+                                </button>
+
+                                <button 
+                                    onClick={() => handleRecovery('ignore')}
+                                    className="w-full py-3 text-center text-sm font-bold text-gray-500 hover:text-gray-300 transition-colors"
+                                >
+                                    Zostaw jak jest, nadal nad tym pracuję!
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div 
                 className={cn(
                     "flex items-center gap-3 px-4 py-1.5 rounded-full transition-all duration-300 border shadow-sm",

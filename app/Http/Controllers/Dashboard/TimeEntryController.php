@@ -22,6 +22,9 @@ class TimeEntryController extends Controller
         ]);
 
         $startedAt = ($validated['is_manual'] ?? false) 
+        /** ? Carbon::parse($validated['started_at']) 
+            : Carbon::now();
+        */
             ? Carbon::parse($validated['started_at'])->utc() 
             : Carbon::now('UTC');
 
@@ -112,6 +115,66 @@ class TimeEntryController extends Controller
         $this->recalculateSpentTime($validated['project_id'], $validated['task_id'] ?? null);
 
         return back()->with('message', 'Time entry added successfully');
+    }
+
+    public function recoveryAction(Request $request, TimeEntry $timeEntry)
+    {
+        $validated = $request->validate([
+            'action' => 'required|in:fix_yesterday,manual,delete,ignore',
+            'end_time' => 'nullable|string', // HH:mm
+        ]);
+
+        switch ($validated['action']) {
+            case 'fix_yesterday':
+                // Set to user's reminder interval after start as a safe default
+                $remindEvery = $request->user()->timer_remind_every ?? 8;
+                $endedAt = Carbon::parse($timeEntry->started_at)->addHours($remindEvery);
+                $duration = $remindEvery * 3600;
+                $timeEntry->update([
+                    'ended_at' => $endedAt,
+                    'duration' => $duration
+                ]);
+                UserCurrentJob::where('time_entry_id', $timeEntry->id)->delete();
+                break;
+
+            case 'manual':
+                if (!$validated['end_time']) return back();
+                
+                // If it's a full ISO string from frontend, parse it directly to UTC
+                if (str_contains($validated['end_time'], 'T')) {
+                    $endedAt = Carbon::parse($validated['end_time'])->utc();
+                } else {
+                    // Fallback for HH:mm string
+                    $timeParts = explode(':', $validated['end_time']);
+                    $endedAt = Carbon::parse($timeEntry->started_at)->setTime((int)$timeParts[0], (int)$timeParts[1]);
+                    
+                    // If endedAt is before startedAt, it likely means it ended the next day
+                    if ($endedAt->lt(Carbon::parse($timeEntry->started_at))) {
+                        $endedAt->addDay();
+                    }
+                }
+                
+                $duration = abs(strtotime($endedAt->toDateTimeString()) - strtotime(Carbon::parse($timeEntry->started_at)->toDateTimeString()));
+                $timeEntry->update([
+                    'ended_at' => $endedAt,
+                    'duration' => $duration
+                ]);
+                UserCurrentJob::where('time_entry_id', $timeEntry->id)->delete();
+                break;
+
+            case 'delete':
+                UserCurrentJob::where('time_entry_id', $timeEntry->id)->delete();
+                $timeEntry->delete();
+                break;
+
+            case 'ignore':
+                $timeEntry->update(['recovery_dismissed' => true]);
+                break;
+        }
+
+        $this->recalculateSpentTime($timeEntry->project_id, $timeEntry->task_id);
+
+        return back();
     }
 
     protected function recalculateSpentTime($projectId, $taskId = null)
