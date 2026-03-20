@@ -30,12 +30,15 @@ class PlanController extends Controller
             'is_free' => 'boolean',
             'is_active' => 'boolean',
             'is_coming_soon' => 'boolean',
+            'is_promoted' => 'boolean',
             'display_order' => 'integer',
             'trial_days' => 'nullable|integer|min:0',
             'prices' => 'required|array',
             'prices.*.type' => 'required|string|in:month,year',
             'prices.*.price' => 'required|numeric|min:0',
             'prices.*.sale_price' => 'nullable|numeric|min:0',
+            'prices.*.sale_start_at' => 'nullable|date',
+            'prices.*.sale_ends_at' => 'nullable|date',
             'prices.*.lowest_price_30d' => 'nullable|numeric|min:0',
         ]);
 
@@ -47,12 +50,22 @@ class PlanController extends Controller
             'is_free' => $validated['is_free'] ?? false,
             'is_active' => $validated['is_active'] ?? true,
             'is_coming_soon' => $validated['is_coming_soon'] ?? false,
+            'is_promoted' => $validated['is_promoted'] ?? false,
             'display_order' => $validated['display_order'] ?? 0,
             'trial_days' => $validated['trial_days'] ?? 0,
         ]);
 
         foreach ($validated['prices'] as $priceData) {
-            $plan->prices()->create($priceData);
+            $planPrice = $plan->prices()->create($priceData);
+            
+            // Record initial price in history
+            $planPrice->priceHistories()->create(['price' => $priceData['price']]);
+
+            // If it's a sale, calculate omnibus price from history
+            if (!empty($priceData['sale_price'])) {
+                $omnibus = $planPrice->getLowestPriceLast30Days($priceData['sale_start_at'] ?? null);
+                $planPrice->update(['lowest_price_30d' => $omnibus]);
+            }
         }
 
         return redirect()->back()->with('success', 'Plan created successfully.');
@@ -67,6 +80,7 @@ class PlanController extends Controller
             'is_free' => 'boolean',
             'is_active' => 'boolean',
             'is_coming_soon' => 'boolean',
+            'is_promoted' => 'boolean',
             'display_order' => 'integer',
             'trial_days' => 'nullable|integer|min:0',
             'prices' => 'required|array',
@@ -74,6 +88,8 @@ class PlanController extends Controller
             'prices.*.type' => 'required|string|in:month,year',
             'prices.*.price' => 'required|numeric|min:0',
             'prices.*.sale_price' => 'nullable|numeric|min:0',
+            'prices.*.sale_start_at' => 'nullable|date',
+            'prices.*.sale_ends_at' => 'nullable|date',
             'prices.*.lowest_price_30d' => 'nullable|numeric|min:0',
         ]);
 
@@ -85,6 +101,7 @@ class PlanController extends Controller
             'is_free' => $validated['is_free'] ?? false,
             'is_active' => $validated['is_active'] ?? true,
             'is_coming_soon' => $validated['is_coming_soon'] ?? false,
+            'is_promoted' => $validated['is_promoted'] ?? false,
             'display_order' => $validated['display_order'] ?? 0,
             'trial_days' => $validated['trial_days'] ?? 0,
         ]);
@@ -95,9 +112,27 @@ class PlanController extends Controller
 
         foreach ($validated['prices'] as $priceData) {
             if (isset($priceData['id'])) {
-                PlanPrice::where('id', $priceData['id'])->update($priceData);
+                $planPrice = PlanPrice::findOrFail($priceData['id']);
+                
+                // If price changed, record history
+                if ((float)$planPrice->price !== (float)$priceData['price']) {
+                    $planPrice->priceHistories()->create(['price' => $priceData['price']]);
+                }
+
+                // If sale started/changed, update omnibus price
+                if (!empty($priceData['sale_price'])) {
+                    $priceData['lowest_price_30d'] = $planPrice->getLowestPriceLast30Days($priceData['sale_start_at'] ?? null);
+                }
+
+                $planPrice->update($priceData);
             } else {
-                $plan->prices()->create($priceData);
+                $planPrice = $plan->prices()->create($priceData);
+                $planPrice->priceHistories()->create(['price' => $priceData['price']]);
+
+                if (!empty($priceData['sale_price'])) {
+                    $omnibus = $planPrice->getLowestPriceLast30Days($priceData['sale_start_at'] ?? null);
+                    $planPrice->update(['lowest_price_30d' => $omnibus]);
+                }
             }
         }
 

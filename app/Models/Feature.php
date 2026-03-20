@@ -10,6 +10,7 @@ class Feature extends Model
         'name',
         'slug',
         'type',
+        'category',
     ];
 
     public function plans()

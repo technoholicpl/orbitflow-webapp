@@ -4,7 +4,22 @@ import AdaptiveCard from '@/components/shared/AdaptiveCard'
 import { Card, Button } from '@/components/ui';
 import { AnimatedShinyButton } from "@/components/ui/animated-shiny-button"
 import DashboardLayout from '@/layouts/DashboardLayout';
-export default function Dashboard() {
+import UsageWidget from '@/components/dashboard/UsageWidget';
+
+interface UsageItem {
+    label: string
+    usage: number
+    limit: number | string
+    percentage: number
+    is_unlimited: boolean
+}
+
+interface DashboardProps {
+    usageSummary: UsageItem[]
+}
+
+export default function Dashboard({ usageSummary }: DashboardProps) {
+    const activeProjects = usageSummary?.find(item => item.label === 'Projects')?.usage ?? 0
     return (
         <DashboardLayout>
             <Head title="User Dashboard" />
@@ -30,14 +45,14 @@ export default function Dashboard() {
                         <div className="flex items-start justify-between">
                             <div className="flex flex-col gap-1">
                                 <span className="text-sm font-medium text-muted-foreground">Active Projects</span>
-                                <h3 className="text-3xl font-bold">5</h3>
+                                <h3 className="text-3xl font-bold">{activeProjects}</h3>
                             </div>
                             <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                                 <CheckCircle2 className="size-5 text-blue-600 dark:text-blue-400" />
                             </div>
                         </div>
                         <div className="mt-4 flex items-center text-xs text-green-600 font-medium">
-                            <span>2 projects ahead of schedule</span>
+                            <span>Live data from your workspace</span>
                         </div>
                     </AdaptiveCard>
 
@@ -56,20 +71,7 @@ export default function Dashboard() {
                         </div>
                     </AdaptiveCard>
 
-                    <AdaptiveCard>
-                        <div className="flex items-start justify-between">
-                            <div className="flex flex-col gap-1">
-                                <span className="text-sm font-medium text-muted-foreground">New Tasks</span>
-                                <h3 className="text-3xl font-bold">12</h3>
-                            </div>
-                            <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                                <ListTodo className="size-5 text-purple-600 dark:text-purple-400" />
-                            </div>
-                        </div>
-                        <div className="mt-4 flex items-center text-xs text-muted-foreground">
-                            <span>4 tasks due by EOD</span>
-                        </div>
-                    </AdaptiveCard>
+                    <UsageWidget usageSummary={usageSummary} />
                 </div>
 
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">

@@ -16,6 +16,7 @@ class Plan extends Model
         'is_coming_soon',
         'display_order',
         'trial_days',
+        'is_promoted',
     ];
 
     public function prices()

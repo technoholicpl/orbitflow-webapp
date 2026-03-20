@@ -10,6 +10,7 @@ interface Feature {
     name: string
     slug: string
     type: 'boolean' | 'limit'
+    category?: string
 }
 
 interface Props {
@@ -21,7 +22,8 @@ const { TBody, THead, Th, Tr, Td } = Table
 export default function FeaturesIndex({ features }: Props) {
     const { data, setData, post, processing, reset, errors } = useForm({
         name: '',
-        type: 'boolean'
+        type: 'boolean',
+        category: '',
     })
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -73,6 +75,7 @@ export default function FeaturesIndex({ features }: Props) {
                                 <THead>
                                     <Tr>
                                         <Th>Name</Th>
+                                        <Th>Category</Th>
                                         <Th>Slug</Th>
                                         <Th>Type</Th>
                                         <Th></Th>
@@ -82,6 +85,7 @@ export default function FeaturesIndex({ features }: Props) {
                                     {features.map((feature) => (
                                         <Tr key={feature.id}>
                                             <Td className="font-bold">{feature.name}</Td>
+                                            <Td><span className="text-xs uppercase font-medium text-gray-400">{feature.category || 'General'}</span></Td>
                                             <Td><code>{feature.slug}</code></Td>
                                             <Td>
                                                 <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${feature.type === 'boolean' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>
@@ -129,6 +133,14 @@ export default function FeaturesIndex({ features }: Props) {
                                         options={featureTypes}
                                         value={featureTypes.find(t => t.value === data.type)}
                                         onChange={(opt) => setData('type', opt?.value || 'boolean')}
+                                    />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Category</label>
+                                    <Input 
+                                        placeholder="e.g. Management" 
+                                        value={data.category}
+                                        onChange={(e) => setData('category', e.target.value)}
                                     />
                                 </div>
                                 <Button 

@@ -90,6 +90,13 @@ Route::middleware(['web'])
                 ]);
             })->name('users');
 
+            Route::get('workspaces', [\App\Http\Controllers\Admin\WorkspaceController::class, 'index'])->name('workspaces.index');
+            Route::post('workspaces/{workspace}/limits', [\App\Http\Controllers\Admin\WorkspaceController::class, 'updateLimits'])->name('workspaces.limits.update');
+
+            Route::get('coupons', [\App\Http\Controllers\Admin\CouponController::class, 'index'])->name('coupons.index');
+            Route::post('coupons', [\App\Http\Controllers\Admin\CouponController::class, 'store'])->name('coupons.store');
+            Route::delete('coupons/{coupon}', [\App\Http\Controllers\Admin\CouponController::class, 'destroy'])->name('coupons.destroy');
+
             Route::get('subscriptions', function () {
                 return redirect()->route('admin.plans.index');
             })->name('subscriptions');

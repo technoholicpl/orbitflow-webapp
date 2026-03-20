@@ -14,7 +14,10 @@ use Inertia\Inertia;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
-        return Inertia::render('dashboard/dashboard');
+        $workspace = auth()->user()->currentWorkspace;
+        return Inertia::render('dashboard/dashboard', [
+            'usageSummary' => $workspace?->getUsageSummary() ?? [],
+        ]);
     })->name('dashboard');
 
     Route::post('workspace/switch/{workspace}', [WorkspaceController::class, 'switch'])->name('workspace.switch');

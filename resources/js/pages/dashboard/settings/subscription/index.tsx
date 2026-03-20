@@ -20,6 +20,7 @@ interface PlanPrice {
     price: string
     sale_price?: string
     lowest_price_30d?: string
+    calculated_lowest_price?: string
 }
 
 interface Plan {
@@ -204,11 +205,35 @@ export default function SubscriptionIndex({ workspace, plans }: Props) {
                                         )}
                                     </div>
                                     
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-3xl font-black text-gray-900 dark:text-gray-100">
-                                            {getPriceForPlan(plan)}
-                                        </span>
-                                        {!plan.is_free && <span className="text-xs text-gray-400 lowercase">/{billingCycle}</span>}
+                                    <div className="flex flex-col">
+                                        <div className="flex items-baseline gap-2">
+                                            {(() => {
+                                                const price = plan.prices.find(p => p.type === billingCycle);
+                                                if (plan.is_free) return <span className="text-3xl font-black text-gray-900 dark:text-gray-100">0 zł</span>;
+                                                if (!price) return <span className="text-3xl font-black text-gray-900 dark:text-gray-100">N/A</span>;
+                                                
+                                                return (
+                                                    <div className="flex flex-col">
+                                                        <div className="flex items-baseline gap-2">
+                                                            {price.sale_price ? (
+                                                                <>
+                                                                    <span className="text-sm line-through text-gray-400 opacity-60 font-normal">{price.price} zł</span>
+                                                                    <span className="text-3xl font-black text-indigo-600">{price.sale_price} zł</span>
+                                                                </>
+                                                            ) : (
+                                                                <span className="text-3xl font-black text-gray-900 dark:text-gray-100">{price.price} zł</span>
+                                                            )}
+                                                            {!plan.is_free && <span className="text-xs text-gray-400 lowercase">/{billingCycle}</span>}
+                                                        </div>
+                                                        {price.sale_price && (
+                                                            <div className="text-[10px] text-gray-400 mt-1">
+                                                                Najniższa cena z 30 dni: <span className="font-bold">{price.calculated_lowest_price || price.lowest_price_30d || price.price} zł</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })()}
+                                        </div>
                                     </div>
 
                                     <p className="text-xs text-gray-500 dark:text-gray-400 min-h-[32px]">{plan.description}</p>

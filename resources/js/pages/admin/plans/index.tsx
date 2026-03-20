@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Head, useForm, router } from '@inertiajs/react'
+import dayjs from 'dayjs'
 import AdminLayout from '@/layouts/adminlayout'
 import { store, update, destroy } from '@/routes/admin/plans'
 import { update as updateFeatures } from '@/routes/admin/plans/features'
@@ -13,9 +14,11 @@ import {
     Card, 
     Badge, 
     Dialog,
+    Drawer,
     Switcher,
     Checkbox
 } from '@/components/ui'
+import DatePicker from '@/components/ui/DatePicker'
 import { 
     HiOutlineTrash, 
     HiOutlinePencil, 
@@ -35,9 +38,12 @@ interface Feature {
 interface PlanPrice {
     id?: number
     type: 'month' | 'year'
-    price: number
-    sale_price?: number
-    lowest_price_30d?: number
+    price: number | null
+    sale_price?: number | null
+    sale_start_at?: string | null
+    sale_ends_at?: string | null
+    lowest_price_30d?: number | null
+    calculated_lowest_price?: number | null
     is_active: boolean
 }
 
@@ -50,6 +56,7 @@ interface Plan {
     is_free: boolean
     is_active: boolean
     is_coming_soon: boolean
+    is_promoted: boolean
     display_order: number
     trial_days: number
     prices: PlanPrice[]
@@ -60,6 +67,8 @@ interface Props {
     plans: Plan[]
     features: Feature[]
 }
+
+const { DateTimepicker } = DatePicker
 
 export default function PlansIndex({ plans, features }: Props) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -73,11 +82,12 @@ export default function PlansIndex({ plans, features }: Props) {
         is_free: false,
         is_active: true,
         is_coming_soon: false,
+        is_promoted: false,
         display_order: 0,
         trial_days: 0,
         prices: [
-            { type: 'month', price: 0, sale_price: 0, lowest_price_30d: 0, is_active: true },
-            { type: 'year', price: 0, sale_price: 0, lowest_price_30d: 0, is_active: true }
+            { type: 'month', price: 0, sale_price: null, sale_start_at: null, sale_ends_at: null, lowest_price_30d: null, is_active: true },
+            { type: 'year', price: 0, sale_price: null, sale_start_at: null, sale_ends_at: null, lowest_price_30d: null, is_active: true }
         ] as PlanPrice[]
     })
 
@@ -100,17 +110,21 @@ export default function PlansIndex({ plans, features }: Props) {
             is_free: !!plan.is_free,
             is_active: !!plan.is_active,
             is_coming_soon: !!plan.is_coming_soon,
+            is_promoted: !!plan.is_promoted,
             display_order: plan.display_order ?? 0,
             trial_days: plan.trial_days ?? 0,
             prices: plan.prices.length > 0 ? plan.prices.map(p => ({
                 ...p,
                 price: p.price ?? 0,
-                sale_price: p.sale_price ?? 0,
-                lowest_price_30d: p.lowest_price_30d ?? 0,
+                sale_price: p.sale_price !== null ? Number(p.sale_price) : null,
+                sale_start_at: p.sale_start_at ?? null,
+                sale_ends_at: p.sale_ends_at ?? null,
+                lowest_price_30d: p.lowest_price_30d ?? null,
+                calculated_lowest_price: p.calculated_lowest_price ?? null,
                 is_active: !!p.is_active
             })) : [
-                { type: 'month', price: 0, sale_price: 0, lowest_price_30d: 0, is_active: true },
-                { type: 'year', price: 0, sale_price: 0, lowest_price_30d: 0, is_active: true }
+                { type: 'month', price: 0, sale_price: null, sale_start_at: null, sale_ends_at: null, lowest_price_30d: null, is_active: true },
+                { type: 'year', price: 0, sale_price: null, sale_start_at: null, sale_ends_at: null, lowest_price_30d: null, is_active: true }
             ]
         })
         setIsEditModalOpen(true)
@@ -193,6 +207,14 @@ export default function PlansIndex({ plans, features }: Props) {
                                     </div>
                                 </div>
                             )}
+
+                            {!!plan.is_promoted && (
+                                <div className="absolute top-0 left-0">
+                                    <div className="bg-rose-600 text-white text-[10px] font-black uppercase tracking-tighter px-4 py-1 rounded-br-xl shadow-lg flex items-center gap-1">
+                                        <HiOutlineClock /> Promo
+                                    </div>
+                                </div>
+                            )}
                             
                             <div className="flex flex-col gap-4 grow">
                                 <div className="flex justify-between items-start">
@@ -213,18 +235,20 @@ export default function PlansIndex({ plans, features }: Props) {
                                         <div key={price.type} className="flex justify-between items-center">
                                             <span className="text-xs font-bold text-gray-400 uppercase">{price.type}ly</span>
                                             <div className="flex flex-col items-end">
-                                                <span className="font-bold text-gray-900 dark:text-gray-100">
-                                                    {!!price.sale_price ? (
+                                                <div className="flex items-center gap-2">
+                                                    {price.sale_price !== null && price.sale_price !== undefined ? (
                                                         <>
-                                                            <span className="line-through text-gray-400 mr-2 opacity-50 font-normal">${price.price}</span>
-                                                            <span className="text-indigo-600">${price.sale_price}</span>
+                                                            <span className="line-through text-gray-400 opacity-50 text-xs font-normal">${price.price}</span>
+                                                            <span className="text-indigo-600 font-bold">${price.sale_price}</span>
                                                         </>
                                                     ) : (
-                                                        <>${!!plan.is_free ? '0.00' : price.price}</>
+                                                        <span className="font-bold text-gray-900 dark:text-gray-100">${plan.is_free ? '0.00' : price.price}</span>
                                                     )}
-                                                </span>
-                                                {!!price.sale_price && !!price.lowest_price_30d && (
-                                                    <span className="text-[10px] text-gray-400">Low30d: ${price.lowest_price_30d}</span>
+                                                </div>
+                                                {price.sale_price !== null && price.sale_price !== undefined && (
+                                                    <span className="text-[9px] text-gray-400 mt-0.5">
+                                                        Lowest last 30d: <span className="font-bold">${price.calculated_lowest_price || price.lowest_price_30d || price.price}</span>
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>
@@ -265,56 +289,67 @@ export default function PlansIndex({ plans, features }: Props) {
             </div>
 
             {/* Plan Edit Modal */}
-            <Dialog 
+            <Drawer 
                 isOpen={isEditModalOpen} 
                 onClose={() => setIsEditModalOpen(false)}
+                onRequestClose={() => setIsEditModalOpen(false)}
+                title={selectedPlan ? `Edit Plan: ${selectedPlan.name}` : 'Create New Plan'}
                 width={800}
-            >
-                <div className="flex flex-col gap-1 mb-6">
-                    <h3 className="text-xl font-bold">{selectedPlan ? `Edit Plan: ${selectedPlan.name}` : 'Create New Plan'}</h3>
+                  footer={
+                <div className="flex justify-end gap-2 w-full">
+                    <Button type="button" variant="plain" onClick={() => setIsEditModalOpen(false)}>Cancel</Button>
+                    <Button type="submit"  variant="solid" loading={processing} form="plans-form">
+                       {selectedPlan ? 'Save Changes' : 'Create Plan'}
+                    </Button>
                 </div>
-                <form onSubmit={handleSubmit} className="flex flex-col gap-6 mt-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            }
+            >
+                <form id="plans-form" onSubmit={handleSubmit} className="flex flex-col gap-6 mt-4">
+                    <div className="grid grid-cols-1 gap-6">
                         <div className="flex flex-col gap-4">
                             <div className="flex flex-col gap-1">
                                 <label className="text-xs font-bold uppercase text-gray-500">Plan Name</label>
-                                <Input value={data.name} onChange={e => setData('name', e.target.value)} placeholder="e.g. Professional" />
+                                <Input size="sm" value={data.name} onChange={e => setData('name', e.target.value)} placeholder="e.g. Professional" />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label className="text-xs font-bold uppercase text-gray-500">Description</label>
-                                <Input textArea value={data.description} onChange={e => setData('description', e.target.value)} placeholder="What's special about this plan?" />
+                                <Input size="sm" textArea value={data.description} onChange={e => setData('description', e.target.value)} placeholder="What's special about this plan?" />
                             </div>
+                            
                             <div className="grid grid-cols-2 gap-4 items-end">
                                 <div className="flex flex-col gap-1">
                                     <label className="text-xs font-bold uppercase text-gray-500">Display Order</label>
-                                    <Input type="number" value={data.display_order} onChange={e => setData('display_order', parseInt(e.target.value))} />
+                                    <Input size="sm" type="number" value={data.display_order} onChange={e => setData('display_order', parseInt(e.target.value))} />
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label className="text-xs font-bold uppercase text-gray-500">Trial Days</label>
-                                    <Input type="number" value={data.trial_days} onChange={e => setData('trial_days', parseInt(e.target.value))} placeholder="0 = No Trial" />
+                                    <Input size="sm" type="number" value={data.trial_days} onChange={e => setData('trial_days', parseInt(e.target.value))} placeholder="0 = No Trial" />
                                 </div>
-                                <div className="flex flex-col gap-2">
-                                    <div className="flex items-center gap-2">
-                                        <Switcher checked={data.is_recommended} onChange={val => setData('is_recommended', val)} />
-                                        <span className="text-xs font-bold">Recommended Plan</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Switcher checked={data.is_coming_soon} onChange={val => setData('is_coming_soon', val)} />
-                                        <span className="text-xs font-bold">Coming Soon</span>
-                                    </div>
+                                <div className="flex  gap-2">
+                                    <Switcher checked={data.is_recommended} onChange={val => setData('is_recommended', val)} />
+                                    <span className="text-xs font-bold">Recommended Plan</span>
                                 </div>
+                                <div className="flex  gap-2">
+                                    <Switcher checked={data.is_coming_soon} onChange={val => setData('is_coming_soon', val)} />
+                                    <span className="text-xs font-bold">Coming Soon</span>
+                                </div>
+                                <div className="flex  gap-2">
+                                    <Switcher checked={data.is_promoted} onChange={val => setData('is_promoted', val)} />
+                                    <span className="text-xs font-bold">Promoted Flow</span>
+                                </div>
+                               
                             </div>
-                            <div className="flex flex-col gap-2">
-                                <div className="flex items-center gap-2">
+                            <div className="flex  gap-2">
+                                <div className="flex gap-2">
                                     <Checkbox checked={data.is_free} onChange={val => setData('is_free', val)}>Is Free Plan</Checkbox>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex  gap-2">
                                     <Checkbox checked={data.is_active} onChange={val => setData('is_active', val)}>Is Active (Visible)</Checkbox>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-4 bg-gray-50 dark:bg-gray-800/50 p-6 rounded-2xl border border-gray-100 dark:border-gray-800">
+                        <div className="flex flex-col gap-4 ">
                             <h4 className="font-bold flex items-center gap-2">
                                 <span className="p-2 bg-indigo-100 text-indigo-600 rounded-lg text-lg"><HiOutlinePlus /></span>
                                 Pricing Configuration
@@ -336,7 +371,7 @@ export default function PlansIndex({ plans, features }: Props) {
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="flex flex-col gap-1">
                                             <span className="text-[10px] font-bold text-gray-400 uppercase">Regular Price</span>
-                                            <Input 
+                                            <Input size="sm"
                                                 disabled={data.is_free}
                                                 prefix="$" 
                                                 type="number" 
@@ -348,48 +383,123 @@ export default function PlansIndex({ plans, features }: Props) {
                                                 }}
                                             />
                                         </div>
-                                        <div className="flex flex-col gap-1">
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Sale Price</span>
-                                            <Input 
-                                                disabled={data.is_free}
-                                                prefix="$" 
-                                                type="number" 
-                                                value={price.sale_price ?? 0} 
-                                                onChange={e => {
-                                                    const newPrices = [...data.prices]
-                                                    newPrices[index].sale_price = parseFloat(e.target.value) || 0
-                                                    setData('prices', newPrices)
-                                                }}
-                                            />
+                                        <div className="flex flex-col gap-1 justify-end">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <Switcher 
+                                                    checked={price.sale_price !== null && price.sale_price !== undefined} 
+                                                    onChange={val => {
+                                                        const newPrices = [...data.prices]
+                                                        if (!val) {
+                                                            newPrices[index].sale_price = null
+                                                            newPrices[index].sale_start_at = null
+                                                            newPrices[index].sale_ends_at = null
+                                                        } else {
+                                                            if (newPrices[index].sale_price === null || newPrices[index].sale_price === undefined) {
+                                                                if (data.is_free) {
+                                                                    newPrices[index].sale_price = 0
+                                                                } else {
+                                                                    newPrices[index].sale_price = price.price || 0
+                                                                }
+                                                            }
+                                                              const formattedNow = dayjs().format('YYYY-MM-DD HH:mm:ss')
+                                                              newPrices[index].sale_start_at = newPrices[index].sale_start_at || formattedNow
+                                                              newPrices[index].sale_ends_at = newPrices[index].sale_ends_at || dayjs().add(1, 'month').format('YYYY-MM-DD HH:mm:ss')
+                                                        }
+                                                        setData('prices', newPrices)
+                                                    }} 
+                                                />
+                                                <span className="text-[10px] font-bold uppercase text-indigo-600">Promotion</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-[10px] font-bold text-rose-400 uppercase">Lowest Price (Last 30 days) - Omnibus</span>
-                                        <Input 
-                                            disabled={data.is_free}
-                                            prefix="$" 
-                                            type="number" 
-                                            value={price.lowest_price_30d ?? 0} 
-                                            onChange={e => {
-                                                const newPrices = [...data.prices]
-                                                newPrices[index].lowest_price_30d = parseFloat(e.target.value) || 0
-                                                setData('prices', newPrices)
-                                            }}
-                                        />
-                                    </div>
+
+                                    {(price.sale_price !== null && price.sale_price !== undefined) && (
+                                        <div className="flex flex-col gap-3 pt-3 border-t border-dashed animate-in fade-in slide-in-from-top-2">
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-[10px] font-bold text-gray-400 uppercase">Sale Price</span>
+                                                <Input  size="sm"
+                                                    disabled={data.is_free}
+                                                    prefix="$" 
+                                                    type="number" 
+                                                    className="border-indigo-100"
+                                                    value={price.sale_price ?? 0} 
+                                                    onChange={e => {
+                                                        const newPrices = [...data.prices]
+                                                        newPrices[index].sale_price = parseFloat(e.target.value) || 0
+                                                        setData('prices', newPrices)
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-[10px] font-bold text-gray-400 uppercase">Sale Starts</span>
+                                                    <DateTimepicker size="sm"
+                                                        disabled={data.is_free}
+                                                        placeholder="Select date & time"
+                                                        value={price.sale_start_at ? dayjs(price.sale_start_at).toDate() : null}
+                                                        onChange={(date) => {
+                                                            const newPrices = [...data.prices]
+                                                            const newDateStr = date ? dayjs(date).format('YYYY-MM-DD HH:mm:ss') : null
+                                                            
+                                                            // Validation: if end date exists, start date cannot be after end date
+                                                            if (newDateStr && newPrices[index].sale_ends_at && dayjs(newDateStr).isAfter(dayjs(newPrices[index].sale_ends_at as string))) {
+                                                                toast.push(
+                                                                    <Notification title="Błąd daty" type="danger">
+                                                                        Data rozpoczęcia nie może być późniejsza niż data zakończenia.
+                                                                    </Notification>
+                                                                )
+                                                                return
+                                                            }
+                                                            
+                                                            newPrices[index].sale_start_at = newDateStr
+                                                            setData('prices', newPrices)
+                                                        }}
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-[10px] font-bold text-gray-400 uppercase">Sale Ends</span>
+                                                    <DateTimepicker size="sm"
+                                                        disabled={data.is_free}
+                                                        placeholder="Select date & time"
+                                                        value={price.sale_ends_at ? dayjs(price.sale_ends_at).toDate() : null}
+                                                        onChange={(date) => {
+                                                            const newPrices = [...data.prices]
+                                                            const newDateStr = date ? dayjs(date).format('YYYY-MM-DD HH:mm:ss') : null
+                                                            
+                                                            // Validation
+                                                            const startDate = newPrices[index].sale_start_at ? dayjs(newPrices[index].sale_start_at as string) : dayjs()
+                                                            if (newDateStr && dayjs(newDateStr).isBefore(startDate)) {
+                                                                toast.push(
+                                                                    <Notification title="Błąd daty" type="danger">
+                                                                        Data zakończenia nie może być wcześniejsza niż data rozpoczęcia (lub teraz).
+                                                                    </Notification>
+                                                                )
+                                                                return
+                                                            }
+
+                                                            newPrices[index].sale_ends_at = newDateStr
+                                                            setData('prices', newPrices)
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider">Lowest Price (Last 30 days) - Omnibus</span>
+                                                    <Badge content="Auto-calculated" innerClass="text-[8px] bg-rose-50 text-rose-600 border-rose-100" />
+                                                </div>
+                                                <div className="h-10 px-3 flex items-center bg-gray-50 dark:bg-gray-900 border border-dashed rounded-lg text-sm font-black text-gray-900 dark:text-gray-100 italic opacity-80">
+                                                    $ {Number(price.calculated_lowest_price || price.lowest_price_30d || 0).toFixed(2)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
                     </div>
-                    
-                    <div className="flex justify-end gap-2 mt-4">
-                        <Button type="button" variant="plain" onClick={() => setIsEditModalOpen(false)}>Cancel</Button>
-                        <Button type="submit" variant="solid" loading={processing}>
-                            {selectedPlan ? 'Save Changes' : 'Create Plan'}
-                        </Button>
-                    </div>
                 </form>
-            </Dialog>
+            </Drawer>
 
             {/* Features Sync Modal */}
             <Dialog

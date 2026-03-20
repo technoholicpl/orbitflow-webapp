@@ -19,11 +19,14 @@ class Workspace extends Model
         'subscription_ends_at',
         'trial_ends_at',
         'billing_cycle',
+        'custom_limits',
+        'coupon_code',
     ];
 
     protected $casts = [
         'subscription_ends_at' => 'datetime',
         'trial_ends_at' => 'datetime',
+        'custom_limits' => 'array',
     ];
 
     public function isOnTrial(): bool
@@ -66,10 +69,22 @@ class Workspace extends Model
 
     public function isWithinLimit(string $featureSlug, string $relationship): bool
     {
+        // Check custom limits first
+        if ($this->custom_limits && isset($this->custom_limits[$featureSlug])) {
+            $limit = $this->custom_limits[$featureSlug];
+            if ($limit === 'unlimited') return true;
+            
+            // Note: custom limits currently don't support per-period overrides in this simple implementation
+            // but we can assume they are total limits or handled via the relationship if needed.
+            // For now, let's just check total count.
+            $count = $this->$relationship()->count();
+            return $count < (int) $limit;
+        }
+
         if (!$this->plan) return false;
         
         $feature = $this->plan->features()->where('slug', $featureSlug)->first();
-        if (!$feature) return true; // If feature not defined for plan, assume no limit or handled elsewhere
+        if (!$feature) return true; 
 
         $limit = $feature->pivot->value;
         if ($limit === 'unlimited') return true;
@@ -122,28 +137,58 @@ class Workspace extends Model
         return 0; // Placeholder
     }
 
-    public function getFeatureLimit(string $featureSlug): int
+    public function getFeatureLimit(string $featureSlug): int|string
     {
+        if ($this->custom_limits && isset($this->custom_limits[$featureSlug])) {
+            return $this->custom_limits[$featureSlug];
+        }
+
         if (!$this->plan) return 0;
         
         $feature = $this->plan->features()->where('slug', $featureSlug)->first();
         if (!$feature) return 0;
 
-        if ($feature->pivot->value === 'unlimited') {
-            return 999999;
-        }
-        
-        return (int) $feature->pivot->value;
+        return $feature->pivot->value === 'unlimited' ? 'unlimited' : (int) $feature->pivot->value;
     }
 
     public function isFeatureUnlimited(string $featureSlug): bool
     {
+        if ($this->custom_limits && isset($this->custom_limits[$featureSlug])) {
+            return $this->custom_limits[$featureSlug] === 'unlimited';
+        }
+
         if (!$this->plan) return false;
         
         $feature = $this->plan->features()->where('slug', $featureSlug)->first();
         if (!$feature) return false;
         
         return $feature->pivot->value === 'unlimited';
+    }
+
+    public function getUsageSummary(): array
+    {
+        $featuresToTrack = [
+            'max-projects' => ['label' => 'Projects', 'relationship' => 'projects'],
+            'max-users' => ['label' => 'Team Members', 'relationship' => 'users'],
+            'max-clients' => ['label' => 'Clients', 'relationship' => 'clients'],
+        ];
+
+        $summary = [];
+
+        foreach ($featuresToTrack as $slug => $data) {
+            $limit = $this->getFeatureLimit($slug);
+            $count = $this->{$data['relationship']}()->count();
+
+            $summary[] = [
+                'label' => $data['label'],
+                'usage' => $count,
+                'limit' => $limit,
+                'percentage' => $limit === 'unlimited' ? 0 : round(($count / max(1, (int)$limit)) * 100),
+                'is_unlimited' => $limit === 'unlimited',
+            ];
+        }
+
+        return $summary;
     }
 
     public function owner(): BelongsTo

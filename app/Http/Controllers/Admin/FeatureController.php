@@ -23,12 +23,14 @@ class FeatureController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|string|in:boolean,limit',
+            'category' => 'nullable|string|max:255',
         ]);
 
         Feature::create([
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
             'type' => $validated['type'],
+            'category' => $validated['category'] ?? null,
         ]);
 
         return redirect()->back()->with('success', 'Feature created successfully.');
