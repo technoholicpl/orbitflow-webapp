@@ -20,6 +20,7 @@ class PlanPrice extends Model
 
     protected $appends = [
         'calculated_lowest_price',
+        'is_on_sale',
     ];
 
     protected $casts = [
@@ -79,5 +80,31 @@ class PlanPrice extends Model
     {
         $referenceDate = $this->sale_start_at ?: now();
         return $this->getLowestPriceLast30Days($referenceDate);
+    }
+
+    /**
+     * Determine if the price is currently on sale.
+     * 
+     * @return bool
+     */
+    public function getIsOnSaleAttribute()
+    {
+        if ($this->sale_price === null) {
+            return false;
+        }
+
+        $now = now();
+        $start = $this->sale_start_at;
+        $end = $this->sale_ends_at;
+
+        if ($start && $now->lt($start)) {
+            return false;
+        }
+
+        if ($end && $now->gt($end)) {
+            return false;
+        }
+
+        return true;
     }
 }

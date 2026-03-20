@@ -36,9 +36,9 @@ class PlanController extends Controller
             'prices' => 'required|array',
             'prices.*.type' => 'required|string|in:month,year',
             'prices.*.price' => 'required|numeric|min:0',
-            'prices.*.sale_price' => 'nullable|numeric|min:0',
+            'prices.*.sale_price' => 'nullable|numeric|min:0|lt:prices.*.price',
             'prices.*.sale_start_at' => 'nullable|date',
-            'prices.*.sale_ends_at' => 'nullable|date',
+            'prices.*.sale_ends_at' => 'nullable|date|after_or_equal:prices.*.sale_start_at',
             'prices.*.lowest_price_30d' => 'nullable|numeric|min:0',
         ]);
 
@@ -87,9 +87,9 @@ class PlanController extends Controller
             'prices.*.id' => 'nullable|exists:plan_prices,id',
             'prices.*.type' => 'required|string|in:month,year',
             'prices.*.price' => 'required|numeric|min:0',
-            'prices.*.sale_price' => 'nullable|numeric|min:0',
+            'prices.*.sale_price' => 'nullable|numeric|min:0|lt:prices.*.price',
             'prices.*.sale_start_at' => 'nullable|date',
-            'prices.*.sale_ends_at' => 'nullable|date',
+            'prices.*.sale_ends_at' => 'nullable|date|after_or_equal:prices.*.sale_start_at',
             'prices.*.lowest_price_30d' => 'nullable|numeric|min:0',
         ]);
 

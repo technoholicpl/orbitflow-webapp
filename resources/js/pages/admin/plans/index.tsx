@@ -44,6 +44,7 @@ interface PlanPrice {
     sale_ends_at?: string | null
     lowest_price_30d?: number | null
     calculated_lowest_price?: number | null
+    is_on_sale?: boolean
     is_active: boolean
 }
 
@@ -224,6 +225,12 @@ export default function PlansIndex({ plans, features }: Props) {
                                             {(!plan.is_active) && <Badge content="Inactive" innerClass="bg-red-500" />}
                                             {!!plan.is_coming_soon && <Badge content="Coming Soon" innerClass="bg-amber-500" />}
                                             {!!plan.is_free && <Badge content="Free" innerClass="bg-emerald-500" />}
+                                            {plan.prices.some(p => p.is_on_sale) && (
+                                                <Badge 
+                                                    content="Sale Active" 
+                                                    innerClass="bg-rose-500 animate-pulse" 
+                                                />
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -433,7 +440,7 @@ export default function PlansIndex({ plans, features }: Props) {
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div className="flex flex-col gap-1">
                                                     <span className="text-[10px] font-bold text-gray-400 uppercase">Sale Starts</span>
-                                                    <DateTimepicker size="sm"
+                                                    <DateTimepicker size="sm" amPm={false}
                                                         disabled={data.is_free}
                                                         placeholder="Select date & time"
                                                         value={price.sale_start_at ? dayjs(price.sale_start_at).toDate() : null}

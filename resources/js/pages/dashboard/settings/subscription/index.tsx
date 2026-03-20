@@ -21,6 +21,7 @@ interface PlanPrice {
     sale_price?: string
     lowest_price_30d?: string
     calculated_lowest_price?: string
+    is_on_sale?: boolean
 }
 
 interface Plan {
@@ -215,7 +216,7 @@ export default function SubscriptionIndex({ workspace, plans }: Props) {
                                                 return (
                                                     <div className="flex flex-col">
                                                         <div className="flex items-baseline gap-2">
-                                                            {price.sale_price ? (
+                                                            {price.is_on_sale ? (
                                                                 <>
                                                                     <span className="text-sm line-through text-gray-400 opacity-60 font-normal">{price.price} zł</span>
                                                                     <span className="text-3xl font-black text-indigo-600">{price.sale_price} zł</span>
@@ -225,8 +226,8 @@ export default function SubscriptionIndex({ workspace, plans }: Props) {
                                                             )}
                                                             {!plan.is_free && <span className="text-xs text-gray-400 lowercase">/{billingCycle}</span>}
                                                         </div>
-                                                        {price.sale_price && (
-                                                            <div className="text-[10px] text-gray-400 mt-1">
+                                                        {price.is_on_sale && (
+                                                            <div className="text-[10px] text-gray-400 mt-1 italic">
                                                                 Najniższa cena z 30 dni: <span className="font-bold">{price.calculated_lowest_price || price.lowest_price_30d || price.price} zł</span>
                                                             </div>
                                                         )}

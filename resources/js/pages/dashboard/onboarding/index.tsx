@@ -19,6 +19,7 @@ interface PlanPrice {
     sale_price?: string
     lowest_price_30d?: string
     calculated_lowest_price?: string
+    is_on_sale?: boolean
 }
 
 interface Plan {
@@ -289,14 +290,21 @@ export default function Onboarding({ initialStep, plans }: Props) {
                                                             
                                                             return (
                                                                 <>
-                                                                    <div className="flex items-center justify-end gap-2">
-                                                                        {price.sale_price ? (
-                                                                            <>
-                                                                                <span className="text-sm line-through text-gray-400 opacity-60 font-normal">{price.price} zł</span>
-                                                                                <span className="text-2xl font-black text-indigo-600">{price.sale_price} zł</span>
-                                                                            </>
-                                                                        ) : (
-                                                                            <span className="text-2xl font-black text-gray-900 dark:text-gray-100">{price.price} zł</span>
+                                                                    <div className="flex flex-col items-end">
+                                                                        <div className="flex items-center justify-end gap-2 text-right">
+                                                                            {price.is_on_sale ? (
+                                                                                <>
+                                                                                    <span className="text-sm line-through text-gray-400 opacity-60 font-normal">{price.price} zł</span>
+                                                                                    <span className="text-2xl font-black text-indigo-600">{price.sale_price} zł</span>
+                                                                                </>
+                                                                            ) : (
+                                                                                <span className="text-2xl font-black text-gray-900 dark:text-gray-100">{price.price} zł</span>
+                                                                            )}
+                                                                        </div>
+                                                                        {price.is_on_sale && (
+                                                                            <div className="text-[10px] text-gray-400 mt-1 italic text-right">
+                                                                                Najniższa cena z 30 dni: <span className="font-bold">{price.calculated_lowest_price || price.lowest_price_30d || price.price} zł</span>
+                                                                            </div>
                                                                         )}
                                                                     </div>
                                                                     {price.sale_price && (
