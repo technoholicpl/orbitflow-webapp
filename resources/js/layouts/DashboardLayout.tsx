@@ -14,6 +14,8 @@ import ModeSwitcher from '@/components/template/ThemeConfigurator/ModeSwitcher';
 import GlobalQuickActions from '@/components/template/GlobalQuickActions';
 import GlobalTimer from '@/components/GlobalTimer';
 import NotificationDropdown from '@/components/template/NotificationDropdown';
+import TrialBanner from '@/components/TrialBanner';
+import { toast, Notification } from '@/components/ui';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -22,7 +24,24 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children, title = 'Dashboard' }: DashboardLayoutProps) {
     const { larger, smaller } = useResponsive();
-    const { auth } = usePage<{ auth: { user: any } }>().props;
+    const { auth, flash } = usePage<any>().props;
+
+    React.useEffect(() => {
+        if (flash?.success) {
+            toast.push(
+                <Notification title="Informacja" type="success">
+                    {flash.success}
+                </Notification>
+            );
+        }
+        if (flash?.error) {
+            toast.push(
+                <Notification title="Błąd" type="danger">
+                    {flash.error}
+                </Notification>
+            );
+        }
+    }, [flash]);
 
     return (
         <ConfigProvider
@@ -40,6 +59,7 @@ export default function DashboardLayout({ children, title = 'Dashboard' }: Dashb
                 <div className="flex flex-auto min-w-0">
                     {larger.lg && <StackedSideNav navigationTree={userNavigationConfig.items} />}
                     <div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full">
+                        <TrialBanner />
                         <Header
                             className="shadow-sm dark:shadow-2xl"
                             headerStart={

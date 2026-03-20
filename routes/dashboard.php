@@ -86,5 +86,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('action-types/{id}/attach', [ActionTypeController::class, 'attach'])->name('action-types.attach');
         Route::patch('action-types/{id}', [ActionTypeController::class, 'update'])->name('action-types.update');
         Route::delete('action-types/{id}', [ActionTypeController::class, 'destroy'])->name('action-types.destroy');
+
+        Route::get('subscription', [\App\Http\Controllers\Dashboard\Settings\SubscriptionController::class, 'index'])->name('subscription.index');
+        Route::patch('subscription', [\App\Http\Controllers\Dashboard\Settings\SubscriptionController::class, 'update'])->name('subscription.update');
     });
 });

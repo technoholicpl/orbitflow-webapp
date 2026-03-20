@@ -51,6 +51,10 @@ Route::middleware(['web'])->group(function () {
             ->name('onboarding.index');
         Route::post('/onboarding', [\App\Http\Controllers\Dashboard\OnboardingController::class, 'store'])
             ->name('onboarding.store');
+        Route::post('/onboarding/plan', [\App\Http\Controllers\Dashboard\OnboardingController::class, 'selectPlan'])
+            ->name('onboarding.plan');
+        Route::post('/onboarding/finish', [\App\Http\Controllers\Dashboard\OnboardingController::class, 'finish'])
+            ->name('onboarding.finish');
 
         Route::post('/invitations/reject/{token}', [\App\Http\Controllers\InvitationController::class, 'reject'])
             ->name('invitations.reject');

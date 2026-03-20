@@ -69,7 +69,21 @@ Route::middleware(['web'])
                 Route::delete('action-types/{id}', [AdminActionTypeController::class, 'destroy'])->name('action-types.destroy');
             });
 
-            // Users & Subscriptions
+            // Plans & Features Management
+            Route::group(['prefix' => 'settings'], function () {
+                Route::get('plans', [\App\Http\Controllers\Admin\PlanController::class, 'index'])->name('plans.index');
+                Route::get('plans/create', [\App\Http\Controllers\Admin\PlanController::class, 'create'])->name('plans.create');
+                Route::post('plans', [\App\Http\Controllers\Admin\PlanController::class, 'store'])->name('plans.store');
+                Route::get('plans/{plan}/edit', [\App\Http\Controllers\Admin\PlanController::class, 'edit'])->name('plans.edit');
+                Route::patch('plans/{plan}', [\App\Http\Controllers\Admin\PlanController::class, 'update'])->name('plans.update');
+                Route::delete('plans/{plan}', [\App\Http\Controllers\Admin\PlanController::class, 'destroy'])->name('plans.destroy');
+                Route::post('plans/{plan}/features', [\App\Http\Controllers\Admin\PlanController::class, 'updateFeatures'])->name('plans.features.update');
+
+                Route::get('features', [\App\Http\Controllers\Admin\FeatureController::class, 'index'])->name('features.index');
+                Route::post('features', [\App\Http\Controllers\Admin\FeatureController::class, 'store'])->name('features.store');
+                Route::delete('features/{feature}', [\App\Http\Controllers\Admin\FeatureController::class, 'destroy'])->name('features.destroy');
+            });
+
             Route::get('users', function () {
                 return Inertia::render('admin/users', [
                     'users' => \App\Models\User::all()
@@ -77,7 +91,7 @@ Route::middleware(['web'])
             })->name('users');
 
             Route::get('subscriptions', function () {
-                return Inertia::render('admin/subscriptions');
+                return redirect()->route('admin.plans.index');
             })->name('subscriptions');
         });
 

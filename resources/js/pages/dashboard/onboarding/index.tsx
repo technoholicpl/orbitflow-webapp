@@ -1,20 +1,53 @@
-import { useForm, Head } from '@inertiajs/react';
+import { useForm, Head, router } from '@inertiajs/react';
+import { plan as planRoute, finish as finishRoute } from '@/routes/onboarding';
 import { Button, Input, FormItem, Notification, toast, Select } from '@/components/ui';
 import { useState, useEffect } from 'react';
 import { Plus, X, Rocket, Users, Check, Sparkles, Building2, BarChart3, Search } from 'lucide-react';
 import cn from '@/components/ui/utils/classNames';
 
+interface Feature {
+    id: number
+    name: string
+    slug: string
+    type: 'boolean' | 'limit'
+}
+
+interface PlanPrice {
+    id: number
+    type: 'month' | 'year'
+    price: string
+    sale_price?: string
+    lowest_price_30d?: string
+}
+
+interface Plan {
+    id: number
+    name: string
+    slug: string
+    description: string
+    is_recommended: boolean
+    is_free: boolean
+    is_active: boolean
+    is_coming_soon: boolean
+    trial_days: number | null
+    prices: PlanPrice[]
+    features: (Feature & { pivot: { value: string } })[]
+}
+
 type Props = {
     initialStep: number;
+    plans: Plan[];
 };
 
-export default function Onboarding({ initialStep }: Props) {
+export default function Onboarding({ initialStep, plans }: Props) {
     const [step, setStep] = useState(initialStep);
+    const [billingCycle, setBillingCycle] = useState<'month' | 'year'>('month');
     
-    const { data, setData, post, processing, errors } = useForm({
+    const { post, setData, data, processing, errors, reset } = useForm({
         name: '',
+        plan_id: 0,
+        billing_cycle: 'month',
         invites: [''],
-        // Survey data
         companySize: '',
         industry: '',
         referralSource: '',
@@ -58,19 +91,68 @@ export default function Onboarding({ initialStep }: Props) {
         });
     };
 
-    const nextStep = () => {
-        setStep(step + 1);
+    const submitPlan = (planId: number) => {
+        setData(d => ({ ...d, plan_id: planId, billing_cycle: billingCycle }));
+        
+        router.post(
+            // @ts-ignore
+            planRoute().url, 
+            {
+                plan_id: planId,
+                billing_cycle: billingCycle
+            },
+            {
+                onSuccess: () => {
+                    setStep(3);
+                    toast.push(
+                        <Notification title="Plan wybrany" type="success">
+                            Twój plan został pomyślnie wybrany. Teraz możesz zaprosić swój zespół.
+                        </Notification>
+                    );
+                }
+            }
+        );
     };
 
     const finish = () => {
-        window.location.href = '/dashboard';
+        // Filter out empty strings before sending
+        const payload = {
+            ...data,
+            invites: data.invites.filter(i => i && i.trim() !== '')
+        };
+
+        router.post(finishRoute().url, payload, {
+            onSuccess: () => {
+                window.location.href = '/dashboard';
+            },
+            onError: (err: any) => {
+                console.error('Finish errors:', err);
+                if (err.invites) {
+                    toast.push(
+                        <Notification title="Błąd zaproszeń" type="danger">
+                            {err.invites}
+                        </Notification>
+                    );
+                }
+                // Handle nested errors like invites.0
+                const firstInviteError = Object.keys(err).find(k => k.startsWith('invites.'));
+                if (firstInviteError) {
+                     toast.push(
+                        <Notification title="Błąd zaproszeń" type="danger">
+                            Jeden lub więcej adresów e-mail jest nieprawidłowych.
+                        </Notification>
+                    );
+                }
+            }
+        });
     };
 
-    const plans = [
-        { id: 'basic', name: 'Basic', price: '0 zł', features: ['Do 3 projektów', 'Podstawowe raporty', '1 użytkownik'] },
-        { id: 'standard', name: 'Standard', price: '49 zł', features: ['Nielimitowane projekty', 'Zaawansowane raporty', 'Do 10 użytkowników'], popular: true },
-        { id: 'premium', name: 'Premium', price: '99 zł', features: ['Wszystko co w Standard', 'Integracje API', 'Nielimitowani użytkownicy'] },
-    ];
+    const getPriceForPlan = (plan: Plan) => {
+        if (plan.is_free) return '0 zł';
+        const price = plan.prices.find(p => p.type === billingCycle);
+        if (!price) return 'N/A';
+        return `${price.sale_price || price.price} zł`;
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center p-6">
@@ -121,36 +203,6 @@ export default function Onboarding({ initialStep }: Props) {
                                         required
                                     />
                                 </FormItem>
-
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                                        <Users className="w-5 h-5 text-indigo-500" />
-                                        <span className="text-sm font-semibold uppercase tracking-wider">Zaproś zespół (opcjonalnie)</span>
-                                    </div>
-                                    <div className="space-y-3">
-                                        {data.invites.map((email, index) => (
-                                            <div key={index} className="space-y-1">
-                                                <div className="flex gap-2">
-                                                    <Input
-                                                        type="email"
-                                                        value={email}
-                                                        onChange={(e) => updateInvite(index, e.target.value)}
-                                                        placeholder="email@przyklad.pl"
-                                                        className={cn("h-11 rounded-lg border-gray-200", errors[`invites.${index}`] && "border-red-500")}
-                                                    />
-                                                    {data.invites.length > 1 && (
-                                                        <Button type="button" variant="default" className="h-11 w-11 p-0" onClick={() => removeInvite(index)}>
-                                                            <X className="w-4 h-4" />
-                                                        </Button>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))}
-                                        <button type="button" onClick={addInvite} className="text-sm font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-2">
-                                            <Plus className="w-4 h-4" /> Dodaj kolejny e-mail
-                                        </button>
-                                    </div>
-                                </div>
                             </div>
                             <Button variant="solid" type="submit" className="w-full h-14 rounded-2xl text-lg font-bold shadow-xl shadow-indigo-200" loading={processing}>
                                 Kontynuuj <Rocket className="ml-2 w-5 h-5" />
@@ -173,37 +225,71 @@ export default function Onboarding({ initialStep }: Props) {
                         </div>
 
                         <div className="p-8 space-y-6">
+                            <div className="flex justify-center mb-4">
+                                <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-xl flex gap-1">
+                                    <button 
+                                        onClick={() => setBillingCycle('month')}
+                                        className={cn(
+                                            "px-4 py-2 text-xs font-bold rounded-lg transition-all",
+                                            billingCycle === 'month' ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600" : "text-gray-500"
+                                        )}
+                                    >
+                                        Miesięcznie
+                                    </button>
+                                    <button 
+                                        onClick={() => setBillingCycle('year')}
+                                        className={cn(
+                                            "px-4 py-2 text-xs font-bold rounded-lg transition-all",
+                                            billingCycle === 'year' ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600" : "text-gray-500"
+                                        )}
+                                    >
+                                        Rocznie <span className="text-[10px] text-green-500 ml-1">-20%</span>
+                                    </button>
+                                </div>
+                            </div>
+
                             <div className="grid gap-4">
                                 {plans.map((plan) => (
                                     <div key={plan.id} className={cn(
-                                        "relative group cursor-pointer p-5 rounded-2xl border-2 transition-all hover:shadow-md",
-                                        plan.popular ? "border-purple-600 bg-purple-50/50 dark:bg-purple-900/10" : "border-gray-100 dark:border-gray-800 hover:border-purple-200"
-                                    )} onClick={nextStep}>
-                                        {plan.popular && (
+                                        "relative group p-5 rounded-2xl border-2 transition-all hover:shadow-md",
+                                        plan.is_recommended ? "border-purple-600 bg-purple-50/50 dark:bg-purple-900/10" : "border-gray-100 dark:border-gray-800 hover:border-purple-200",
+                                        plan.is_coming_soon && "opacity-75 cursor-not-allowed"
+                                    )} onClick={() => !plan.is_coming_soon && submitPlan(plan.id)}>
+                                        {!!plan.is_recommended && (
                                             <span className="absolute -top-3 right-4 bg-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Najczęściej wybierany</span>
                                         )}
                                         <div className="flex justify-between items-start">
                                             <div>
-                                                <h3 className="font-bold text-xl text-gray-900 dark:text-gray-100">{plan.name}</h3>
+                                                <div className="flex items-center gap-3">
+                                                    <h3 className="font-bold text-xl text-gray-900 dark:text-gray-100">{plan.name}</h3>
+                                                    {plan.trial_days && plan.trial_days > 0 && (
+                                                        <span className="bg-indigo-100 text-indigo-700 text-[10px] font-black px-2 py-0.5 rounded-lg uppercase tracking-widest animate-pulse border border-indigo-200">
+                                                            {plan.trial_days} dni testów
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <ul className="mt-2 space-y-1">
-                                                    {plan.features.map((f, i) => (
-                                                        <li key={i} className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                                                            <Check className="w-4 h-4 text-green-500" /> {f}
+                                                    {plan.features.slice(0, 3).map((f) => (
+                                                        <li key={f.id} className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                                                            <Check className="w-4 h-4 text-green-500" /> {f.name}: {f.pivot.value === 'true' ? 'Tak' : f.pivot.value === 'false' ? 'Nie' : f.pivot.value === 'unlimited' ? 'Bez limitu' : f.pivot.value}
                                                         </li>
                                                     ))}
                                                 </ul>
                                             </div>
                                             <div className="text-right">
-                                                <span className="text-2xl font-black text-gray-900 dark:text-gray-100">{plan.price}</span>
-                                                <p className="text-xs text-gray-400">miesięcznie</p>
+                                                {plan.is_coming_soon ? (
+                                                    <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">Wkrótce</span>
+                                                ) : (
+                                                    <>
+                                                        <span className="text-2xl font-black text-gray-900 dark:text-gray-100">{getPriceForPlan(plan)}</span>
+                                                        <p className="text-xs text-gray-400">{billingCycle === 'month' ? 'miesięcznie' : 'rocznie'}</p>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            <Button variant="solid" onClick={nextStep} className="w-full h-14 rounded-2xl bg-purple-600 hover:bg-purple-700 text-lg font-bold shadow-xl shadow-purple-200 dark:shadow-none">
-                                Wybierz plan
-                            </Button>
                         </div>
                     </div>
                 )}
@@ -253,6 +339,51 @@ export default function Onboarding({ initialStep }: Props) {
                                         ))}
                                     </div>
                                 </FormItem>
+
+                                <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                                        <Users className="w-5 h-5 text-emerald-500" />
+                                        <span className="text-sm font-semibold uppercase tracking-wider">Zaproś zespół</span>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {data.invites.map((email, index) => (
+                                            <div key={index} className="space-y-1">
+                                                <div className="flex gap-2">
+                                                    <Input
+                                                        type="email"
+                                                        value={email}
+                                                        onChange={(e) => updateInvite(index, e.target.value)}
+                                                        placeholder="email@przyklad.pl"
+                                                        className={cn("h-11 rounded-lg border-gray-200", errors[`invites.${index}`] && "border-red-500")}
+                                                    />
+                                                    {data.invites.length > 1 && (
+                                                        <Button type="button" variant="default" className="h-11 w-11 p-0" onClick={() => removeInvite(index)}>
+                                                            <X className="w-4 h-4" />
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                                {errors[`invites.${index}`] && (
+                                                    <p className="text-xs text-red-500">{errors[`invites.${index}`]}</p>
+                                                )}
+                                            </div>
+                                        ))}
+                                        <div className="flex justify-between items-center">
+                                            <button type="button" onClick={addInvite} className="text-sm font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-2">
+                                                <Plus className="w-4 h-4" /> Dodaj e-mail
+                                            </button>
+                                            <span className="text-[10px] text-gray-400 uppercase font-bold">
+                                                Limit planu: {(() => {
+                                                    const plan = plans.find(p => p.id === data.plan_id);
+                                                    const feat = plan?.features.find(f => f.slug === 'max-users');
+                                                    return feat?.pivot.value === 'unlimited' ? 'Bez limitu' : `${feat?.pivot.value || '1'} osób`;
+                                                })()}
+                                            </span>
+                                        </div>
+                                        {errors.invites && (
+                                            <p className="text-sm text-red-500 font-bold mt-2">{errors.invites}</p>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="pt-4">

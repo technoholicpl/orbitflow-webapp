@@ -16,12 +16,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // Projects
-    Route::apiResource('projects', ProjectController::class);
+    // Projects & Tasks
+    Route::name('api.')->group(function () {
+        Route::apiResource('projects', ProjectController::class);
+        Route::apiResource('tasks', TaskController::class)->only(['store', 'update']);
+    });
     
-    // Tasks
     Route::get('/projects/{project}/tasks', [TaskController::class, 'index']);
-    Route::apiResource('tasks', TaskController::class)->only(['store', 'update']);
 
     // Time Tracking
     Route::prefix('time-entries')->group(function () {

@@ -44,11 +44,6 @@ const ProjectCreateDrawer = ({ isOpen, onClose, project }: ProjectCreateDrawerPr
                 onSuccess: () => {
                     setIsSubmitting(false)
                     onClose()
-                    toast.push(
-                        <Notification title="Sukces" type="success">
-                            Projekt został pomyślnie utworzony.
-                        </Notification>
-                    )
                 },
                 onError: () => setIsSubmitting(false)
             })

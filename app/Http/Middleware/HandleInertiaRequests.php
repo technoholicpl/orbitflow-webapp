@@ -37,6 +37,10 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
+            'flash' => [
+                'success' => $request->session()->get('success') ?? $request->session()->get('message') ?? $request->session()->get('status'),
+                'error' => $request->session()->get('error'),
+            ],
             'name' => config('app.name'),
             'auth' => [
                 'user' => ($request->user() && $request->user() instanceof \App\Models\User) 
@@ -45,6 +49,21 @@ class HandleInertiaRequests extends Middleware
             ],
             'cp_prefix' => config('cp.prefix', 'admin'),
             'isAdmin' => $request->isAdmin(),
+            'current_workspace' => ($request->user() && $request->user()->currentWorkspace)
+                ? (function() use ($request) {
+                    $ws = $request->user()->currentWorkspace->load('plan');
+                    return [
+                        'id' => $ws->id,
+                        'name' => $ws->name,
+                        'plan' => $ws->plan,
+                        'subscription_status' => $ws->subscription_status,
+                        'subscription_ends_at' => $ws->subscription_ends_at ? $ws->subscription_ends_at->toISOString() : null,
+                        'trial_ends_at' => $ws->trial_ends_at ? $ws->trial_ends_at->toISOString() : null,
+                        'isOnTrial' => $ws->isOnTrial(),
+                        'trialDaysRemaining' => $ws->getTrialDaysRemaining(),
+                    ];
+                })()
+                : null,
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'workspace_clients' => ($request->user() && $request->user()->current_workspace_id)
                 ? \App\Models\Client::where('workspace_id', $request->user()->current_workspace_id)

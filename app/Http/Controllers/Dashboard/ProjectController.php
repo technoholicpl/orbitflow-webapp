@@ -26,7 +26,9 @@ class ProjectController extends Controller
 
     public function kanban(Request $request)
     {
-        $projects = Project::where('workspace_id', $request->user()->current_workspace_id)
+        $workspace = $request->user()->currentWorkspace;
+
+        $projects = Project::where('workspace_id', $workspace->id)
             ->get()
             ->groupBy('status');
 
@@ -53,7 +55,34 @@ class ProjectController extends Controller
             'member_ids.*' => 'exists:users,id',
         ]);
 
-        $project = $request->user()->currentWorkspace->projects()->create($validated);
+        $workspace = $request->user()->currentWorkspace;
+        
+        if (!$workspace->canCreateProject()) {
+            if (!$workspace->isWithinLimit('max-projects', 'projects')) {
+                $errorMessage = 'Osiągnięto całkowity limit projektów dla Twojego planu. Uaktualnij plan, aby dodać więcej.';
+            } else {
+                // Find which period limit was hit
+                $periodFeature = $workspace->plan->features()
+                    ->where('slug', 'like', 'max-projects%')
+                    ->whereNotNull('period')
+                    ->first();
+                
+                if ($periodFeature) {
+                    $periodLabel = match($periodFeature->pivot->period) {
+                        'daily' => 'dzienny',
+                        'weekly' => 'tygodniowy',
+                        'monthly' => 'miesięczny',
+                        default => 'okresowy'
+                    };
+                    $errorMessage = "Przekroczono {$periodLabel} limit tworzenia projektów. Spróbuj ponownie później lub uaktualnij plan.";
+                } else {
+                    $errorMessage = 'Osiągnięto limit tworzenia projektów dla Twojego planu.';
+                }
+            }
+            return back()->with('error', $errorMessage);
+        }
+
+        $project = $workspace->projects()->create($validated);
 
         // Handle existing labels
         if ($request->filled('label_ids')) {
@@ -78,7 +107,7 @@ class ProjectController extends Controller
             $project->members()->sync($request->member_ids);
         }
 
-        return redirect()->route('projects.index')->with('message', 'Project created successfully');
+        return back()->with('success', 'Projekt został utworzony pomyślnie.');
     }
 
     public function show(Project $project)

@@ -1,0 +1,514 @@
+import React, { useState } from 'react'
+import { Head, useForm, router } from '@inertiajs/react'
+import AdminLayout from '@/layouts/adminlayout'
+import { store, update, destroy } from '@/routes/admin/plans'
+import { update as updateFeatures } from '@/routes/admin/plans/features'
+import { 
+    Button, 
+    Input, 
+    Select, 
+    Table, 
+    Notification, 
+    toast, 
+    Card, 
+    Badge, 
+    Dialog,
+    Switcher,
+    Checkbox
+} from '@/components/ui'
+import { 
+    HiOutlineTrash, 
+    HiOutlinePencil, 
+    HiOutlinePlus, 
+    HiOutlineAdjustments,
+    HiOutlineCheckCircle,
+    HiOutlineClock
+} from 'react-icons/hi'
+
+interface Feature {
+    id: number
+    name: string
+    slug: string
+    type: 'boolean' | 'limit'
+}
+
+interface PlanPrice {
+    id?: number
+    type: 'month' | 'year'
+    price: number
+    sale_price?: number
+    lowest_price_30d?: number
+    is_active: boolean
+}
+
+interface Plan {
+    id: number
+    name: string
+    slug: string
+    description: string
+    is_recommended: boolean
+    is_free: boolean
+    is_active: boolean
+    is_coming_soon: boolean
+    display_order: number
+    trial_days: number
+    prices: PlanPrice[]
+    features: (Feature & { pivot: { value: string, period?: string } })[]
+}
+
+interface Props {
+    plans: Plan[]
+    features: Feature[]
+}
+
+export default function PlansIndex({ plans, features }: Props) {
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+    const [isFeaturesModalOpen, setIsFeaturesModalOpen] = useState(false)
+    const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null)
+
+    const { data, setData, post, patch, processing, reset, errors } = useForm({
+        name: '',
+        description: '',
+        is_recommended: false,
+        is_free: false,
+        is_active: true,
+        is_coming_soon: false,
+        display_order: 0,
+        trial_days: 0,
+        prices: [
+            { type: 'month', price: 0, sale_price: 0, lowest_price_30d: 0, is_active: true },
+            { type: 'year', price: 0, sale_price: 0, lowest_price_30d: 0, is_active: true }
+        ] as PlanPrice[]
+    })
+
+    const { data: featureData, setData: setFeatureData, post: postFeatures, processing: featureProcessing } = useForm({
+        features: [] as { id: number, value: string, period: string | null }[]
+    })
+
+    const handleCreate = () => {
+        setSelectedPlan(null)
+        reset()
+        setIsEditModalOpen(true)
+    }
+
+    const handleEdit = (plan: Plan) => {
+        setSelectedPlan(plan)
+        setData({
+            name: plan.name,
+            description: plan.description || '',
+            is_recommended: !!plan.is_recommended,
+            is_free: !!plan.is_free,
+            is_active: !!plan.is_active,
+            is_coming_soon: !!plan.is_coming_soon,
+            display_order: plan.display_order ?? 0,
+            trial_days: plan.trial_days ?? 0,
+            prices: plan.prices.length > 0 ? plan.prices.map(p => ({
+                ...p,
+                price: p.price ?? 0,
+                sale_price: p.sale_price ?? 0,
+                lowest_price_30d: p.lowest_price_30d ?? 0,
+                is_active: !!p.is_active
+            })) : [
+                { type: 'month', price: 0, sale_price: 0, lowest_price_30d: 0, is_active: true },
+                { type: 'year', price: 0, sale_price: 0, lowest_price_30d: 0, is_active: true }
+            ]
+        })
+        setIsEditModalOpen(true)
+    }
+
+    const handleManageFeatures = (plan: Plan) => {
+        setSelectedPlan(plan)
+        const currentFeatures = features.map(f => {
+            const planFeature = plan.features.find(pf => pf.id === f.id)
+            return {
+                id: f.id,
+                value: planFeature ? planFeature.pivot.value : (f.type === 'boolean' ? 'false' : '0'),
+                period: planFeature ? (planFeature.pivot.period || null) : null
+            }
+        })
+        setFeatureData('features', currentFeatures)
+        setIsFeaturesModalOpen(true)
+    }
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault()
+        if (selectedPlan) {
+            patch(update(selectedPlan.id).url, {
+                onSuccess: () => {
+                    setIsEditModalOpen(false)
+                    toast.push(<Notification title="Success" type="success">Plan updated successfully</Notification>)
+                }
+            })
+        } else {
+            post(store().url, {
+                onSuccess: () => {
+                    setIsEditModalOpen(false)
+                    toast.push(<Notification title="Success" type="success">Plan created successfully</Notification>)
+                }
+            })
+        }
+    }
+
+    const handleFeatureSubmit = (e: React.FormEvent) => {
+        e.preventDefault()
+        if (selectedPlan) {
+            postFeatures(updateFeatures(selectedPlan.id).url, {
+                onSuccess: () => {
+                    setIsFeaturesModalOpen(false)
+                    toast.push(<Notification title="Success" type="success">Features updated successfully</Notification>)
+                }
+            })
+        }
+    }
+
+    const handleDelete = (id: number) => {
+        if (confirm('Are you sure? All subscriptions for this plan will be affected!')) {
+            router.delete(destroy(id).url, {
+                onSuccess: () => toast.push(<Notification title="Deleted" type="success">Plan deleted successfully</Notification>)
+            })
+        }
+    }
+
+    return (
+        <AdminLayout>
+            <Head title="Subscription Plans" />
+            <div className="flex flex-col gap-8">
+                <header className="flex justify-between items-end">
+                    <div className="flex flex-col gap-1">
+                        <h1 className="text-2xl font-bold">Subscription Plans</h1>
+                        <p className="text-gray-500 text-sm">Design your offering, set prices and manage feature availability.</p>
+                    </div>
+                    <Button variant="solid" icon={<HiOutlinePlus />} onClick={handleCreate}>
+                        Add Plan
+                    </Button>
+                </header>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {plans.map(plan => (
+                        <Card key={plan.id} className="relative overflow-hidden flex flex-col h-full border-2 border-transparent hover:border-indigo-100 transition-all">
+                            {!!plan.is_recommended && (
+                                <div className="absolute top-0 right-0">
+                                    <div className="bg-indigo-600 text-white text-[10px] font-black uppercase tracking-tighter px-4 py-1 rounded-bl-xl shadow-lg">
+                                        Recommended
+                                    </div>
+                                </div>
+                            )}
+                            
+                            <div className="flex flex-col gap-4 grow">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h3 className="text-xl font-black text-gray-900 dark:text-gray-100">{plan.name}</h3>
+                                        <div className="flex gap-2 mt-1">
+                                            {(!plan.is_active) && <Badge content="Inactive" innerClass="bg-red-500" />}
+                                            {!!plan.is_coming_soon && <Badge content="Coming Soon" innerClass="bg-amber-500" />}
+                                            {!!plan.is_free && <Badge content="Free" innerClass="bg-emerald-500" />}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <p className="text-sm text-gray-500 line-clamp-2 min-h-[40px]">{plan.description || 'No description provided.'}</p>
+                                
+                                <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 flex flex-col gap-2">
+                                    {plan.prices.map(price => (
+                                        <div key={price.type} className="flex justify-between items-center">
+                                            <span className="text-xs font-bold text-gray-400 uppercase">{price.type}ly</span>
+                                            <div className="flex flex-col items-end">
+                                                <span className="font-bold text-gray-900 dark:text-gray-100">
+                                                    {!!price.sale_price ? (
+                                                        <>
+                                                            <span className="line-through text-gray-400 mr-2 opacity-50 font-normal">${price.price}</span>
+                                                            <span className="text-indigo-600">${price.sale_price}</span>
+                                                        </>
+                                                    ) : (
+                                                        <>${!!plan.is_free ? '0.00' : price.price}</>
+                                                    )}
+                                                </span>
+                                                {!!price.sale_price && !!price.lowest_price_30d && (
+                                                    <span className="text-[10px] text-gray-400">Low30d: ${price.lowest_price_30d}</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="flex flex-col gap-2">
+                                    <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Included Features</h4>
+                                    <div className="flex flex-wrap gap-1">
+                                        {plan.features.slice(0, 5).map(f => (
+                                            <Badge key={f.id} innerClass="bg-gray-100 text-gray-700" content={`${f.name}: ${f.pivot.value}`} />
+                                        ))}
+                                        {plan.features.length > 5 && (
+                                            <span className="text-[10px] text-gray-400 self-center">+{plan.features.length - 5} more</span>
+                                        )}
+                                        {plan.features.length === 0 && (
+                                            <span className="text-[10px] text-gray-400 italic">No specific features assigned.</span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-2 mt-8 pt-4 border-t">
+                                <Button size="sm" className="grow" icon={<HiOutlinePencil />} onClick={() => handleEdit(plan)}>Edit</Button>
+                                <Button size="sm" icon={<HiOutlineAdjustments />} variant="default" onClick={() => handleManageFeatures(plan)} />
+                                <Button size="sm" color="red" variant="default" icon={<HiOutlineTrash />} onClick={() => handleDelete(plan.id)} />
+                            </div>
+                        </Card>
+                    ))}
+                    {plans.length === 0 && (
+                        <div className="col-span-full py-20 bg-white dark:bg-gray-900 border-2 border-dashed rounded-3xl flex flex-col items-center justify-center text-gray-400 gap-4">
+                            <HiOutlinePlus className="text-4xl opacity-20" />
+                            <p className="font-medium tracking-wide">No subscription plans found. Start by adding one!</p>
+                            <Button size="sm" onClick={handleCreate}>Create First Plan</Button>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Plan Edit Modal */}
+            <Dialog 
+                isOpen={isEditModalOpen} 
+                onClose={() => setIsEditModalOpen(false)}
+                width={800}
+            >
+                <div className="flex flex-col gap-1 mb-6">
+                    <h3 className="text-xl font-bold">{selectedPlan ? `Edit Plan: ${selectedPlan.name}` : 'Create New Plan'}</h3>
+                </div>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-6 mt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-1">
+                                <label className="text-xs font-bold uppercase text-gray-500">Plan Name</label>
+                                <Input value={data.name} onChange={e => setData('name', e.target.value)} placeholder="e.g. Professional" />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-xs font-bold uppercase text-gray-500">Description</label>
+                                <Input textArea value={data.description} onChange={e => setData('description', e.target.value)} placeholder="What's special about this plan?" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 items-end">
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Display Order</label>
+                                    <Input type="number" value={data.display_order} onChange={e => setData('display_order', parseInt(e.target.value))} />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-xs font-bold uppercase text-gray-500">Trial Days</label>
+                                    <Input type="number" value={data.trial_days} onChange={e => setData('trial_days', parseInt(e.target.value))} placeholder="0 = No Trial" />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex items-center gap-2">
+                                        <Switcher checked={data.is_recommended} onChange={val => setData('is_recommended', val)} />
+                                        <span className="text-xs font-bold">Recommended Plan</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Switcher checked={data.is_coming_soon} onChange={val => setData('is_coming_soon', val)} />
+                                        <span className="text-xs font-bold">Coming Soon</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <div className="flex items-center gap-2">
+                                    <Checkbox checked={data.is_free} onChange={val => setData('is_free', val)}>Is Free Plan</Checkbox>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Checkbox checked={data.is_active} onChange={val => setData('is_active', val)}>Is Active (Visible)</Checkbox>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-4 bg-gray-50 dark:bg-gray-800/50 p-6 rounded-2xl border border-gray-100 dark:border-gray-800">
+                            <h4 className="font-bold flex items-center gap-2">
+                                <span className="p-2 bg-indigo-100 text-indigo-600 rounded-lg text-lg"><HiOutlinePlus /></span>
+                                Pricing Configuration
+                            </h4>
+                            
+                            {data.prices.map((price, index) => (
+                                <div key={price.type} className="flex flex-col gap-3 p-4 bg-white dark:bg-gray-900 rounded-xl border">
+                                    <div className="flex justify-between items-center">
+                                        <span className="font-black text-xs uppercase tracking-widest text-indigo-600">{price.type}ly Price</span>
+                                        <Switcher 
+                                            checked={price.is_active} 
+                                            onChange={val => {
+                                                const newPrices = [...data.prices]
+                                                newPrices[index].is_active = val
+                                                setData('prices', newPrices)
+                                            }} 
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Regular Price</span>
+                                            <Input 
+                                                disabled={data.is_free}
+                                                prefix="$" 
+                                                type="number" 
+                                                value={price.price ?? 0} 
+                                                onChange={e => {
+                                                    const newPrices = [...data.prices]
+                                                    newPrices[index].price = parseFloat(e.target.value) || 0
+                                                    setData('prices', newPrices)
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Sale Price</span>
+                                            <Input 
+                                                disabled={data.is_free}
+                                                prefix="$" 
+                                                type="number" 
+                                                value={price.sale_price ?? 0} 
+                                                onChange={e => {
+                                                    const newPrices = [...data.prices]
+                                                    newPrices[index].sale_price = parseFloat(e.target.value) || 0
+                                                    setData('prices', newPrices)
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        <span className="text-[10px] font-bold text-rose-400 uppercase">Lowest Price (Last 30 days) - Omnibus</span>
+                                        <Input 
+                                            disabled={data.is_free}
+                                            prefix="$" 
+                                            type="number" 
+                                            value={price.lowest_price_30d ?? 0} 
+                                            onChange={e => {
+                                                const newPrices = [...data.prices]
+                                                newPrices[index].lowest_price_30d = parseFloat(e.target.value) || 0
+                                                setData('prices', newPrices)
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    <div className="flex justify-end gap-2 mt-4">
+                        <Button type="button" variant="plain" onClick={() => setIsEditModalOpen(false)}>Cancel</Button>
+                        <Button type="submit" variant="solid" loading={processing}>
+                            {selectedPlan ? 'Save Changes' : 'Create Plan'}
+                        </Button>
+                    </div>
+                </form>
+            </Dialog>
+
+            {/* Features Sync Modal */}
+            <Dialog
+                isOpen={isFeaturesModalOpen}
+                onClose={() => setIsFeaturesModalOpen(false)}
+                width={600}
+            >
+                <div className="flex flex-col gap-1 mb-6">
+                    <h3 className="text-xl font-bold">{`Manage Plan Features: ${selectedPlan?.name}`}</h3>
+                </div>
+                <form onSubmit={handleFeatureSubmit} className="flex flex-col gap-6 mt-4">
+                    <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto px-1">
+                        {features.map((f, index) => {
+                            const featureIdx = featureData.features.findIndex(fd => fd.id === f.id)
+                            const currentVal = featureIdx !== -1 ? featureData.features[featureIdx].value : (f.type === 'boolean' ? 'false' : '0')
+
+                            return (
+                                <div key={f.id} className="p-4 border rounded-xl flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                    <div className="flex flex-col">
+                                        <span className="font-bold">{f.name}</span>
+                                        <span className="text-[10px] font-black uppercase text-gray-400 opacity-50">{f.slug}</span>
+                                    </div>
+
+                                    <div className="w-1/2 flex items-center gap-3">
+                                        {f.type === 'boolean' ? (
+                                            <Switcher 
+                                                checked={currentVal === 'true'} 
+                                                onChange={val => {
+                                                    const newFeats = [...featureData.features]
+                                                    if (featureIdx !== -1) {
+                                                        newFeats[featureIdx].value = val ? 'true' : 'false'
+                                                    } else {
+                                                        newFeats.push({ id: f.id, value: val ? 'true' : 'false', period: null })
+                                                    }
+                                                    setFeatureData('features', newFeats)
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="flex items-center gap-4 w-full">
+                                                <Input 
+                                                    size="sm"
+                                                    type="number"
+                                                    disabled={currentVal === 'unlimited'}
+                                                    value={currentVal === 'unlimited' ? '' : currentVal}
+                                                    placeholder="Limit"
+                                                    onChange={e => {
+                                                        const newFeats = [...featureData.features]
+                                                        if (featureIdx !== -1) {
+                                                            newFeats[featureIdx].value = e.target.value
+                                                        } else {
+                                                            newFeats.push({ id: f.id, value: e.target.value, period: null })
+                                                        }
+                                                        setFeatureData('features', newFeats)
+                                                    }}
+                                                />
+                                                <div className="flex items-center gap-2 whitespace-nowrap">
+                                                    <Checkbox 
+                                                        checked={currentVal === 'unlimited'}
+                                                        onChange={val => {
+                                                            const newFeats = [...featureData.features]
+                                                            const newVal = val ? 'unlimited' : '0'
+                                                            if (featureIdx !== -1) {
+                                                                newFeats[featureIdx].value = newVal
+                                                            } else {
+                                                                newFeats.push({ id: f.id, value: newVal, period: null })
+                                                            }
+                                                            setFeatureData('features', newFeats)
+                                                        }}
+                                                    >
+                                                        <span className="text-[10px] font-black uppercase tracking-widest">Unlimited</span>
+                                                    </Checkbox>
+                                                </div>
+                                                <div className="w-1/3 min-w-[100px]">
+                                                    {(() => {
+                                                        const periodOptions = [
+                                                            { label: 'Total (None)', value: '' },
+                                                            { label: 'Daily', value: 'daily' },
+                                                            { label: 'Weekly', value: 'weekly' },
+                                                            { label: 'Monthly', value: 'monthly' },
+                                                        ]
+                                                        const currentPeriod = featureIdx !== -1 ? featureData.features[featureIdx].period || '' : ''
+
+                                                        return (
+                                                            <Select
+                                                                size="sm"
+                                                                placeholder="Period"
+                                                                value={periodOptions.find(opt => opt.value === currentPeriod)}
+                                                                options={periodOptions}
+                                                                onChange={val => {
+                                                                    const newFeats = [...featureData.features]
+                                                                    const periodVal = (val as any)?.value || null
+                                                                    if (featureIdx !== -1) {
+                                                                        newFeats[featureIdx].period = periodVal
+                                                                    } else {
+                                                                        newFeats.push({ id: f.id, value: currentVal, period: periodVal })
+                                                                    }
+                                                                    setFeatureData('features', newFeats)
+                                                                }}
+                                                            />
+                                                        )
+                                                    })()}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )
+                        })}
+                        {features.length === 0 && (
+                            <div className="text-center py-10 opacity-50 italic">No features defined. Create features first!</div>
+                        )}
+                    </div>
+
+                    <div className="flex justify-end gap-2 mt-4">
+                        <Button type="button" variant="plain" onClick={() => setIsFeaturesModalOpen(false)}>Cancel</Button>
+                        <Button type="submit" variant="solid" loading={featureProcessing}>Save Feature Set</Button>
+                    </div>
+                </form>
+            </Dialog>
+        </AdminLayout>
+    )
+}

@@ -27,6 +27,11 @@ const sidebarNavItems = [
         href: workspace.actionTypes.index().url,
         icon: null,
     },
+    {
+        title: 'Subscription',
+        href: workspace.subscription.index().url,
+        icon: null,
+    },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
