@@ -1,6 +1,12 @@
 import React, { useState } from 'react'
 import { Head, useForm, router } from '@inertiajs/react'
 import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/pl'
+
+dayjs.extend(relativeTime)
+dayjs.locale('pl')
+
 import AdminLayout from '@/layouts/adminlayout'
 import { store, update, destroy } from '@/routes/admin/plans'
 import { update as updateFeatures } from '@/routes/admin/plans/features'
@@ -19,6 +25,7 @@ import {
     Checkbox
 } from '@/components/ui'
 import DatePicker from '@/components/ui/DatePicker'
+import cn from '@/components/ui/utils/classNames'
 import { 
     HiOutlineTrash, 
     HiOutlinePencil, 
@@ -311,7 +318,8 @@ export default function PlansIndex({ plans, features }: Props) {
                 </div>
             }
             >
-                <form id="plans-form" onSubmit={handleSubmit} className="flex flex-col gap-6 mt-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
+                    <form id="plans-form" onSubmit={handleSubmit} className="flex flex-col gap-6">
                     <div className="grid grid-cols-1 gap-6">
                         <div className="flex flex-col gap-4">
                             <div className="flex flex-col gap-1">
@@ -440,7 +448,7 @@ export default function PlansIndex({ plans, features }: Props) {
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div className="flex flex-col gap-1">
                                                     <span className="text-[10px] font-bold text-gray-400 uppercase">Sale Starts</span>
-                                                    <DateTimepicker size="sm" amPm={false}
+                                                    <DatePicker.DateTimepicker size="sm" amPm={false}
                                                         disabled={data.is_free}
                                                         placeholder="Select date & time"
                                                         value={price.sale_start_at ? dayjs(price.sale_start_at).toDate() : null}
@@ -465,7 +473,7 @@ export default function PlansIndex({ plans, features }: Props) {
                                                 </div>
                                                 <div className="flex flex-col gap-1">
                                                     <span className="text-[10px] font-bold text-gray-400 uppercase">Sale Ends</span>
-                                                    <DateTimepicker size="sm"
+                                                    <DatePicker.DateTimepicker size="sm" amPm={false}
                                                         disabled={data.is_free}
                                                         placeholder="Select date & time"
                                                         value={price.sale_ends_at ? dayjs(price.sale_ends_at).toDate() : null}
@@ -503,9 +511,110 @@ export default function PlansIndex({ plans, features }: Props) {
                                     )}
                                 </div>
                             ))}
+                            </div>
+                        </div>
+                    </form>
+
+                    {/* Live Preview Section */}
+                    <div className="flex flex-col gap-4 sticky top-0 h-fit">
+                        <h4 className="text-xs font-bold uppercase text-gray-400 tracking-widest flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            Live Preview
+                        </h4>
+                        
+                        <div className="bg-gray-100 dark:bg-gray-900 rounded-3xl p-6 border-2 border-dashed border-gray-200 dark:border-gray-800 flex items-center justify-center min-h-[500px]">
+                            <Card className={cn(
+                                "relative overflow-hidden flex flex-col h-full w-full max-w-[350px] border-2 transition-all shadow-xl bg-white dark:bg-gray-900",
+                                data.is_recommended ? "border-indigo-500 ring-4 ring-indigo-50 dark:ring-indigo-900/20" : "border-gray-100 dark:border-gray-800"
+                            )}>
+                                {!!data.is_recommended && (
+                                    <div className="absolute top-0 right-0">
+                                        <div className="bg-indigo-600 text-white text-[10px] font-black uppercase tracking-tighter px-4 py-1 rounded-bl-xl shadow-lg">
+                                            Recommended
+                                        </div>
+                                    </div>
+                                )}
+
+                                {!!data.is_promoted && (
+                                    <div className="absolute top-0 left-0">
+                                        <div className="bg-rose-600 text-white text-[10px] font-black uppercase tracking-tighter px-4 py-1 rounded-br-xl shadow-lg flex items-center gap-1">
+                                            <HiOutlineClock /> Promo
+                                        </div>
+                                    </div>
+                                )}
+
+                                {data.trial_days > 0 && (
+                                    <span className="absolute top-10 right-4 bg-indigo-100 text-indigo-700 text-[10px] font-black px-2 py-0.5 rounded-lg uppercase tracking-widest animate-pulse border border-indigo-200">
+                                        {data.trial_days} dni testów
+                                    </span>
+                                )}
+                                
+                                <div className="flex flex-col gap-4 grow">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h3 className="text-xl font-black text-gray-900 dark:text-gray-100">{data.name || 'Plan Name'}</h3>
+                                            <div className="flex gap-2 mt-1">
+                                                {(!data.is_active) && <Badge content="Inactive" innerClass="bg-red-500" />}
+                                                {!!data.is_coming_soon && <Badge content="Coming Soon" innerClass="bg-amber-500" />}
+                                                {!!data.is_free && <Badge content="Free" innerClass="bg-emerald-500" />}
+                                                {data.prices.some(p => p.sale_price !== null && p.sale_price !== undefined) && (
+                                                    <Badge 
+                                                        content="Sale Active" 
+                                                        innerClass="bg-rose-500 animate-pulse" 
+                                                    />
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <p className="text-sm text-gray-500 line-clamp-3 min-h-[60px]">{data.description || 'Provide a description to see how it looks here.'}</p>
+                                    
+                                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 flex flex-col gap-2">
+                                        {data.prices.filter(p => p.is_active).map(price => (
+                                            <div key={price.type} className="flex justify-between items-center">
+                                                <span className="text-xs font-bold text-gray-400 uppercase">{price.type}ly</span>
+                                                <div className="flex flex-col items-end">
+                                                    <div className="flex items-center gap-2">
+                                                        {price.sale_price !== null && price.sale_price !== undefined ? (
+                                                            <>
+                                                                <span className="line-through text-gray-400 opacity-50 text-xs font-normal">${price.price}</span>
+                                                                <span className="text-indigo-600 font-bold">${price.sale_price}</span>
+                                                            </>
+                                                        ) : (
+                                                            <span className="font-bold text-gray-900 dark:text-gray-100">${data.is_free ? '0.00' : price.price}</span>
+                                                        )}
+                                                    </div>
+                                                    {price.sale_price !== null && price.sale_price !== undefined && (
+                                                        <div className="flex flex-col items-end gap-1">
+                                                            <span className="text-[9px] text-gray-400 mt-0.5">
+                                                                Lowest last 30d: <span className="font-bold">${price.calculated_lowest_price || price.lowest_price_30d || price.price}</span>
+                                                            </span>
+                                                            {price.sale_ends_at && dayjs(price.sale_ends_at).isAfter(dayjs()) && (
+                                                                <div className="text-[9px] font-bold text-rose-500 flex items-center gap-1 animate-pulse">
+                                                                    <HiOutlineClock className="w-2.5 h-2.5" /> Ends {dayjs(price.sale_ends_at).fromNow()}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="flex flex-col gap-2">
+                                        <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Selected Features</h4>
+                                        <div className="flex flex-wrap gap-1">
+                                            {selectedPlan?.features.slice(0, 3).map(f => (
+                                                <Badge key={f.id} innerClass="bg-gray-100 text-gray-700" content={`${f.name}`} />
+                                            ))}
+                                            <span className="text-[10px] text-gray-400 italic">Preview only (Plan basic info)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
                         </div>
                     </div>
-                </form>
+                </div>
             </Drawer>
 
             {/* Features Sync Modal */}

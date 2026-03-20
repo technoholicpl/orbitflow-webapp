@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('app:auto-stop-timers')->hourly();
 Schedule::command('app:cleanup-unverified-users')->daily();
+Schedule::command('app:cleanup-expired-promotions')->daily();

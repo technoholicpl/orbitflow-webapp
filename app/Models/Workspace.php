@@ -21,6 +21,7 @@ class Workspace extends Model
         'billing_cycle',
         'custom_limits',
         'coupon_code',
+        'onboarding_step',
     ];
 
     protected $casts = [
@@ -135,6 +136,13 @@ class Workspace extends Model
     {
         // This is a helper, but we should make it generic too if needed.
         return 0; // Placeholder
+    }
+
+    public function checkLimit(string $featureSlug, int $value): bool
+    {
+        $limit = $this->getFeatureLimit($featureSlug);
+        if ($limit === 'unlimited') return true;
+        return $value <= (int) $limit;
     }
 
     public function getFeatureLimit(string $featureSlug): int|string

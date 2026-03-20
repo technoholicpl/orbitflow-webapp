@@ -20,7 +20,7 @@ class OnboardingController extends Controller
         
         $step = 1;
         if ($workspace) {
-            $step = $workspace->plan_id ? 3 : 2;
+            $step = $workspace->onboarding_step;
         }
 
         $plans = \App\Models\Plan::where('is_active', true)
@@ -40,6 +40,7 @@ class OnboardingController extends Controller
         $request->validate([
             'plan_id' => 'required|exists:plans,id',
             'billing_cycle' => 'required|string|in:month,year',
+            'coupon_code' => 'nullable|string|exists:coupons,code',
         ]);
 
         $user = $request->user();
@@ -54,11 +55,25 @@ class OnboardingController extends Controller
         $workspace->update([
             'plan_id' => $plan->id,
             'billing_cycle' => $request->billing_cycle,
+            'coupon_code' => $request->coupon_code,
             'subscription_status' => $plan->is_free ? 'active' : ($plan->trial_days > 0 ? 'trialing' : 'active'),
             'trial_ends_at' => (!$plan->is_free && $plan->trial_days > 0) ? now()->addDays($plan->trial_days) : null,
+            'onboarding_step' => 3,
         ]);
 
         return redirect()->back()->with('success', 'Plan ' . $plan->name . ' selected successfully!');
+    }
+
+    public function back(Request $request)
+    {
+        $user = $request->user();
+        $workspace = $user->currentWorkspace;
+        if ($workspace && $workspace->onboarding_step > 1) {
+            $workspace->update([
+                'onboarding_step' => $workspace->onboarding_step - 1
+            ]);
+        }
+        return redirect()->back();
     }
 
     public function store(Request $request)
@@ -84,7 +99,7 @@ class OnboardingController extends Controller
                 'slug' => \Illuminate\Support\Str::slug($request->name) . '-' . \Illuminate\Support\Str::random(5),
                 'owner_id' => $user->id,
                 'identifier' => \Illuminate\Support\Str::random(10),
-                'plan_id' => \App\Models\Plan::where('is_free', true)->first()?->id,
+                'onboarding_step' => 2,
                 'subscription_status' => 'active',
             ]);
 

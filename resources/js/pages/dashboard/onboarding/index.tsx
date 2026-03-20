@@ -1,9 +1,16 @@
 import { useForm, Head, router } from '@inertiajs/react';
-import { plan as planRoute, finish as finishRoute } from '@/routes/onboarding';
-import { Button, Input, FormItem, Notification, toast, Select } from '@/components/ui';
+import { plan as planRoute, finish as finishRoute, back as backRoute } from '@/routes/onboarding';
+import { Button, Input, FormItem, Notification, toast, Select, Badge } from '@/components/ui';
 import { useState, useEffect } from 'react';
-import { Plus, X, Rocket, Users, Check, Sparkles, Building2, BarChart3, Search } from 'lucide-react';
+import axios from 'axios';
+import { ArrowLeft, Plus, X, Rocket, Users, Check, Sparkles, Building2, BarChart3, Search, Clock } from 'lucide-react';
 import cn from '@/components/ui/utils/classNames';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/pl';
+
+dayjs.extend(relativeTime);
+dayjs.locale('pl');
 
 interface Feature {
     id: number
@@ -17,6 +24,8 @@ interface PlanPrice {
     type: 'month' | 'year'
     price: string
     sale_price?: string
+    sale_start_at?: string
+    sale_ends_at?: string
     lowest_price_30d?: string
     calculated_lowest_price?: string
     is_on_sale?: boolean
@@ -44,6 +53,11 @@ type Props = {
 export default function Onboarding({ initialStep, plans }: Props) {
     const [step, setStep] = useState(initialStep);
     const [billingCycle, setBillingCycle] = useState<'month' | 'year'>('month');
+    const [couponCode, setCouponCode] = useState('');
+    const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; type: 'fixed' | 'percentage'; value: string } | null>(null);
+    const [couponError, setCouponError] = useState('');
+    const [validatingCoupon, setValidatingCoupon] = useState(false);
+    const [selectedPlanId, setSelectedPlanId] = useState<number>(0);
     
     const { post, setData, data, processing, errors, reset } = useForm({
         name: '',
@@ -93,15 +107,55 @@ export default function Onboarding({ initialStep, plans }: Props) {
         });
     };
 
-    const submitPlan = (planId: number) => {
-        setData(d => ({ ...d, plan_id: planId, billing_cycle: billingCycle }));
+    const handleApplyCoupon = async () => {
+        if (!couponCode) return;
+        setValidatingCoupon(true);
+        setCouponError('');
+        try {
+            const response = await axios.post('/coupons/validate', { code: couponCode });
+            setAppliedCoupon(response.data);
+            toast.push(
+                <Notification title="Kupon zastosowany" type="success">
+                    Zniżka została naliczona!
+                </Notification>
+            );
+        } catch (err: any) {
+            setAppliedCoupon(null);
+            setCouponError(err.response?.data?.message || 'Nie udało się zweryfikować kuponu.');
+        } finally {
+            setValidatingCoupon(false);
+        }
+    };
+
+    const getPriceWithDiscount = (price: string) => {
+        if (!appliedCoupon) return price;
+        const p = parseFloat(price);
+        const v = parseFloat(appliedCoupon.value);
+        if (appliedCoupon.type === 'percentage') {
+            return (p * (1 - v / 100)).toFixed(2);
+        }
+        return Math.max(0, p - v).toFixed(2);
+    };
+
+    const goBack = () => {
+        router.post(backRoute().url, {}, {
+            onSuccess: () => {
+                setStep(s => s - 1);
+            }
+        });
+    };
+
+    const submitPlan = () => {
+        if (selectedPlanId === 0) return;
+        setData(d => ({ ...d, plan_id: selectedPlanId, billing_cycle: billingCycle }));
         
         router.post(
             // @ts-ignore
             planRoute().url, 
             {
-                plan_id: planId,
-                billing_cycle: billingCycle
+                plan_id: selectedPlanId,
+                billing_cycle: billingCycle,
+                coupon_code: appliedCoupon?.code
             },
             {
                 onSuccess: () => {
@@ -147,13 +201,6 @@ export default function Onboarding({ initialStep, plans }: Props) {
                 }
             }
         });
-    };
-
-    const getPriceForPlan = (plan: Plan) => {
-        if (plan.is_free) return '0 zł';
-        const price = plan.prices.find(p => p.type === billingCycle);
-        if (!price) return 'N/A';
-        return `${price.sale_price || price.price} zł`;
     };
 
     return (
@@ -253,10 +300,10 @@ export default function Onboarding({ initialStep, plans }: Props) {
                             <div className="grid gap-4">
                                 {plans.map((plan) => (
                                     <div key={plan.id} className={cn(
-                                        "relative group p-5 rounded-2xl border-2 transition-all hover:shadow-md",
-                                        plan.is_recommended ? "border-purple-600 bg-purple-50/50 dark:bg-purple-900/10" : "border-gray-100 dark:border-gray-800 hover:border-purple-200",
+                                        "relative group p-5 rounded-2xl border-2 transition-all hover:shadow-md cursor-pointer",
+                                        plan.id === selectedPlanId ? "border-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/10 shadow-indigo-100" : (plan.is_recommended ? "border-purple-600 bg-purple-50/50 dark:bg-purple-900/10" : "border-gray-100 dark:border-gray-800 hover:border-purple-200"),
                                         plan.is_coming_soon && "opacity-75 cursor-not-allowed"
-                                    )} onClick={() => !plan.is_coming_soon && submitPlan(plan.id)}>
+                                    )} onClick={() => !plan.is_coming_soon && setSelectedPlanId(plan.id)}>
                                         {!!plan.is_recommended && (
                                             <span className="absolute -top-3 right-4 bg-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Najczęściej wybierany</span>
                                         )}
@@ -288,30 +335,37 @@ export default function Onboarding({ initialStep, plans }: Props) {
                                                             if (plan.is_free) return <span className="text-2xl font-black text-gray-900 dark:text-gray-100">0 zł</span>;
                                                             if (!price) return <span className="text-2xl font-black text-gray-900 dark:text-gray-100">N/A</span>;
                                                             
+                                                            const basePrice = price.sale_price || price.price;
+                                                            const discountedPrice = getPriceWithDiscount(basePrice);
+
                                                             return (
                                                                 <>
                                                                     <div className="flex flex-col items-end">
                                                                         <div className="flex items-center justify-end gap-2 text-right">
-                                                                            {price.is_on_sale ? (
+                                                                            {price.is_on_sale || appliedCoupon ? (
                                                                                 <>
-                                                                                    <span className="text-sm line-through text-gray-400 opacity-60 font-normal">{price.price} zł</span>
-                                                                                    <span className="text-2xl font-black text-indigo-600">{price.sale_price} zł</span>
+                                                                                    <span className="text-sm line-through text-gray-400 opacity-60 font-normal">
+                                                                                        {appliedCoupon ? (price.sale_price || price.price) : price.price} zł
+                                                                                    </span>
+                                                                                    <span className="text-2xl font-black text-indigo-600">{discountedPrice} zł</span>
                                                                                 </>
                                                                             ) : (
                                                                                 <span className="text-2xl font-black text-gray-900 dark:text-gray-100">{price.price} zł</span>
                                                                             )}
                                                                         </div>
-                                                                        {price.is_on_sale && (
-                                                                            <div className="text-[10px] text-gray-400 mt-1 italic text-right">
-                                                                                Najniższa cena z 30 dni: <span className="font-bold">{price.calculated_lowest_price || price.lowest_price_30d || price.price} zł</span>
+                                                                        {price.is_on_sale && !appliedCoupon && (
+                                                                            <div className="flex flex-col items-end gap-1 mt-1">
+                                                                                <div className="text-[10px] text-gray-400 italic text-right">
+                                                                                    Najniższa cena z 30 dni: <span className="font-bold">{price.calculated_lowest_price || price.lowest_price_30d || price.price} zł</span>
+                                                                                </div>
+                                                                                {price.sale_ends_at && dayjs(price.sale_ends_at).isAfter(dayjs()) && (
+                                                                                    <div className="text-[10px] font-bold text-rose-500 flex items-center gap-1 justify-end animate-pulse">
+                                                                                        <Clock className="w-3 h-3" /> Koniec {dayjs(price.sale_ends_at).fromNow()}
+                                                                                    </div>
+                                                                                )}
                                                                             </div>
                                                                         )}
                                                                     </div>
-                                                                    {price.sale_price && (
-                                                                        <div className="text-[10px] text-gray-400 mt-1">
-                                                                            Najniższa cena z 30 dni: <span className="font-bold">{price.calculated_lowest_price || price.lowest_price_30d || price.price} zł</span>
-                                                                        </div>
-                                                                    )}
                                                                 </>
                                                             );
                                                         })()}
@@ -322,6 +376,51 @@ export default function Onboarding({ initialStep, plans }: Props) {
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+
+                            {plans.some(p => !p.is_free) && (
+                                <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800">
+                                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-4">
+                                        <Sparkles className="w-5 h-5 text-purple-500" />
+                                        <span className="text-sm font-semibold uppercase tracking-wider">Kod promocyjny</span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Input
+                                            value={couponCode}
+                                            onChange={(e) => setCouponCode(e.target.value)}
+                                            placeholder="Masz kod kuponu?"
+                                            className={cn("h-11 rounded-lg border-gray-200", couponError && "border-red-500")}
+                                            disabled={!!appliedCoupon}
+                                        />
+                                        {appliedCoupon ? (
+                                            <Button variant="default" className="h-11" onClick={() => { setAppliedCoupon(null); setCouponCode(''); }}>
+                                                Usuń
+                                            </Button>
+                                        ) : (
+                                            <Button variant="solid" className="h-11 px-6 bg-purple-600 hover:bg-purple-700 font-bold" onClick={handleApplyCoupon} loading={validatingCoupon}>
+                                                Zastosuj
+                                            </Button>
+                                        )}
+                                    </div>
+                                    {couponError && <p className="text-xs text-red-500 mt-2 font-medium">{couponError}</p>}
+                                    {appliedCoupon && (
+                                        <p className="text-xs text-green-600 mt-2 font-bold flex items-center gap-1">
+                                            <Check className="w-3 h-3" /> Kod {appliedCoupon.code} aktywny: {appliedCoupon.type === 'percentage' ? `-${appliedCoupon.value}%` : `-${appliedCoupon.value} zł`}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+
+                            <div className="pt-4">
+                                <Button 
+                                    variant="solid" 
+                                    onClick={submitPlan} 
+                                    disabled={selectedPlanId === 0} 
+                                    className="w-full h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-lg font-bold shadow-xl shadow-indigo-200"
+                                    loading={processing}
+                                >
+                                    Przejdź dalej <Rocket className="ml-2 w-5 h-5" />
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -419,12 +518,24 @@ export default function Onboarding({ initialStep, plans }: Props) {
                                 </div>
                             </div>
 
-                            <div className="pt-4">
-                                <Button variant="solid" onClick={finish} className="w-full h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-lg font-bold shadow-xl shadow-emerald-200">
-                                    Zakończ konfigurację
+                            <div className="flex gap-4 pt-4">
+                                <Button 
+                                    variant="default" 
+                                    onClick={goBack} 
+                                    className="flex-1 h-14 rounded-2xl text-lg font-bold"
+                                >
+                                    <ArrowLeft className="mr-2 w-5 h-5" /> Wróć
                                 </Button>
-                                <button onClick={finish} className="w-full mt-4 text-sm text-gray-400 hover:text-gray-600 transition-colors">Pomiń i przejdź do panelu</button>
+                                <Button 
+                                    variant="solid" 
+                                    onClick={finish} 
+                                    className="flex-1 h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-lg font-bold shadow-xl shadow-emerald-200"
+                                    loading={processing}
+                                >
+                                    Zakończ
+                                </Button>
                             </div>
+                            <button onClick={finish} className="w-full mt-4 text-sm text-gray-400 hover:text-gray-600 transition-all italic">Pomiń i przejdź do panelu</button>
                         </div>
                     </div>
                 )}

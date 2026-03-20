@@ -21,7 +21,7 @@ class HandlePendingInvitation
 
         // If we have a token and the user is logged in, try to accept it
         if ($token && $user) {
-            $invitationService = app(\App\Services\InvitationService::class);
+            $invitationService = app(InvitationService::class);
             $invitationService->acceptTokenForUser($user, $token);
             
             // Clear the token from the session so it doesn't run again

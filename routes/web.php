@@ -53,6 +53,8 @@ Route::middleware(['web'])->group(function () {
             ->name('onboarding.store');
         Route::post('/onboarding/plan', [\App\Http\Controllers\Dashboard\OnboardingController::class, 'selectPlan'])
             ->name('onboarding.plan');
+        Route::post('/onboarding/back', [\App\Http\Controllers\Dashboard\OnboardingController::class, 'back'])
+            ->name('onboarding.back');
         Route::post('/onboarding/finish', [\App\Http\Controllers\Dashboard\OnboardingController::class, 'finish'])
             ->name('onboarding.finish');
 

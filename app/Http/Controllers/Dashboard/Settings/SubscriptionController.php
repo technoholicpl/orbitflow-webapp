@@ -30,6 +30,7 @@ class SubscriptionController extends Controller
         $request->validate([
             'plan_id' => 'required|exists:plans,id',
             'billing_cycle' => 'required|string|in:month,year',
+            'coupon_code' => 'nullable|string|exists:coupons,code',
         ]);
 
         $workspace = $request->user()->currentWorkspace;
@@ -41,6 +42,8 @@ class SubscriptionController extends Controller
 
         $data = [
             'plan_id' => $plan->id,
+            'coupon_code' => $request->coupon_code,
+            'billing_cycle' => $request->billing_cycle,
             'subscription_status' => 'active',
             'trial_ends_at' => null,
         ];

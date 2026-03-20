@@ -2,10 +2,17 @@ import React, { useState } from 'react'
 import { Head, useForm, router } from '@inertiajs/react'
 import { update as updateRoute } from '@/routes/workspace/subscription'
 import SettingsLayout from '@/layouts/settings/layout'
-import { Button, Card, Badge, Notification, toast, Tag } from '@/components/ui'
-import { HiOutlineCheck, HiOutlineSparkles, HiOutlineCalendar } from 'react-icons/hi'
+import { Button, Card, Badge, Notification, toast, Tag, Input } from '@/components/ui'
+import { HiOutlineCheck, HiOutlineSparkles, HiOutlineCalendar, HiOutlineClock } from 'react-icons/hi'
 import cn from '@/components/ui/utils/classNames'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/pl'
+
+dayjs.extend(relativeTime)
+dayjs.locale('pl')
 import DashboardLayout from '@/layouts/DashboardLayout'
+import axios from 'axios'
 
 interface Feature {
     id: number
@@ -19,6 +26,8 @@ interface PlanPrice {
     type: 'month' | 'year'
     price: string
     sale_price?: string
+    sale_start_at?: string
+    sale_ends_at?: string
     lowest_price_30d?: string
     calculated_lowest_price?: string
     is_on_sale?: boolean
@@ -45,6 +54,7 @@ interface Workspace {
     subscription_status: string
     subscription_ends_at: string | null
     trial_ends_at: string | null
+    coupon_code: string | null
     isOnTrial?: boolean
     trialDaysRemaining?: number
     plan?: Plan
@@ -57,13 +67,49 @@ interface Props {
 
 export default function SubscriptionIndex({ workspace, plans }: Props) {
     const [billingCycle, setBillingCycle] = useState<'month' | 'year'>('month')
+    const [couponCode, setCouponCode] = useState(workspace.coupon_code || '')
+    const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; type: 'fixed' | 'percentage'; value: string } | null>(null)
+    const [couponError, setCouponError] = useState('')
+    const [validatingCoupon, setValidatingCoupon] = useState(false)
+
     const { setData, processing } = useForm({
         plan_id: null as number | null,
-        billing_cycle: 'month'
+        billing_cycle: 'month',
+        coupon_code: null as string | null
     })
 
+    const handleApplyCoupon = async () => {
+        if (!couponCode) return
+        setValidatingCoupon(true)
+        setCouponError('')
+        try {
+            const response = await axios.post('/coupons/validate', { code: couponCode })
+            setAppliedCoupon(response.data)
+            toast.push(
+                <Notification title="Kupon zastosowany" type="success">
+                    Zniżka została naliczona!
+                </Notification>
+            )
+        } catch (err: any) {
+            setAppliedCoupon(null)
+            setCouponError(err.response?.data?.message || 'Nie udało się zweryfikować kuponu.')
+        } finally {
+            setValidatingCoupon(false)
+        }
+    }
+
+    const getPriceWithDiscount = (price: string) => {
+        if (!appliedCoupon) return price
+        const p = parseFloat(price)
+        const v = parseFloat(appliedCoupon.value)
+        if (appliedCoupon.type === 'percentage') {
+            return (p * (1 - v / 100)).toFixed(2)
+        }
+        return Math.max(0, p - v).toFixed(2)
+    }
+
     const handleUpgrade = (planId: number) => {
-        setData(d => ({ ...d, plan_id: planId, billing_cycle: billingCycle }));
+        setData(d => ({ ...d, plan_id: planId, billing_cycle: billingCycle, coupon_code: appliedCoupon?.code || null }));
         
         router.patch(
             // @ts-ignore
@@ -71,6 +117,7 @@ export default function SubscriptionIndex({ workspace, plans }: Props) {
             {
                 plan_id: planId,
                 billing_cycle: billingCycle,
+                coupon_code: appliedCoupon?.code || null
             },
             {
                 onSuccess: () => {
@@ -82,13 +129,6 @@ export default function SubscriptionIndex({ workspace, plans }: Props) {
                 }
             }
         )
-    }
-
-    const getPriceForPlan = (plan: Plan) => {
-        if (plan.is_free) return '0 zł'
-        const price = plan.prices.find(p => p.type === billingCycle)
-        if (!price) return 'N/A'
-        return `${price.sale_price || price.price} zł`
     }
 
     const currentPlan = workspace.plan
@@ -157,25 +197,55 @@ export default function SubscriptionIndex({ workspace, plans }: Props) {
                             <p className="text-sm text-gray-500">Choose the best plan for your team's growth.</p>
                         </div>
 
-                        <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-xl flex gap-1">
-                            <button 
-                                onClick={() => setBillingCycle('month')}
-                                className={cn(
-                                    "px-4 py-2 text-xs font-bold rounded-lg transition-all",
-                                    billingCycle === 'month' ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600" : "text-gray-500"
+                        <div className="flex items-center gap-4">
+                            {/* Coupon Section */}
+                            <div className="flex flex-col items-end gap-1">
+                                <div className="flex gap-2">
+                                    <Input
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value)}
+                                        placeholder="Kod kuponu"
+                                        className={cn("h-9 rounded-lg border-gray-200 text-xs w-32", couponError && "border-red-500")}
+                                        disabled={!!appliedCoupon}
+                                    />
+                                    {appliedCoupon ? (
+                                        <Button size="sm" variant="default" className="h-9" onClick={() => { setAppliedCoupon(null); setCouponCode(''); }}>
+                                            Usuń
+                                        </Button>
+                                    ) : (
+                                        <Button size="sm" variant="solid" className="h-9 px-4 bg-purple-600 hover:bg-purple-700 font-bold text-xs" onClick={handleApplyCoupon} loading={validatingCoupon}>
+                                            Zastosuj
+                                        </Button>
+                                    )}
+                                </div>
+                                {couponError && <p className="text-[10px] text-red-500 font-medium">{couponError}</p>}
+                                {appliedCoupon && (
+                                    <p className="text-[10px] text-green-600 font-bold flex items-center gap-1">
+                                        <HiOutlineCheck className="w-3 h-3" /> Kod {appliedCoupon.code} aktywny
+                                    </p>
                                 )}
-                            >
-                                Monthly
-                            </button>
-                            <button 
-                                onClick={() => setBillingCycle('year')}
-                                className={cn(
-                                    "px-4 py-2 text-xs font-bold rounded-lg transition-all",
-                                    billingCycle === 'year' ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600" : "text-gray-500"
-                                )}
-                            >
-                                Yearly <span className="text-[10px] text-green-500 ml-1">-20%</span>
-                            </button>
+                            </div>
+
+                            <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-xl flex gap-1">
+                                <button 
+                                    onClick={() => setBillingCycle('month')}
+                                    className={cn(
+                                        "px-4 py-2 text-xs font-bold rounded-lg transition-all",
+                                        billingCycle === 'month' ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600" : "text-gray-500"
+                                    )}
+                                >
+                                    Monthly
+                                </button>
+                                <button 
+                                    onClick={() => setBillingCycle('year')}
+                                    className={cn(
+                                        "px-4 py-2 text-xs font-bold rounded-lg transition-all",
+                                        billingCycle === 'year' ? "bg-white dark:bg-gray-700 shadow-sm text-indigo-600" : "text-gray-500"
+                                    )}
+                                >
+                                    Yearly <span className="text-[10px] text-green-500 ml-1">-20%</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -213,23 +283,35 @@ export default function SubscriptionIndex({ workspace, plans }: Props) {
                                                 if (plan.is_free) return <span className="text-3xl font-black text-gray-900 dark:text-gray-100">0 zł</span>;
                                                 if (!price) return <span className="text-3xl font-black text-gray-900 dark:text-gray-100">N/A</span>;
                                                 
+                                                const basePrice = price.sale_price || price.price;
+                                                const discountedPrice = getPriceWithDiscount(basePrice);
+
                                                 return (
                                                     <div className="flex flex-col">
                                                         <div className="flex items-baseline gap-2">
-                                                            {price.is_on_sale ? (
+                                                            {price.is_on_sale || appliedCoupon ? (
                                                                 <>
-                                                                    <span className="text-sm line-through text-gray-400 opacity-60 font-normal">{price.price} zł</span>
-                                                                    <span className="text-3xl font-black text-indigo-600">{price.sale_price} zł</span>
+                                                                    <span className="text-sm line-through text-gray-400 opacity-60 font-normal">
+                                                                        {appliedCoupon ? (price.sale_price || price.price) : price.price} zł
+                                                                    </span>
+                                                                    <span className="text-3xl font-black text-indigo-600">{discountedPrice} zł</span>
                                                                 </>
                                                             ) : (
                                                                 <span className="text-3xl font-black text-gray-900 dark:text-gray-100">{price.price} zł</span>
                                                             )}
                                                             {!plan.is_free && <span className="text-xs text-gray-400 lowercase">/{billingCycle}</span>}
                                                         </div>
-                                                        {price.is_on_sale && (
-                                                            <div className="text-[10px] text-gray-400 mt-1 italic">
-                                                                Najniższa cena z 30 dni: <span className="font-bold">{price.calculated_lowest_price || price.lowest_price_30d || price.price} zł</span>
-                                                            </div>
+                                                        {price.is_on_sale && !appliedCoupon && (
+                                                            <>
+                                                                <div className="text-[10px] text-gray-400 mt-1 italic">
+                                                                    Najniższa cena z 30 dni: <span className="font-bold">{price.calculated_lowest_price || price.lowest_price_30d || price.price} zł</span>
+                                                                </div>
+                                                                {price.sale_ends_at && dayjs(price.sale_ends_at).isAfter(dayjs()) && (
+                                                                    <div className="text-[10px] font-bold text-rose-500 flex items-center gap-1 mt-1 animate-pulse">
+                                                                        <HiOutlineClock className="w-3 h-3" /> Koniec {dayjs(price.sale_ends_at).fromNow()}
+                                                                    </div>
+                                                                )}
+                                                            </>
                                                         )}
                                                     </div>
                                                 );

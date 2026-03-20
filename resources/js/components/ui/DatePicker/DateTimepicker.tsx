@@ -38,6 +38,7 @@ export interface DateTimepickerProps
 }
 
 const DEFAULT_INPUT_FORMAT = 'DD-MMM-YYYY hh:mm a'
+const DEFAULT_INPUT_FORMAT_24 = 'DD-MMM-YYYY HH:mm'
 
 const DateTimepicker = (props: DateTimepickerProps) => {
     const {
@@ -92,7 +93,7 @@ const DateTimepicker = (props: DateTimepickerProps) => {
 
     const finalLocale = locale || themeLocale
 
-    const dateFormat = inputFormat || DEFAULT_INPUT_FORMAT
+    const dateFormat = inputFormat || (amPm ? DEFAULT_INPUT_FORMAT : DEFAULT_INPUT_FORMAT_24)
 
     const [dropdownOpened, setDropdownOpened] = useState(defaultOpen)
 

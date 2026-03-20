@@ -38,6 +38,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Appearance
     Route::inertia('dashboard/settings/appearance', 'dashboard/settings/appearance')->name('appearance.edit');
+
+    // Coupons
+    Route::post('coupons/validate', [\App\Http\Controllers\Dashboard\CouponController::class, 'validateCoupon'])->name('coupons.validate');
 });
 
 Route::middleware(['auth'])->group(function () {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\PlanRequest;
 use Illuminate\Http\Request;
 
 use App\Models\Plan;
@@ -21,26 +22,9 @@ class PlanController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(PlanRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'is_recommended' => 'boolean',
-            'is_free' => 'boolean',
-            'is_active' => 'boolean',
-            'is_coming_soon' => 'boolean',
-            'is_promoted' => 'boolean',
-            'display_order' => 'integer',
-            'trial_days' => 'nullable|integer|min:0',
-            'prices' => 'required|array',
-            'prices.*.type' => 'required|string|in:month,year',
-            'prices.*.price' => 'required|numeric|min:0',
-            'prices.*.sale_price' => 'nullable|numeric|min:0|lt:prices.*.price',
-            'prices.*.sale_start_at' => 'nullable|date',
-            'prices.*.sale_ends_at' => 'nullable|date|after_or_equal:prices.*.sale_start_at',
-            'prices.*.lowest_price_30d' => 'nullable|numeric|min:0',
-        ]);
+        $validated = $request->validated();
 
         $plan = Plan::create([
             'name' => $validated['name'],
@@ -71,27 +55,9 @@ class PlanController extends Controller
         return redirect()->back()->with('success', 'Plan created successfully.');
     }
 
-    public function update(Request $request, Plan $plan)
+    public function update(PlanRequest $request, Plan $plan)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'is_recommended' => 'boolean',
-            'is_free' => 'boolean',
-            'is_active' => 'boolean',
-            'is_coming_soon' => 'boolean',
-            'is_promoted' => 'boolean',
-            'display_order' => 'integer',
-            'trial_days' => 'nullable|integer|min:0',
-            'prices' => 'required|array',
-            'prices.*.id' => 'nullable|exists:plan_prices,id',
-            'prices.*.type' => 'required|string|in:month,year',
-            'prices.*.price' => 'required|numeric|min:0',
-            'prices.*.sale_price' => 'nullable|numeric|min:0|lt:prices.*.price',
-            'prices.*.sale_start_at' => 'nullable|date',
-            'prices.*.sale_ends_at' => 'nullable|date|after_or_equal:prices.*.sale_start_at',
-            'prices.*.lowest_price_30d' => 'nullable|numeric|min:0',
-        ]);
+        $validated = $request->validated();
 
         $plan->update([
             'name' => $validated['name'],
