@@ -18,6 +18,7 @@ class Project extends Model
         'brand_id',
         'workspace_action_id',
         'name',
+        'slug',
         'description',
         'status',
         'priority',
@@ -25,6 +26,21 @@ class Project extends Model
         'count_by_hours',
         'deadline',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($project) {
+            if (empty($project->slug)) {
+                $project->slug = \Illuminate\Support\Str::slug($project->name) . '-' . \Illuminate\Support\Str::random(5);
+            }
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     protected $appends = ['total_time'];
 

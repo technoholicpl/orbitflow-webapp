@@ -47,6 +47,9 @@ Route::middleware(['web'])->group(function () {
         ->name('invitations.accept');
 
     Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('/search', [\App\Http\Controllers\Dashboard\SearchController::class, 'index'])
+            ->name('search');
+        
         Route::get('/onboarding', [\App\Http\Controllers\Dashboard\OnboardingController::class, 'index'])
             ->name('onboarding.index');
         Route::post('/onboarding', [\App\Http\Controllers\Dashboard\OnboardingController::class, 'store'])

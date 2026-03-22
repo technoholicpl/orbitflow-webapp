@@ -113,7 +113,7 @@ class ProjectController extends Controller
     public function show(Project $project)
     {
         $project->load(['client', 'tasks', 'timeEntries']);
-        return Inertia::render('projects/show', [
+        return Inertia::render('dashboard/projects/show', [
             'project' => $project
         ]);
     }

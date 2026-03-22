@@ -13,9 +13,12 @@ import { userNavigationConfig } from '@/configs/navigation.config';
 import ModeSwitcher from '@/components/template/ThemeConfigurator/ModeSwitcher';
 import GlobalQuickActions from '@/components/template/GlobalQuickActions';
 import GlobalTimer from '@/components/GlobalTimer';
+import { Search } from 'lucide-react';
 import NotificationDropdown from '@/components/template/NotificationDropdown';
 import TrialBanner from '@/components/TrialBanner';
 import { toast, Notification } from '@/components/ui';
+import CommandPalette from '@/components/template/CommandPalette';
+import { useQuickActionsStore } from '@/store/quickActionsStore';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -70,6 +73,16 @@ export default function DashboardLayout({ children, title = 'Dashboard' }: Dashb
                             }
                             headerEnd={
                                 <div className="flex items-center gap-2 sm:gap-4">
+                                    <button 
+                                        onClick={() => useQuickActionsStore.getState().toggleSearch()}
+                                        className="hidden md:flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-all group"
+                                    >
+                                        <Search className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                        <span className="text-xs font-bold uppercase tracking-wider">Szukaj...</span>
+                                        <kbd className="hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border bg-white dark:bg-gray-900 px-1.5 font-mono text-[10px] font-medium text-gray-400">
+                                            Ctrl+K
+                                        </kbd>
+                                    </button>
                                     <GlobalQuickActions />
                                     <NotificationDropdown />
                                     <ModeSwitcher />
@@ -87,6 +100,7 @@ export default function DashboardLayout({ children, title = 'Dashboard' }: Dashb
                         </main>
                     </div>
                 </div>
+                <CommandPalette />
             </LayoutBase>
         </ConfigProvider>
     );

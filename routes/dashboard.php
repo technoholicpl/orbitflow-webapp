@@ -27,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('clients', [ClientController::class, 'store'])->name('clients.store');
     Route::get('projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::post('projects', [ProjectController::class, 'store'])->name('projects.store');
+    Route::get('projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
     Route::match(['put', 'patch'], 'projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
     Route::get('projects/{project}/tasks', [ProjectController::class, 'getTasks'])->name('projects.tasks');
     Route::get('projects/kanban', [ProjectController::class, 'kanban'])->name('projects.kanban');

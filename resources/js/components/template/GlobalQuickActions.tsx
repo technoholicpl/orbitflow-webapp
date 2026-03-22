@@ -1,35 +1,38 @@
-import React, { useState } from 'react'
+import React from 'react'
 import QuickAddMenu from '@/components/template/QuickAddMenu'
 import ClientCreateDrawer from '@/components/shared/ClientCreateDrawer'
 import ProjectCreateDrawer from '@/components/shared/ProjectCreateDrawer'
 import TimeEntryModal from '@/components/shared/TimeEntryModal'
-import { usePage } from '@inertiajs/react'
+import { useQuickActionsStore } from '@/store/quickActionsStore'
 
 const GlobalQuickActions = () => {
-    const { props } = usePage<any>()
-    const { cp_prefix, isAdmin } = props
-    const [isClientDrawerOpen, setIsClientDrawerOpen] = useState(false)
-    const [isProjectDrawerOpen, setIsProjectDrawerOpen] = useState(false)
-    const [isTimeModalOpen, setIsTimeModalOpen] = useState(false)
+    const { 
+        isClientDrawerOpen, 
+        setClientDrawerOpen,
+        isProjectDrawerOpen, 
+        setProjectDrawerOpen,
+        isTimeModalOpen, 
+        setTimeModalOpen 
+    } = useQuickActionsStore()
 
     return (
         <>
             <QuickAddMenu 
-                onAddClient={() => setIsClientDrawerOpen(true)}
-                onAddProject={() => setIsProjectDrawerOpen(true)}
-                onAddTime={() => setIsTimeModalOpen(true)}
+                onAddClient={() => setClientDrawerOpen(true)}
+                onAddProject={() => setProjectDrawerOpen(true)}
+                onAddTime={() => setTimeModalOpen(true)}
             />
             <ClientCreateDrawer 
                 isOpen={isClientDrawerOpen} 
-                onClose={() => setIsClientDrawerOpen(false)}
+                onClose={() => setClientDrawerOpen(false)}
             />
             <ProjectCreateDrawer
                 isOpen={isProjectDrawerOpen}
-                onClose={() => setIsProjectDrawerOpen(false)}
+                onClose={() => setProjectDrawerOpen(false)}
             />
             <TimeEntryModal
                 isOpen={isTimeModalOpen}
-                onClose={() => setIsTimeModalOpen(false)}
+                onClose={() => setTimeModalOpen(false)}
             />
         </>
     )
