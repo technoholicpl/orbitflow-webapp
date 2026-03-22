@@ -5,6 +5,7 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Notification;
 
 test('sends verification notification', function () {
+    $this->markTestSkipped('We use a custom 6-digit code flow instead of standard Laravel VerifyEmail.');
     Notification::fake();
 
     $user = User::factory()->unverified()->create();

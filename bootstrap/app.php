@@ -22,12 +22,14 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\HandlePendingInvitation::class,
             \App\Http\Middleware\SetCurrentWorkspace::class,
             HandleInertiaRequests::class,
+            \App\Http\Middleware\SetAdminContext::class,
             \App\Http\Middleware\EnsureHasWorkspace::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
         $middleware->redirectTo(
             guests: function ($request) {
+                // Admin Context is now handled via SetAdminContext middleware
                 if ($request->isAdmin()) {
                     return route('admin.login');
                 }
