@@ -81,7 +81,7 @@ const HorizontalMenuDropdown = (props: HorizontalMenuDropdownProps) => {
 
     const isNested = parentId != null
 
-    const { floatingStyles, refs, context } = useFloating<HTMLButtonElement>({
+    const { floatingStyles, refs: { setReference, setFloating }, context } = useFloating<HTMLButtonElement>({
         nodeId,
         open: isOpen,
         onOpenChange: setIsOpen,
@@ -190,7 +190,7 @@ const HorizontalMenuDropdown = (props: HorizontalMenuDropdownProps) => {
         }
     }, [tree, isOpen, nodeId, parentId])
 
-    const dropdownRef = useMergeRefs([refs.setReference, item.ref])
+    const dropdownRef = useMergeRefs([setReference, item.ref])
     const dropdownProps = {
         ...getReferenceProps(
             parent.getItemProps({
@@ -234,7 +234,7 @@ const HorizontalMenuDropdown = (props: HorizontalMenuDropdownProps) => {
                                     returnFocus={!isNested}
                                 >
                                     <div
-                                        ref={refs.setFloating}
+                                        ref={setFloating}
                                         style={floatingStyles}
                                         className="outline-hidden z-40"
                                         {...getFloatingProps()}

@@ -6,7 +6,6 @@ import {
     PiBookBookmarkDuotone,
     PiAcornDuotone,
     PiBagSimpleDuotone,
-    PiLayoutDuotone,
     PiUsersDuotone,
     PiCreditCardDuotone,
     PiShoppingCartDuotone,

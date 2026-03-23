@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import type { CommonProps } from '@/types/common'
 
 type AffixStyles = {
@@ -22,7 +22,7 @@ function Affix(props: AffixProps) {
         width: '',
     })
 
-    const checkPosition = (distanceToBody: number, width?: number) => {
+    const checkPosition = useCallback((distanceToBody: number, width?: number) => {
         const scrollTop = window.scrollY
 
         if (ref.current) {
@@ -43,7 +43,7 @@ function Affix(props: AffixProps) {
                 }
             }
         }
-    }
+    }, [offset])
 
     useEffect(() => {
         if (typeof window.scrollY === 'undefined') {
@@ -69,7 +69,7 @@ function Affix(props: AffixProps) {
                 window.removeEventListener('scroll', handleScroll)
             }
         }
-    }, [offset])
+    }, [offset, checkPosition])
 
     return (
         <div ref={ref} className={classNames('z-10', className)}>

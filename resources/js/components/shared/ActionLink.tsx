@@ -32,6 +32,7 @@ const ActionLink = (props: ActionLink) => {
     return to ? (
         <Link
             href={to}
+            reloadDocument={reloadDocument}
             {...classNameProps}
             {...(rest as any)}
         >

@@ -1,5 +1,5 @@
 import { Head, useForm, router } from '@inertiajs/react';
-import { Edit2, Plus, Trash2, Rocket, CheckCircle2, Copy, X } from 'lucide-react';
+import { Edit2, Plus, Trash2, Rocket, Copy, X } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import React, { useState } from 'react';
 import Heading from '@/components/heading';
@@ -11,7 +11,6 @@ import {
     Notification,
     toast,
     Badge,
-    Switcher
 } from '@/components/ui';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import SettingsLayout from '@/layouts/settings/layout';
@@ -139,7 +138,7 @@ export default function TemplatesSettings({ systemTemplates = [], customTemplate
                                     <div className="flex flex-col gap-4 grow">
                                         <div className="flex items-center gap-3">
                                             <div className="p-3 bg-white dark:bg-gray-800 text-indigo-600 rounded-xl shadow-sm">
-                                                {/* @ts-ignore */}
+                                                {/* @ts-expect-error Lucide icon component mapping from string slug */}
                                                 {LucideIcons[template.icon] ? React.createElement(LucideIcons[template.icon], { size: 24 }) : <Rocket size={24} />}
                                             </div>
                                             <div>
@@ -176,7 +175,7 @@ export default function TemplatesSettings({ systemTemplates = [], customTemplate
                                     <div className="flex flex-col gap-4 grow">
                                         <div className="flex items-center gap-3">
                                             <div className="p-3 bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 rounded-xl">
-                                                {/* @ts-ignore */}
+                                                {/* @ts-expect-error Lucide icon component mapping from string slug */}
                                                 {LucideIcons[template.icon] ? React.createElement(LucideIcons[template.icon], { size: 24 }) : <Rocket size={24} />}
                                             </div>
                                             <div>

@@ -5,15 +5,6 @@ import PasswordController from '@/actions/App/Http/Controllers/Dashboard/Account
 import { Button, Input, FormItem } from '@/components/ui';
 import AccountLayout from '@/layouts/account/layout';
 import DashboardLayout from '@/layouts/DashboardLayout';
-import { edit } from '@/routes/user-password';
-import type { BreadcrumbItem } from '@/types';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Password settings',
-        href: edit().url,
-    },
-];
 
 export default function Password() {
     const passwordInput = useRef<HTMLInputElement>(null);

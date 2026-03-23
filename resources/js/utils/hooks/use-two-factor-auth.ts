@@ -49,7 +49,7 @@ export const useTwoFactorAuth = (prefix: string = ''): UseTwoFactorAuthReturn =>
             setErrors((prev) => [...prev, 'Failed to fetch QR code']);
             setQrCodeSvg(null);
         }
-    }, []);
+    }, [prefix]);
 
     const fetchSetupKey = useCallback(async (): Promise<void> => {
         try {
@@ -61,7 +61,7 @@ export const useTwoFactorAuth = (prefix: string = ''): UseTwoFactorAuthReturn =>
             setErrors((prev) => [...prev, 'Failed to fetch a setup key']);
             setManualSetupKey(null);
         }
-    }, []);
+    }, [prefix]);
 
     const clearErrors = useCallback((): void => {
         setErrors([]);
@@ -82,7 +82,7 @@ export const useTwoFactorAuth = (prefix: string = ''): UseTwoFactorAuthReturn =>
             setErrors((prev) => [...prev, 'Failed to fetch recovery codes']);
             setRecoveryCodesList([]);
         }
-    }, [clearErrors]);
+    }, [prefix, clearErrors]);
 
     const fetchSetupData = useCallback(async (): Promise<void> => {
         try {

@@ -6,7 +6,7 @@ interface ProjectTimerProps {
     onStop?: (seconds: number) => void
 }
 
-export default function ProjectTimer({ projectId, initialSeconds = 0, onStop }: ProjectTimerProps) {
+export default function ProjectTimer({ initialSeconds = 0, onStop }: Omit<ProjectTimerProps, 'projectId'>) {
     const [isTracking, setIsTracking] = useState(false)
     const [seconds, setSeconds] = useState(initialSeconds)
 

@@ -1,22 +1,13 @@
 import { Transition } from '@headlessui/react';
-import { Form, Head, Link, usePage, useForm } from '@inertiajs/react';
+import { Head, Link, usePage, useForm } from '@inertiajs/react';
 import ProfileController from '@/actions/App/Http/Controllers/Dashboard/Account/ProfileController';
 import DeleteUser from '@/components/delete-user';
-import Heading from '@/components/heading';
 import LogoutOtherBrowserSessionsForm from '@/components/logout-other-browser-sessions-form';
 import { Button, Input, FormItem } from '@/components/ui';
 import AccountLayout from '@/layouts/account/layout';
 import DashboardLayout from '@/layouts/DashboardLayout';
-import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
-import type { BreadcrumbItem } from '@/types';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Profile settings',
-        href: edit().url,
-    },
-];
 
 export default function Profile({
     mustVerifyEmail,

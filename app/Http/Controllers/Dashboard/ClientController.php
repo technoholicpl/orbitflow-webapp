@@ -13,6 +13,7 @@ class ClientController extends Controller
         $workspaceId = $request->user()->current_workspace_id; // Assume this logic exists or will be added to User
 
         $clients = Client::where('workspace_id', $workspaceId)
+            ->with('brands')
             ->orderBy('company_name')
             ->orderBy('last_name')
             ->get();
@@ -80,7 +81,7 @@ class ClientController extends Controller
     public function edit(Client $client)
     {
         return Inertia::render('dashboard/clients/edit', [
-            'client' => $client
+            'client' => $client->load('brands')
         ]);
     }
 
@@ -88,14 +89,34 @@ class ClientController extends Controller
     {
         $validated = $request->validate([
             'type' => 'required|in:business,individual',
-            'company_name' => 'required_if:type,business',
-            'first_name' => 'required_if:type,individual',
-            'last_name' => 'required_if:type,individual',
-            'email' => 'nullable|email',
-            'phone' => 'nullable|string',
+            'company_name' => 'required_if:type,business|nullable|string|max:255',
+            'tax_id' => 'nullable|string|max:50',
+            'first_name' => 'required_if:type,individual|nullable|string|max:255',
+            'last_name' => 'required_if:type,individual|nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:50',
+            'website' => 'nullable|string|max:255',
+            'note' => 'nullable|string',
+            'brands' => 'nullable|array',
+            'brands.*.name' => 'required|string|max:255',
+            'brands.*.description' => 'nullable|string',
+            'brands.*.website' => 'nullable|string|max:255',
         ]);
 
-        $client->update($validated);
+        $client->update(collect($validated)->except('brands')->toArray());
+
+        if (isset($validated['brands'])) {
+            $client->brands()->delete();
+            foreach ($validated['brands'] as $brandData) {
+                $client->brands()->create(array_merge($brandData, [
+                    'workspace_id' => $client->workspace_id
+                ]));
+            }
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Client updated successfully', 'client' => $client->load('brands')]);
+        }
 
         return redirect()->route('clients.index');
     }

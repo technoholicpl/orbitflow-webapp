@@ -1,4 +1,5 @@
-import type { ButtonHTMLAttributes, Ref } from 'react'
+import { forwardRef   } from 'react'
+import type {ButtonHTMLAttributes, Ref} from 'react';
 import { cn } from '@/lib/utils'
 import type { CommonProps } from '@/types/common'
 import HorizontalMenuNavLink from './HorizontalMenuNavLink'
@@ -25,9 +26,10 @@ interface AnchorProps
 
 type HorizontalMenuDropdownTriggerProps = ButtonProps | AnchorProps
 
-const HorizontalMenuDropdownTrigger = (
-    props: HorizontalMenuDropdownTriggerProps,
-) => {
+const HorizontalMenuDropdownTrigger = forwardRef<
+    HTMLButtonElement,
+    HorizontalMenuDropdownTriggerProps
+>((props, fr) => {
     const { className, active, asElement = 'button', ...rest } = props
     const commonProps = {
         className: cn(
@@ -53,14 +55,20 @@ const HorizontalMenuDropdownTrigger = (
     if (asElement === 'button') {
         return (
             <button
-                ref={(rest as ButtonProps).ref}
+                ref={(node) => {
+                    if (typeof fr === 'function') {
+                        fr(node)
+                    } else if (fr) {
+                        ;(fr as any).current = node
+                    }
+                }}
                 {...commonProps}
                 {...(rest as ButtonProps)}
             />
         )
     }
 
-    return <></>
-}
+    return null
+})
 
 export default HorizontalMenuDropdownTrigger

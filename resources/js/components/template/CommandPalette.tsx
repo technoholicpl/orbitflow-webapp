@@ -2,8 +2,8 @@ import { router } from '@inertiajs/react'
 import axios from 'axios'
 import { Command } from 'cmdk'
 import debounce from 'lodash/debounce'
-import { Search, FileText, User, Briefcase, Command as CommandIcon, X } from 'lucide-react'
-import React, { useEffect, useState, useCallback } from 'react'
+import { Search, FileText, User, Briefcase, X } from 'lucide-react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useQuickActionsStore } from '@/store/quickActionsStore'
 
@@ -49,24 +49,25 @@ const CommandPalette = () => {
         navigateTo('/dashboard')
     })
 
-    const fetchResults = useCallback(
-        debounce(async (searchQuery: string) => {
-            if (searchQuery.length < 2) {
-                setResults({ projects: [], clients: [], members: [] })
-                setLoading(false)
-                return
-            }
+    const fetchResults = useMemo(
+        () =>
+            debounce(async (searchQuery: string) => {
+                if (searchQuery.length < 2) {
+                    setResults({ projects: [], clients: [], members: [] })
+                    setLoading(false)
+                    return
+                }
 
-            setLoading(true)
-            try {
-                const response = await axios.get(`/search?q=${searchQuery}`)
-                setResults(response.data)
-            } catch (err) {
-                console.error('Search error:', err)
-            } finally {
-                setLoading(false)
-            }
-        }, 300),
+                setLoading(true)
+                try {
+                    const response = await axios.get(`/search?q=${searchQuery}`)
+                    setResults(response.data)
+                } catch (err) {
+                    console.error('Search error:', err)
+                } finally {
+                    setLoading(false)
+                }
+            }, 300),
         []
     )
 
@@ -124,7 +125,7 @@ const CommandPalette = () => {
                             {results.projects.map((project: any) => (
                                 <Command.Item
                                     key={project.id}
-                                    onSelect={() => navigateTo(`/projects/${project.slug}`)}
+                                    onSelect={() => project.slug ? navigateTo(`/projects/${project.slug}`) : console.warn('Project missing slug:', project)}
                                     className="flex items-center gap-3 px-3 py-3 rounded-xl cursor-default select-none aria-selected:bg-indigo-50 aria-selected:text-indigo-600 dark:aria-selected:bg-indigo-900/30 dark:aria-selected:text-indigo-400 transition-colors"
                                 >
                                     <Briefcase className="w-4 h-4" />

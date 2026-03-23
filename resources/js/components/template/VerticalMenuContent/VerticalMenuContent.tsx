@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from 'react'
+import { useMemo, Fragment } from 'react'
 import AuthorityCheck from '@/components/shared/AuthorityCheck'
 import Menu from '@/components/ui/Menu'
 import { themeConfig } from '@/configs/theme.config'
@@ -42,14 +42,13 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
 
     const { t } = useTranslation(!translationSetup)
 
-    const [defaulExpandKey, setDefaulExpandKey] = useState<string[]>([])
-
     const { activedRoute } = useMenuActive(navigationTree, routeKey)
 
-    useEffect(() => {
+    const defaulExpandKey = useMemo(() => {
         if (activedRoute?.parentKey) {
-            setDefaulExpandKey([activedRoute?.parentKey])
+            return [activedRoute?.parentKey]
         }
+        return []
     }, [activedRoute?.parentKey])
 
     const handleLinkClick = () => {

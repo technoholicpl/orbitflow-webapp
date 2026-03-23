@@ -12,14 +12,12 @@ import {
     HiOutlinePencil, 
     HiOutlinePlus, 
     HiOutlineAdjustments,
-    HiOutlineCheckCircle,
     HiOutlineClock
 } from 'react-icons/hi'
 import { 
     Button, 
     Input, 
     Select, 
-    Table, 
     Notification, 
     toast, 
     Card, 
@@ -76,14 +74,13 @@ interface Props {
     features: Feature[]
 }
 
-const { DateTimepicker } = DatePicker
 
 export default function PlansIndex({ plans, features }: Props) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [isFeaturesModalOpen, setIsFeaturesModalOpen] = useState(false)
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null)
 
-    const { data, setData, post, patch, processing, reset, errors } = useForm({
+    const { data, setData, post, patch, processing, reset } = useForm({
         name: '',
         description: '',
         is_recommended: false,
@@ -628,7 +625,7 @@ export default function PlansIndex({ plans, features }: Props) {
                 </div>
                 <form onSubmit={handleFeatureSubmit} className="flex flex-col gap-6 mt-4">
                     <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto px-1">
-                        {features.map((f, index) => {
+                        {features.map((f) => {
                             const featureIdx = featureData.features.findIndex(fd => fd.id === f.id)
                             const currentVal = featureIdx !== -1 ? featureData.features[featureIdx].value : (f.type === 'boolean' ? 'false' : '0')
 

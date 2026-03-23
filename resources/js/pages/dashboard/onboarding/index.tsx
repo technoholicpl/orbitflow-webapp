@@ -2,9 +2,9 @@ import { useForm, Head, router } from '@inertiajs/react';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { ArrowLeft, Plus, X, Rocket, Users, Check, Sparkles, Building2, BarChart3, Search, Clock } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { Button, Input, FormItem, Notification, toast, Select, Badge } from '@/components/ui';
+import { ArrowLeft, Plus, X, Rocket, Users, Check, Sparkles, BarChart3, Clock } from 'lucide-react';
+import { useState } from 'react';
+import { Button, Input, FormItem, Notification, toast } from '@/components/ui';
 import cn from '@/components/ui/utils/classNames';
 import { plan as planRoute, finish as finishRoute, back as backRoute } from '@/routes/onboarding';
 import 'dayjs/locale/pl';
@@ -59,7 +59,7 @@ export default function Onboarding({ initialStep, plans }: Props) {
     const [validatingCoupon, setValidatingCoupon] = useState(false);
     const [selectedPlanId, setSelectedPlanId] = useState<number>(0);
     
-    const { post, setData, data, processing, errors, reset } = useForm({
+    const { post, setData, data, processing, errors } = useForm({
         name: '',
         plan_id: 0,
         billing_cycle: 'month',
@@ -150,7 +150,6 @@ export default function Onboarding({ initialStep, plans }: Props) {
         setData(d => ({ ...d, plan_id: selectedPlanId, billing_cycle: billingCycle }));
         
         router.post(
-            // @ts-ignore
             planRoute().url, 
             {
                 plan_id: selectedPlanId,

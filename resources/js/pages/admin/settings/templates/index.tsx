@@ -5,14 +5,12 @@ import {
     HiOutlineTrash, 
     HiOutlinePencil, 
     HiOutlinePlus,
-    HiOutlineTerminal,
     HiOutlineCheckCircle,
     HiOutlineX
 } from 'react-icons/hi'
 import { 
     Button, 
     Input, 
-    Table, 
     Notification, 
     toast, 
     Card, 
@@ -46,7 +44,7 @@ export default function TemplatesIndex({ templates }: Props) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [selectedTemplate, setSelectedTemplate] = useState<ProjectTemplate | null>(null)
 
-    const { data, setData, post, patch, processing, reset, errors } = useForm({
+    const { data, setData, post, patch, processing, reset } = useForm({
         name: '',
         description: '',
         icon: 'Rocket',
@@ -137,7 +135,7 @@ export default function TemplatesIndex({ templates }: Props) {
                                 <div className="flex justify-between items-start">
                                     <div className="flex items-center gap-3">
                                         <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
-                                            {/* @ts-ignore */}
+                                            {/* @ts-expect-error Lucide icon component mapping from string slug */}
                                             {LucideIcons[template.icon] ? React.createElement(LucideIcons[template.icon], { size: 24 }) : <LucideIcons.Rocket size={24} />}
                                         </div>
                                         <div>

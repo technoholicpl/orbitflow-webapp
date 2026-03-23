@@ -1,5 +1,5 @@
 import { Head } from '@inertiajs/react'
-import { Clock, CheckCircle2, ListTodo, Plus, Calendar as CalendarIcon } from 'lucide-react'
+import { Clock, CheckCircle2, Plus, Calendar as CalendarIcon } from 'lucide-react'
 import UsageWidget from '@/components/dashboard/UsageWidget';
 import AdaptiveCard from '@/components/shared/AdaptiveCard'
 import { Card, Button } from '@/components/ui';

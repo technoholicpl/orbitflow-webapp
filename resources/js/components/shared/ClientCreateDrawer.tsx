@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { router } from '@inertiajs/react'
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { HiPlus, HiTrash, HiOfficeBuilding, HiUser, HiGlobeAlt } from 'react-icons/hi'
 import * as zod from 'zod'
@@ -13,14 +13,6 @@ import Input from '@/components/ui/Input'
 import Segment from '@/components/ui/Segment'
 import SegmentItem from '@/components/ui/Segment/SegmentItem'
 import Upload from '@/components/ui/Upload'
-
-interface Brand {
-    id?: string | number
-    name: string
-    description: string
-    website: string
-    logo?: string
-}
 
 interface ClientCreateDrawerProps {
     isOpen: boolean
@@ -147,7 +139,7 @@ const ClientCreateDrawer = ({ isOpen, onClose, client }: ClientCreateDrawerProps
                         <div className="mb-6 flex justify-center">
                             <Segment 
                                 value={[clientType]} 
-                                onChange={(val: string | string[]) => onClientTypeChange(Array.isArray(val) ? val : [val])}
+                                onChange={(val) => onClientTypeChange(Array.isArray(val) ? val : [val])}
                                 size="sm"
                             >
                                 <SegmentItem value="business" className="flex items-center gap-2 px-6">

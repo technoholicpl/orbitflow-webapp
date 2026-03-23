@@ -1,16 +1,17 @@
+import { Link } from "@inertiajs/react"
+import debounce from 'lodash/debounce'
 import { useState, useRef, useEffect } from 'react'
+import Highlighter from 'react-highlight-words'
+import { HiOutlineSearch, HiChevronRight } from 'react-icons/hi'
+import { PiMagnifyingGlassDuotone } from 'react-icons/pi'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import ScrollBar from '@/components/ui/ScrollBar'
 import navigationIcon from '@/configs/navigation-icon.config'
 import { cn } from '@/lib/utils'
 import withHeaderItem from '@/utils/hoc/withHeaderItem'
-const apiGetSearchResult = async <T,>(data: any): Promise<T> => ([] as any);
-import debounce from 'lodash/debounce'
-import { HiOutlineSearch, HiChevronRight } from 'react-icons/hi'
-import { PiMagnifyingGlassDuotone } from 'react-icons/pi'
-import { Link } from "@inertiajs/react"
-import Highlighter from 'react-highlight-words'
+
+const apiGetSearchResult = async <T,>(_data: any): Promise<T> => ([] as any); // eslint-disable-line @typescript-eslint/no-unused-vars
 
 type SearchData = {
     key: string
@@ -82,11 +83,13 @@ const SearchBase = ({ className }: { className?: string }) => {
     const [searchResult, setSearchResult] =
         useState<SearchResult[]>(recommendedSearch)
     const [noResult, setNoResult] = useState(false)
+    const [query, setQuery] = useState('')
 
     const inputRef = useRef<HTMLInputElement>(null)
 
     const handleReset = () => {
         setNoResult(false)
+        setQuery('')
         setSearchResult(recommendedSearch)
     }
 
@@ -122,7 +125,9 @@ const SearchBase = ({ className }: { className?: string }) => {
     }
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        debounceFn(e.target.value)
+        const val = e.target.value
+        setQuery(val)
+        debounceFn(val)
     }
 
     useEffect(() => {
@@ -160,6 +165,7 @@ const SearchBase = ({ className }: { className?: string }) => {
                                 ref={inputRef}
                                 className="ring-0 outline-hidden block w-full p-4 text-base bg-transparent text-gray-900 dark:text-gray-100"
                                 placeholder="Search..."
+                                value={query}
                                 onChange={handleSearch}
                             />
                         </div>
@@ -178,9 +184,7 @@ const SearchBase = ({ className }: { className?: string }) => {
                                             icon={data.icon}
                                             label={data.title}
                                             url={data.path}
-                                            keyWord={
-                                                inputRef.current?.value || ''
-                                            }
+                                            keyWord={query}
                                             onNavigate={handleNavigate}
                                         />
                                     ))}
@@ -191,7 +195,7 @@ const SearchBase = ({ className }: { className?: string }) => {
                                     <span>No results for </span>
                                     <span className="heading-text">
                                         {`'`}
-                                        {inputRef.current?.value}
+                                        {query}
                                         {`'`}
                                     </span>
                                 </div>

@@ -1,7 +1,6 @@
 import { Head, usePage, router } from '@inertiajs/react'
-import dayjs from 'dayjs';
 import { useState } from 'react';
-import { HiPlus, HiClock, HiPlay, HiStop } from 'react-icons/hi';
+import { HiPlus, HiPlay, HiStop } from 'react-icons/hi';
 import ProjectCreateDrawer from '@/components/shared/ProjectCreateDrawer'
 import TimeEntryModal from '@/components/shared/TimeEntryModal';
 import { Button, Notification, toast } from '@/components/ui';
@@ -23,10 +22,9 @@ interface Project {
 
 interface ProjectsListProps {
     projects: Project[]
-    clients: any[]
 }
 
-export default function ProjectsList({ projects, clients }: ProjectsListProps) {
+export default function ProjectsList({ projects }: ProjectsListProps) {
     const { current_timer } = usePage<any>().props
     const [isSheetOpen, setIsSheetOpen] = useState(false)
     const [isTimeModalOpen, setIsTimeModalOpen] = useState(false)

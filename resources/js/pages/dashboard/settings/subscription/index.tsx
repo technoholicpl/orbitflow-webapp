@@ -1,4 +1,5 @@
 import { Head, useForm, router } from '@inertiajs/react'
+import axios from 'axios'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import React, { useState } from 'react'
@@ -12,7 +13,6 @@ import 'dayjs/locale/pl'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pl')
-import axios from 'axios'
 
 interface Feature {
     id: number
@@ -112,7 +112,6 @@ export default function SubscriptionIndex({ workspace, plans }: Props) {
         setData(d => ({ ...d, plan_id: planId, billing_cycle: billingCycle, coupon_code: appliedCoupon?.code || null }));
         
         router.patch(
-            // @ts-ignore
             updateRoute().url, 
             {
                 plan_id: planId,

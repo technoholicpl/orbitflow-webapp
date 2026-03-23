@@ -2,29 +2,18 @@ import { useForm, Head } from '@inertiajs/react';
 import { ShieldBan, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import ConfirmsPassword from '@/components/confirms-password';
-import Heading from '@/components/heading';
 import TwoFactorRecoveryCodes from '@/components/two-factor-recovery-codes';
 import TwoFactorSetupModal from '@/components/two-factor-setup-modal';
 import { Button, Tag } from '@/components/ui';
 import AccountLayout from '@/layouts/account/layout';
 import DashboardLayout from '@/layouts/DashboardLayout';
-import { disable, enable, show } from '@/routes/two-factor';
-import type { BreadcrumbItem } from '@/types';
+import { disable, enable } from '@/routes/two-factor';
 import { useTwoFactorAuth } from '@/utils/hooks/use-two-factor-auth';
 
 type Props = {
     requiresConfirmation?: boolean;
     twoFactorEnabled?: boolean;
 };
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Two-factor authentication',
-        href: show().url,
-    },
-];
-
-
 
 export default function TwoFactor({
     requiresConfirmation = false,
@@ -84,6 +73,7 @@ export default function TwoFactor({
 
                             <div className="relative inline pt-4">
                                 <ConfirmsPassword
+                                    confirmUrl="/account/confirm-password"
                                     onConfirmed={() =>
                                         disable2fa(disable().url)
                                     }
@@ -119,6 +109,7 @@ export default function TwoFactor({
                             <div className="pt-4">
                                 {hasSetupData ? (
                                     <ConfirmsPassword
+                                        confirmUrl="/account/confirm-password"
                                         onConfirmed={() =>
                                             setShowSetupModal(true)
                                         }
@@ -130,6 +121,7 @@ export default function TwoFactor({
                                     </ConfirmsPassword>
                                 ) : (
                                     <ConfirmsPassword
+                                        confirmUrl="/account/confirm-password"
                                         onConfirmed={() =>
                                             enable2fa(enable().url, {
                                                 onSuccess: () =>

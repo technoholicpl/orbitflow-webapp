@@ -18,7 +18,6 @@ import CreatableSelect from 'react-select/creatable'
 import * as zod from 'zod'
 import {
     Input,
-    Button,
     Select,
     FormItem,
     FormContainer,
@@ -30,7 +29,7 @@ const { Option, SingleValue } = components
 
 const validationSchema = zod.object({
     name: zod.string().min(1, 'Nazwa projektu jest wymagana'),
-    description: zod.string().optional(),
+    description: zod.string().nullable().optional(),
     client_id: zod.number().min(1, 'Klient jest wymagany'),
     brand_id: zod.number().nullable().optional(),
     workspace_action_id: zod.number().nullable().optional(),
@@ -342,7 +341,8 @@ const ProjectForm = ({ onSubmit, defaultValues }: ProjectFormProps) => {
                             control={control}
                             render={({ field }) => (
                                 <Input 
-                                    {...field} 
+                                    {...field}
+                                    value={field.value ?? ''}
                                     textArea 
                                     placeholder="Opisz krótko zakres projektu..." 
                                     className="min-h-[100px]"

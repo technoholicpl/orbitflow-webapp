@@ -28,19 +28,16 @@ const GlobalTimer = () => {
     const { current_timer, workspace_projects, auth } = usePage<any>().props;
     const [seconds, setSeconds] = useState(0);
     const [isInfoOpen, setIsInfoOpen] = useState(false);
-    const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
+    const [isRecoveryOpenOverride, setIsRecoveryOpenOverride] = useState<boolean | null>(null);
+    const isRecoveryOpen = isRecoveryOpenOverride ?? !!current_timer?.needs_recovery;
     const [recoveryEndTime, setRecoveryEndTime] = useState('');
 
-    const formatTime = (totalSeconds: number) => {
-        const d = dayjs.duration(totalSeconds, 'seconds');
-        const h = Math.floor(d.asHours());
-        const m = d.minutes();
-        const s = d.seconds();
-        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    };
-
     // Floating UI for Info Popover
-    const { refs, floatingStyles, context } = useFloating({
+    const { 
+        refs: { setReference, setFloating }, 
+        floatingStyles, 
+        context 
+    } = useFloating({
         open: isInfoOpen,
         onOpenChange: setIsInfoOpen,
         middleware: [offset(10), flip(), shift()],
@@ -63,17 +60,25 @@ const GlobalTimer = () => {
         role,
     ]);
 
-    // Sync seconds with currently running timer
+    // Helper for formatting time
+    const formatTime = (totalSeconds: number) => {
+        const d = dayjs.duration(totalSeconds, 'seconds');
+        const h = Math.floor(d.asHours());
+        const m = d.minutes();
+        const s = d.seconds();
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    };
+
+    // Update seconds every second
     useEffect(() => {
         let interval: any;
-        if (current_timer) {
-            const start = dayjs.utc(current_timer.started_at);
-            const updateSeconds = () => {
-                const diff = dayjs.utc().diff(start, 'second');
-                setSeconds(diff > 0 ? diff : 0);
-            };
-            updateSeconds();
-            interval = setInterval(updateSeconds, 1000);
+        if (current_timer && !current_timer.needs_recovery) {
+            // Initial sync
+            setSeconds(Math.max(0, dayjs.utc().diff(dayjs.utc(current_timer.started_at), 'second')));
+            
+            interval = setInterval(() => {
+                setSeconds(Math.max(0, dayjs.utc().diff(dayjs.utc(current_timer.started_at), 'second')));
+            }, 1000);
         } else {
             setSeconds(0);
         }
@@ -105,11 +110,7 @@ const GlobalTimer = () => {
         };
     }, [current_timer, seconds]);
 
-    useEffect(() => {
-        if (current_timer?.needs_recovery) {
-            setIsRecoveryOpen(true);
-        }
-    }, [current_timer]);
+
 
 
     const handleStart = (projectId: number) => {
@@ -150,6 +151,7 @@ const GlobalTimer = () => {
 
 
     const handleRecovery = (action: string) => {
+        if (!current_timer) return;
         let finalEndTime: string | null = null;
         if (action === 'manual' && recoveryEndTime) {
             const [hours, minutes] = recoveryEndTime.split(':');
@@ -162,7 +164,7 @@ const GlobalTimer = () => {
             end_time: action === 'manual' ? finalEndTime : null
         }, {
             onSuccess: () => {
-                setIsRecoveryOpen(false);
+                setIsRecoveryOpenOverride(false);
             },
             showProgress: false
         });
@@ -300,7 +302,7 @@ const GlobalTimer = () => {
                 {/* Info & Popover Trigger Section */}
                 {current_timer && (
                     <div 
-                        ref={refs.setReference}
+                        ref={setReference}
                         {...getReferenceProps()}
                         className="flex items-center gap-3 cursor-pointer group select-none"
                         onClick={() => setIsInfoOpen(!isInfoOpen)}
@@ -322,7 +324,7 @@ const GlobalTimer = () => {
             {isInfoOpen && current_timer && (
                 <FloatingPortal>
                     <div
-                        ref={refs.setFloating}
+                        ref={setFloating}
                         style={floatingStyles}
                         {...getFloatingProps()}
                         className="z-9999 bg-[#0d1117] border border-gray-800 rounded-2xl shadow-2xl p-5 w-80 animate-in fade-in zoom-in duration-200"

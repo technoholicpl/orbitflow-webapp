@@ -1,7 +1,7 @@
 import { Head } from '@inertiajs/react';
 import { Briefcase, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import React from 'react';
-import { Card, Badge, Tag, Table } from '@/components/ui';
+import { Card, Badge } from '@/components/ui';
 import DashboardLayout from '@/layouts/DashboardLayout';
 
 interface ProjectShowProps {

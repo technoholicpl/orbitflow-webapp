@@ -32,7 +32,7 @@ class Project extends Model
         parent::boot();
         static::creating(function ($project) {
             if (empty($project->slug)) {
-                $project->slug = \Illuminate\Support\Str::slug($project->name) . '-' . \Illuminate\Support\Str::random(5);
+                $project->slug = strtolower(\Illuminate\Support\Str::random(10));
             }
         });
     }

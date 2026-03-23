@@ -1,6 +1,6 @@
 import { router } from '@inertiajs/react'
 import classNames from 'classnames'
-import { useEffect, useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { HiOutlineMailOpen } from 'react-icons/hi'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
@@ -35,19 +35,10 @@ const NotificationBase = ({ className }: { className?: string }) => {
         NotificationList[]
     >([])
     const [unreadNotification, setUnreadNotification] = useState(false)
-    const [noResult, setNoResult] = useState(false)
+    const [noResult] = useState(true)
     const [loading, setLoading] = useState(false)
 
     const { larger } = useResponsive()
-
-    const getNotificationCount = async () => {
-        // Mocking count for now
-        setNoResult(true)
-    }
-
-    useEffect(() => {
-        getNotificationCount()
-    }, [])
 
     const onNotificationOpen = async () => {
         if (notificationList.length === 0) {

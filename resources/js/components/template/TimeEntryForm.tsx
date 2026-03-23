@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { usePage } from '@inertiajs/react'
-import axios from 'axios'
 import dayjs from 'dayjs'
 import React, { useState, useEffect, useMemo } from 'react'
 import { useForm, Controller } from 'react-hook-form'
@@ -31,7 +30,7 @@ const validationSchema = zod.object({
 type TimeEntryFormSchema = zod.infer<typeof validationSchema>
 
 interface TimeEntryFormProps {
-    onSubmit: (data: any) => void
+    onSubmit: (_data: any) => void
     isSubmitting?: boolean
     defaultValues?: any
 }
@@ -39,9 +38,6 @@ const TimeEntryForm = ({ onSubmit, defaultValues }: TimeEntryFormProps) => {
     const { props } = usePage<any>()
     const { workspace_projects = [] } = props
     
-    const [tasks, setTasks] = useState<any[]>([])
-    const [isLoadingTasks, setIsLoadingTasks] = useState(false)
-
     // Internal states for time sync
     const [duration, setDuration] = useState(15) // minutes
     const [startDate, setStartDate] = useState<Date>(new Date())
@@ -67,22 +63,6 @@ const TimeEntryForm = ({ onSubmit, defaultValues }: TimeEntryFormProps) => {
         workspace_projects.find((p: any) => p.id === selectedProjectId),
     [selectedProjectId, workspace_projects])
 
-    useEffect(() => {
-        if (selectedProjectId) {
-            setIsLoadingTasks(true)
-            axios.get(`/projects/${selectedProjectId}/tasks`)
-                .then(res => {
-                    setTasks(res.data)
-                    setIsLoadingTasks(false)
-                })
-                .catch(() => {
-                    setTasks([])
-                    setIsLoadingTasks(false)
-                })
-        } else {
-            setTasks([])
-        }
-    }, [selectedProjectId])
 
     // Sync Logic
     const handleStartTimeChange = (newDate: Date | null) => {
@@ -141,11 +121,6 @@ const TimeEntryForm = ({ onSubmit, defaultValues }: TimeEntryFormProps) => {
     const projectOptions = workspace_projects.map((p: any) => ({
         label: p.name,
         value: p.id,
-    }))
-
-    const taskOptions = tasks.map((t: any) => ({
-        label: t.name,
-        value: t.id,
     }))
 
     const formatDurationDisplay = (mins: number) => {

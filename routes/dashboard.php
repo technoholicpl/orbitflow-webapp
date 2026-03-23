@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\Account\ConfirmablePasswordController;
 use App\Http\Controllers\Dashboard\Account\PasswordController;
 use App\Http\Controllers\Dashboard\Account\ProfileController;
 use App\Http\Controllers\Dashboard\Account\TwoFactorAuthenticationController;
@@ -25,6 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Modules
     Route::get('clients', [ClientController::class, 'index'])->name('clients.index');
     Route::post('clients', [ClientController::class, 'store'])->name('clients.store');
+    Route::match(['put', 'patch'], 'clients/{client}', [ClientController::class, 'update'])->name('clients.update');
     Route::get('projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::post('projects', [ProjectController::class, 'store'])->name('projects.store');
     Route::get('projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
@@ -68,6 +70,8 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('two-factor', [TwoFactorAuthenticationController::class, 'show'])->name('two-factor.show')
             ->middleware('verified');
+
+        Route::post('confirm-password', [ConfirmablePasswordController::class, 'store'])->name('password.confirm');
     });
 
     // Workspace Settings
