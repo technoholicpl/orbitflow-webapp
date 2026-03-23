@@ -4,6 +4,7 @@ import { Search, FileText, User, Briefcase, Command as CommandIcon, X } from 'lu
 import axios from 'axios'
 import { router } from '@inertiajs/react'
 import debounce from 'lodash/debounce'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { useQuickActionsStore } from '@/store/quickActionsStore'
 
 interface SearchResult {
@@ -23,37 +24,30 @@ const CommandPalette = () => {
         router.visit(url)
     }
 
-    useEffect(() => {
-        const down = (e: KeyboardEvent) => {
-            if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault()
-                setOpen((open: boolean) => !open)
-            }
-            
-            // Other shortcuts (only when not typing)
-            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || (e.target as HTMLElement).isContentEditable) return
+    useHotkeys('mod+k', (e) => {
+        e.preventDefault()
+        setOpen((prev: boolean) => !prev)
+    }, { enableOnFormTags: true })
 
-            if (e.key === 'n') {
-                e.preventDefault()
-                openProjectDrawer()
-            }
-            if (e.key === 'c') {
-                e.preventDefault()
-                openClientDrawer()
-            }
-            if (e.key === 't') {
-                e.preventDefault()
-                openTimeModal()
-            }
-            if (e.key === 'h') {
-                e.preventDefault()
-                navigateTo('/dashboard')
-            }
-        }
+    useHotkeys('n', (e) => {
+        e.preventDefault()
+        openProjectDrawer()
+    })
 
-        document.addEventListener('keydown', down)
-        return () => document.removeEventListener('keydown', down)
-    }, [])
+    useHotkeys('c', (e) => {
+        e.preventDefault()
+        openClientDrawer()
+    })
+
+    useHotkeys('t', (e) => {
+        e.preventDefault()
+        openTimeModal()
+    })
+
+    useHotkeys('h', (e) => {
+        e.preventDefault()
+        navigateTo('/dashboard')
+    })
 
     const fetchResults = useCallback(
         debounce(async (searchQuery: string) => {
@@ -127,7 +121,7 @@ const CommandPalette = () => {
 
                     {results.projects.length > 0 && (
                         <Command.Group heading={<span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-gray-400">Projekty</span>}>
-                            {results.projects.map((project) => (
+                            {results.projects.map((project: any) => (
                                 <Command.Item
                                     key={project.id}
                                     onSelect={() => navigateTo(`/projects/${project.slug}`)}
@@ -142,7 +136,7 @@ const CommandPalette = () => {
 
                     {results.clients.length > 0 && (
                         <Command.Group heading={<span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-2 block">Klienci</span>}>
-                            {results.clients.map((client) => (
+                            {results.clients.map((client: any) => (
                                 <Command.Item
                                     key={client.id}
                                     onSelect={() => navigateTo(`/clients/${client.id}`)}
@@ -157,7 +151,7 @@ const CommandPalette = () => {
 
                     {results.members.length > 0 && (
                         <Command.Group heading={<span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-2 block">Zespół</span>}>
-                            {results.members.map((member) => (
+                            {results.members.map((member: any) => (
                                 <Command.Item
                                     key={member.id}
                                     onSelect={() => navigateTo(`/settings/members`)}

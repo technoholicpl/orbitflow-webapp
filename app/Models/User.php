@@ -41,6 +41,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verification_code',
         'email_verification_expires_at',
         'email_verified_at',
+        'has_completed_tour',
     ];
 
     public function socialAccounts(): \Illuminate\Database\Eloquent\Relations\HasMany
@@ -98,6 +99,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verification_expires_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'has_completed_tour' => 'boolean',
         ];
     }
 }

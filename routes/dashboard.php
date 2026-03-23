@@ -96,5 +96,12 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('subscription', [\App\Http\Controllers\Dashboard\Settings\SubscriptionController::class, 'index'])->name('subscription.index');
         Route::patch('subscription', [\App\Http\Controllers\Dashboard\Settings\SubscriptionController::class, 'update'])->name('subscription.update');
+
+        Route::get('templates', [\App\Http\Controllers\Dashboard\Settings\ProjectTemplateController::class, 'index'])->name('templates.index');
+        Route::post('templates', [\App\Http\Controllers\Dashboard\Settings\ProjectTemplateController::class, 'store'])->name('templates.store');
+        Route::patch('templates/{template}', [\App\Http\Controllers\Dashboard\Settings\ProjectTemplateController::class, 'update'])->name('templates.update');
+        // Rename destroy to delete if needed to avoid conflicts or keep as is
+        Route::delete('templates/{template}', [\App\Http\Controllers\Dashboard\Settings\ProjectTemplateController::class, 'destroy'])->name('templates.destroy');
+        Route::post('templates/{template}/clone', [\App\Http\Controllers\Dashboard\Settings\ProjectTemplateController::class, 'clone'])->name('templates.clone');
     });
 });

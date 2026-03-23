@@ -61,6 +61,9 @@ Route::middleware(['web'])->group(function () {
         Route::post('/onboarding/finish', [\App\Http\Controllers\Dashboard\OnboardingController::class, 'finish'])
             ->name('onboarding.finish');
 
+        Route::post('/tour/complete', [\App\Http\Controllers\TourController::class, 'complete'])
+            ->name('tour.complete');
+
         Route::post('/invitations/reject/{token}', [\App\Http\Controllers\InvitationController::class, 'reject'])
             ->name('invitations.reject');
     });

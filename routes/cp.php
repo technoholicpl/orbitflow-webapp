@@ -82,6 +82,11 @@ Route::middleware(['web'])
                 Route::get('features', [\App\Http\Controllers\Admin\FeatureController::class, 'index'])->name('features.index');
                 Route::post('features', [\App\Http\Controllers\Admin\FeatureController::class, 'store'])->name('features.store');
                 Route::delete('features/{feature}', [\App\Http\Controllers\Admin\FeatureController::class, 'destroy'])->name('features.destroy');
+
+                Route::get('templates', [\App\Http\Controllers\Admin\ProjectTemplateController::class, 'index'])->name('templates.index');
+                Route::post('templates', [\App\Http\Controllers\Admin\ProjectTemplateController::class, 'store'])->name('templates.store');
+                Route::patch('templates/{template}', [\App\Http\Controllers\Admin\ProjectTemplateController::class, 'update'])->name('templates.update');
+                Route::delete('templates/{template}', [\App\Http\Controllers\Admin\ProjectTemplateController::class, 'destroy'])->name('templates.destroy');
             });
 
             Route::get('users', function () {

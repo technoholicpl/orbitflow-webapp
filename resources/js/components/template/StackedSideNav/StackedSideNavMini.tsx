@@ -100,6 +100,7 @@ const StackedSideNavMini = (props: StackedSideNavMiniProps) => {
     return (
         <div {...rest} className={`flex flex-col h-full ${rest.className || ''}`}>
             <Link
+                id="workspace-switcher"
                 href={appConfig.authenticatedEntryPath}
                 className="stacked-mini-nav-header flex items-center justify-center shrink-0"
                 style={{ height: HEADER_HEIGHT }}

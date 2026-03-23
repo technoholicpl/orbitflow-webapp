@@ -19,6 +19,7 @@ import TrialBanner from '@/components/TrialBanner';
 import { toast, Notification } from '@/components/ui';
 import CommandPalette from '@/components/template/CommandPalette';
 import { useQuickActionsStore } from '@/store/quickActionsStore';
+import DashboardTour from '@/components/template/DashboardTour';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -60,7 +61,11 @@ export default function DashboardLayout({ children, title = 'Dashboard' }: Dashb
             >
                 <Head title={title} />
                 <div className="flex flex-auto min-w-0">
-                    {larger.lg && <StackedSideNav navigationTree={userNavigationConfig.items} />}
+                    {larger.lg && (
+                        <div id="sidebar-nav">
+                            <StackedSideNav navigationTree={userNavigationConfig.items} />
+                        </div>
+                    )}
                     <div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full">
                         <TrialBanner />
                         <Header
@@ -74,6 +79,7 @@ export default function DashboardLayout({ children, title = 'Dashboard' }: Dashb
                             headerEnd={
                                 <div className="flex items-center gap-2 sm:gap-4">
                                     <button 
+                                        id="global-search-trigger"
                                         onClick={() => useQuickActionsStore.getState().toggleSearch()}
                                         className="hidden md:flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-all group"
                                     >
@@ -83,7 +89,9 @@ export default function DashboardLayout({ children, title = 'Dashboard' }: Dashb
                                             Ctrl+K
                                         </kbd>
                                     </button>
-                                    <GlobalQuickActions />
+                                    <div id="quick-actions">
+                                        <GlobalQuickActions />
+                                    </div>
                                     <NotificationDropdown />
                                     <ModeSwitcher />
                                     <UserProfileDropdown hoverable={false} />
@@ -101,6 +109,7 @@ export default function DashboardLayout({ children, title = 'Dashboard' }: Dashb
                     </div>
                 </div>
                 <CommandPalette />
+                <DashboardTour />
             </LayoutBase>
         </ConfigProvider>
     );
