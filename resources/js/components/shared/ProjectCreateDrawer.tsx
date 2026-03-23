@@ -27,7 +27,7 @@ const ProjectCreateDrawer = ({ isOpen, onClose, project }: ProjectCreateDrawerPr
     const onFormSubmit = (data: any) => {
         setIsSubmitting(true)
         if (isEdit) {
-            router.put(`/projects/${project.id}`, data, {
+            router.put(`/projects/${project.slug}`, data, {
                 onSuccess: () => {
                     setIsSubmitting(false)
                     onClose()

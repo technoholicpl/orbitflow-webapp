@@ -90,7 +90,6 @@ const ProjectForm = ({ onSubmit, defaultValues }: ProjectFormProps) => {
         handleSubmit,
         control,
         setValue,
-        watch,
         formState: { errors },
     } = useForm<ProjectFormSchema>({
         resolver: zodResolver(validationSchema),
@@ -124,6 +123,12 @@ const ProjectForm = ({ onSubmit, defaultValues }: ProjectFormProps) => {
     const currentBrandId = useWatch({
         control,
         name: 'brand_id',
+    })
+
+    const newLabels = useWatch({
+        control,
+        name: 'new_labels',
+        defaultValue: [],
     })
 
     const availableBrands = useMemo(() => {
@@ -315,7 +320,7 @@ const ProjectForm = ({ onSubmit, defaultValues }: ProjectFormProps) => {
                             render={({ field: { value, onChange } }) => {
                                 const selectedValues = [
                                     ...labelOptions.filter((opt: any) => value?.includes(opt.value)),
-                                    ...(watch('new_labels')?.map((l: string) => ({ label: l, value: l, isNew: true })) || [])
+                                    ...(newLabels?.map((l: string) => ({ label: l, value: l, isNew: true })) || [])
                                 ]
 
                                 return (

@@ -25,7 +25,7 @@ test('two factor settings page can be rendered', function () {
         );
 });
 
-test('two factor settings page requires password confirmation when enabled', function () {
+test('two factor settings page does not require password confirmation to be rendered', function () {
     if (! Features::canManageTwoFactorAuthentication()) {
         $this->markTestSkipped('Two-factor authentication is not enabled.');
     }
@@ -40,7 +40,10 @@ test('two factor settings page requires password confirmation when enabled', fun
     $response = $this->actingAs($user)
         ->get(route('two-factor.show'));
 
-    $response->assertRedirect(route('password.confirm'));
+    $response->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('dashboard/account/two-factor')
+        );
 });
 
 test('two factor settings page does not requires password confirmation when disabled', function () {

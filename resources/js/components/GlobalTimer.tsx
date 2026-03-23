@@ -393,7 +393,7 @@ const GlobalTimer = () => {
                                     </button>
                                 </div>
                                 <button 
-                                    onClick={() => router.get(`/projects/${current_timer.project_id}`)}
+                                    onClick={() => router.get(`/projects/${current_timer.project?.slug || current_timer.project_id}`)}
                                     className="w-9 h-9 flex items-center justify-center rounded-xl bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600 hover:text-white border border-indigo-500/20 transition-all active:scale-90 hover:scale-105" 
                                     title="Pokaż pełny opis projektu"
                                 >
