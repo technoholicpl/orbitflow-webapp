@@ -1,5 +1,5 @@
-import reorderArray from './reorderArray'
 import type { DraggableLocation } from '@hello-pangea/dnd'
+import reorderArray from './reorderArray'
 
 export const reorderDragable = <T extends Record<string, unknown[]>>({
     quoteMap,

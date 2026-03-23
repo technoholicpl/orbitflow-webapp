@@ -1,8 +1,8 @@
-import { ElementType, useId } from 'react'
-import { MasonryProps } from './types'
-import useMasonry from './useMasonry'
+import { useId } from 'react'
+import type { Ref , ElementType} from 'react'
 import { MasonryItemContext } from './context'
-import type { Ref } from 'react'
+import type { MasonryProps } from './types'
+import useMasonry from './useMasonry'
 
 const MasonryBase = <T extends ElementType = 'div'>(
     props: MasonryProps<T> & {

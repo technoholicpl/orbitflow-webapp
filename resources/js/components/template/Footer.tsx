@@ -1,7 +1,7 @@
 import Container from '@/components/shared/Container'
-import { cn } from '@/lib/utils'
 import appConfig from '@/configs/app.config'
 import { PAGE_CONTAINER_GUTTER_X } from '@/constants/theme.constant'
+import { cn } from '@/lib/utils'
 
 export type FooterPageContainerType = 'gutterless' | 'contained'
 

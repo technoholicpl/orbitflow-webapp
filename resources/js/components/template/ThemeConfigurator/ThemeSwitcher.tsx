@@ -1,6 +1,6 @@
-import { cn } from '@/lib/utils'
 import { TbCheck } from 'react-icons/tb'
 import presetThemeSchemaConfig from '@/configs/preset-theme-schema.config'
+import { cn } from '@/lib/utils'
 import { useThemeStore } from '@/store/themeStore'
 
 const ThemeSwitcher = () => {

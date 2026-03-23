@@ -1,6 +1,6 @@
+import type { CommonProps } from '@/types/common'
 import { LayoutContext } from '@/utils/hooks/useLayout'
 import type { LayoutContextProps } from '@/utils/hooks/useLayout'
-import type { CommonProps } from '@/types/common'
 
 type LayoutBaseProps = CommonProps & LayoutContextProps
 

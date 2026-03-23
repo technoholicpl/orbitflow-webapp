@@ -1,12 +1,12 @@
-import Tooltip from '@/components/ui/Tooltip'
-import Menu from '@/components/ui/Menu'
-import AuthorityCheck from '@/components/shared/AuthorityCheck'
-import VerticalMenuIcon from './VerticalMenuIcon'
 import { Link } from "@inertiajs/react"
+import AuthorityCheck from '@/components/shared/AuthorityCheck'
 import Dropdown from '@/components/ui/Dropdown'
+import Menu from '@/components/ui/Menu'
+import Tooltip from '@/components/ui/Tooltip'
 import type { CommonProps } from '@/types/common'
-import type { Direction } from '@/types/theme'
 import type { NavigationTree } from '@/types/navigation'
+import type { Direction } from '@/types/theme'
+import VerticalMenuIcon from './VerticalMenuIcon'
 
 const { MenuItem } = Menu
 

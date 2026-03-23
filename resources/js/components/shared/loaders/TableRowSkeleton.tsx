@@ -1,6 +1,6 @@
 ﻿import Skeleton from '@/components/ui/Skeleton'
-import Table from '@/components/ui/Table'
 import type { SkeletonProps } from '@/components/ui/Skeleton'
+import Table from '@/components/ui/Table'
 
 type TableRowSkeletonProps = {
     columns?: number

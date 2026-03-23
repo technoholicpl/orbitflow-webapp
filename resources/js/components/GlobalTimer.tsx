@@ -1,11 +1,3 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { usePage, router } from '@inertiajs/react';
-import { HiPlay, HiStop, HiChevronDown, HiPencilAlt, HiExternalLink, HiPlusCircle, HiPhotograph, HiHashtag, HiOutlineClock } from 'react-icons/hi';
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
-import utc from 'dayjs/plugin/utc';
-import { cn } from '@/lib/utils';
-import { Button, Dropdown, Notification, toast } from '@/components/ui';
 import {
     useFloating,
     autoUpdate,
@@ -20,6 +12,14 @@ import {
     safePolygon,
     FloatingPortal,
 } from '@floating-ui/react';
+import { usePage, router } from '@inertiajs/react';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import utc from 'dayjs/plugin/utc';
+import React, { useState, useEffect } from 'react';
+import { HiPlay, HiStop, HiChevronDown, HiPencilAlt, HiExternalLink, HiPlusCircle, HiPhotograph, HiHashtag, HiOutlineClock } from 'react-icons/hi';
+import { Dropdown, Notification, toast } from '@/components/ui';
+import { cn } from '@/lib/utils';
 
 dayjs.extend(duration);
 dayjs.extend(utc);
@@ -27,11 +27,17 @@ dayjs.extend(utc);
 const GlobalTimer = () => {
     const { current_timer, workspace_projects, auth } = usePage<any>().props;
     const [seconds, setSeconds] = useState(0);
-    const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [isInfoOpen, setIsInfoOpen] = useState(false);
-    const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
     const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
     const [recoveryEndTime, setRecoveryEndTime] = useState('');
+
+    const formatTime = (totalSeconds: number) => {
+        const d = dayjs.duration(totalSeconds, 'seconds');
+        const h = Math.floor(d.asHours());
+        const m = d.minutes();
+        const s = d.seconds();
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    };
 
     // Floating UI for Info Popover
     const { refs, floatingStyles, context } = useFloating({
@@ -105,20 +111,12 @@ const GlobalTimer = () => {
         }
     }, [current_timer]);
 
-    const formatTime = (totalSeconds: number) => {
-        const d = dayjs.duration(totalSeconds, 'seconds');
-        const h = Math.floor(d.asHours());
-        const m = d.minutes();
-        const s = d.seconds();
-        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    };
 
     const handleStart = (projectId: number) => {
         router.post('/time-entries', {
             project_id: projectId
         }, {
             onSuccess: () => {
-                setIsPopoverOpen(false);
                 toast.push(
                     <Notification title="Licznik uruchomiony" type="success" />
                 );
@@ -150,7 +148,6 @@ const GlobalTimer = () => {
         }
     };
 
-    const activeProject = current_timer?.project;
 
     const handleRecovery = (action: string) => {
         let finalEndTime: string | null = null;

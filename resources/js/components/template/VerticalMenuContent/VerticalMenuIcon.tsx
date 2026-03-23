@@ -1,5 +1,5 @@
-import navigationIcon from '@/configs/navigation-icon.config'
 import type { ElementType, ComponentPropsWithRef } from 'react'
+import navigationIcon from '@/configs/navigation-icon.config'
 
 type VerticalMenuIconProps = {
     icon: string

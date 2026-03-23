@@ -1,6 +1,6 @@
+import type { ReactNode, ElementType } from 'react'
 import { cn } from '@/lib/utils'
 import type { CommonProps } from '@/types/common'
-import type { ReactNode, ElementType } from 'react'
 
 export interface IconTextProps extends CommonProps {
     icon?: ReactNode | string

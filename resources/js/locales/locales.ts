@@ -1,7 +1,7 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import en from './lang/en.json'
 import appConfig from '@/configs/app.config'
+import en from './lang/en.json'
 
 const resources = {
     en: {

@@ -1,16 +1,16 @@
 import { Suspense } from 'react'
+import type { ReactNode, ElementType, ComponentPropsWithRef } from 'react'
 import Container from '@/components/shared/Container'
 import Footer from '@/components/template/Footer'
-import useLayout from '@/utils/hooks/useLayout'
-import { cn } from '@/lib/utils'
+import type { FooterPageContainerType } from '@/components/template/Footer'
 import {
     PAGE_CONTAINER_GUTTER_X,
     PAGE_CONTAINER_GUTTER_Y,
 } from '@/constants/theme.constant'
+import { cn } from '@/lib/utils'
 import type { CommonProps } from '@/types/common'
 import type { Meta, PageHeaderProps } from '@/types/routes'
-import type { FooterPageContainerType } from '@/components/template/Footer'
-import type { ReactNode, ElementType, ComponentPropsWithRef } from 'react'
+import useLayout from '@/utils/hooks/useLayout'
 
 export interface PageContainerProps extends CommonProps, Meta {
     contained?: boolean

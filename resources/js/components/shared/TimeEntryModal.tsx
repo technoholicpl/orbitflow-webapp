@@ -1,8 +1,8 @@
-import React from 'react'
-import { Dialog, Button, Notification, toast } from '@/components/ui'
-import TimeEntryForm from '@/components/template/TimeEntryForm'
 import { router } from '@inertiajs/react'
+import React from 'react'
 import { HiClock } from 'react-icons/hi'
+import TimeEntryForm from '@/components/template/TimeEntryForm'
+import { Dialog, Button, Notification, toast } from '@/components/ui'
 
 interface TimeEntryModalProps {
     isOpen: boolean

@@ -1,7 +1,7 @@
-import debounce from 'lodash/debounce'
 import type { DebounceSettingsLeading } from 'lodash'
+import debounce from 'lodash/debounce'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 function useDebounce<T extends (...args: any) => any>(
     func: T,
     wait: number | undefined,

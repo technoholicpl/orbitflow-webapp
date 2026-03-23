@@ -1,25 +1,25 @@
-import React from 'react';
 import { Head, usePage } from '@inertiajs/react';
-import StackedSideNav from '@/components/template/StackedSideNav';
-import Header from '@/components/template/Header';
-import MobileNav from '@/components/template/MobileNav';
-import UserProfileDropdown from '@/components/template/UserProfileDropdown';
-import LayoutBase from '@/components/template/LayoutBase';
-import useResponsive from '@/utils/hooks/useResponsive';
-import { LAYOUT_STACKED_SIDE } from '@/constants/theme.constant';
-import ConfigProvider from '@/components/ui/ConfigProvider';
-import { themeConfig } from '@/configs/theme.config';
-import { userNavigationConfig } from '@/configs/navigation.config';
-import ModeSwitcher from '@/components/template/ThemeConfigurator/ModeSwitcher';
-import GlobalQuickActions from '@/components/template/GlobalQuickActions';
-import GlobalTimer from '@/components/GlobalTimer';
 import { Search } from 'lucide-react';
+import React from 'react';
+import GlobalTimer from '@/components/GlobalTimer';
+import CommandPalette from '@/components/template/CommandPalette';
+import DashboardTour from '@/components/template/DashboardTour';
+import GlobalQuickActions from '@/components/template/GlobalQuickActions';
+import Header from '@/components/template/Header';
+import LayoutBase from '@/components/template/LayoutBase';
+import MobileNav from '@/components/template/MobileNav';
 import NotificationDropdown from '@/components/template/NotificationDropdown';
+import StackedSideNav from '@/components/template/StackedSideNav';
+import ModeSwitcher from '@/components/template/ThemeConfigurator/ModeSwitcher';
+import UserProfileDropdown from '@/components/template/UserProfileDropdown';
 import TrialBanner from '@/components/TrialBanner';
 import { toast, Notification } from '@/components/ui';
-import CommandPalette from '@/components/template/CommandPalette';
+import ConfigProvider from '@/components/ui/ConfigProvider';
+import { userNavigationConfig } from '@/configs/navigation.config';
+import { themeConfig } from '@/configs/theme.config';
+import { LAYOUT_STACKED_SIDE } from '@/constants/theme.constant';
 import { useQuickActionsStore } from '@/store/quickActionsStore';
-import DashboardTour from '@/components/template/DashboardTour';
+import useResponsive from '@/utils/hooks/useResponsive';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -28,7 +28,7 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children, title = 'Dashboard' }: DashboardLayoutProps) {
     const { larger, smaller } = useResponsive();
-    const { auth, flash } = usePage<any>().props;
+    const { flash } = usePage<any>().props;
 
     React.useEffect(() => {
         if (flash?.success) {

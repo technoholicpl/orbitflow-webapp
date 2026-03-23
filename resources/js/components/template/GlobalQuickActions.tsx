@@ -1,8 +1,8 @@
 import React from 'react'
-import QuickAddMenu from '@/components/template/QuickAddMenu'
 import ClientCreateDrawer from '@/components/shared/ClientCreateDrawer'
 import ProjectCreateDrawer from '@/components/shared/ProjectCreateDrawer'
 import TimeEntryModal from '@/components/shared/TimeEntryModal'
+import QuickAddMenu from '@/components/template/QuickAddMenu'
 import { useQuickActionsStore } from '@/store/quickActionsStore'
 
 const GlobalQuickActions = () => {

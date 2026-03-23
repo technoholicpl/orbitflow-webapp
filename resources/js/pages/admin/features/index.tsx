@@ -1,9 +1,9 @@
-import React from 'react'
 import { Head, useForm, router } from '@inertiajs/react'
+import React from 'react'
+import { HiOutlineTrash, HiOutlinePlus } from 'react-icons/hi'
+import { Button, Input, Select, Table, Notification, toast, Card } from '@/components/ui'
 import AdminLayout from '@/layouts/adminlayout'
 import { store, destroy } from '@/routes/admin/features'
-import { Button, Input, Select, Table, Notification, toast, Card } from '@/components/ui'
-import { HiOutlineTrash, HiOutlinePlus } from 'react-icons/hi'
 
 interface Feature {
     id: number

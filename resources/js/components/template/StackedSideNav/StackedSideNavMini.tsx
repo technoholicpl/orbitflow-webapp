@@ -1,21 +1,22 @@
-import { useEffect, ReactNode } from 'react'
+import { Link } from "@inertiajs/react"
+import isEmpty from 'lodash/isEmpty'
+import type { ReactNode } from 'react';
+import { useEffect } from 'react'
+import AuthorityCheck from '@/components/shared/AuthorityCheck'
 import Logo from '@/components/template/Logo'
 import Menu from '@/components/ui/Menu'
 import ScrollBar from '@/components/ui/ScrollBar'
-import AuthorityCheck from '@/components/shared/AuthorityCheck'
+import appConfig from '@/configs/app.config'
+import navigationIcon from '@/configs/navigation-icon.config'
+import { NAV_ITEM_TYPE_ITEM } from '@/constants/navigation.constant'
 import {
     SIDE_NAV_CONTENT_GUTTER,
     HEADER_HEIGHT,
 } from '@/constants/theme.constant'
-import { NAV_ITEM_TYPE_ITEM } from '@/constants/navigation.constant'
-import appConfig from '@/configs/app.config'
-import navigationIcon from '@/configs/navigation-icon.config'
-import useMenuActive from '@/utils/hooks/useMenuActive'
-import isEmpty from 'lodash/isEmpty'
-import { Link } from "@inertiajs/react"
+import type { CommonProps } from '@/types/common'
 import type { NavigationTree } from '@/types/navigation'
 import type { Direction, Mode } from '@/types/theme'
-import type { CommonProps } from '@/types/common'
+import useMenuActive from '@/utils/hooks/useMenuActive'
 
 export type SelectedMenuItem = {
     key?: string

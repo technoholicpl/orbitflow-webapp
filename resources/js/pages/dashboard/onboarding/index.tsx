@@ -1,12 +1,12 @@
 import { useForm, Head, router } from '@inertiajs/react';
-import { plan as planRoute, finish as finishRoute, back as backRoute } from '@/routes/onboarding';
-import { Button, Input, FormItem, Notification, toast, Select, Badge } from '@/components/ui';
-import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ArrowLeft, Plus, X, Rocket, Users, Check, Sparkles, Building2, BarChart3, Search, Clock } from 'lucide-react';
-import cn from '@/components/ui/utils/classNames';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { ArrowLeft, Plus, X, Rocket, Users, Check, Sparkles, Building2, BarChart3, Search, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Button, Input, FormItem, Notification, toast, Select, Badge } from '@/components/ui';
+import cn from '@/components/ui/utils/classNames';
+import { plan as planRoute, finish as finishRoute, back as backRoute } from '@/routes/onboarding';
 import 'dayjs/locale/pl';
 
 dayjs.extend(relativeTime);

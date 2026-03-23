@@ -1,5 +1,6 @@
 import { Head, useForm, router } from '@inertiajs/react';
 import { Edit2, Plus, Trash2, Rocket, CheckCircle2, Copy, X } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import React, { useState } from 'react';
 import Heading from '@/components/heading';
 import {
@@ -14,7 +15,6 @@ import {
 } from '@/components/ui';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import SettingsLayout from '@/layouts/settings/layout';
-import * as LucideIcons from 'lucide-react';
 import { store, update, destroy as destroyRoute, clone } from '@/routes/workspace/templates';
 
 interface Task {

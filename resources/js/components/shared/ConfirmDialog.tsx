@@ -1,4 +1,5 @@
-﻿import {
+﻿import type { ReactNode } from 'react'
+import {
     HiCheckCircle,
     HiOutlineInformationCircle,
     HiOutlineExclamation,
@@ -6,10 +7,9 @@
 } from 'react-icons/hi'
 import Avatar from '@/components/ui/Avatar'
 import Button from '@/components/ui/Button'
-import Dialog from '@/components/ui/Dialog'
-import type { ReactNode } from 'react'
-import type { DialogProps } from '@/components/ui/Dialog'
 import type { ButtonProps } from '@/components/ui/Button'
+import Dialog from '@/components/ui/Dialog'
+import type { DialogProps } from '@/components/ui/Dialog'
 
 type StatusType = 'info' | 'success' | 'warning' | 'danger'
 

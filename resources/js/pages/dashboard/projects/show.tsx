@@ -1,8 +1,8 @@
-import React from 'react';
-import DashboardLayout from '@/layouts/DashboardLayout';
 import { Head } from '@inertiajs/react';
 import { Briefcase, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import React from 'react';
 import { Card, Badge, Tag, Table } from '@/components/ui';
+import DashboardLayout from '@/layouts/DashboardLayout';
 
 interface ProjectShowProps {
     project: any;

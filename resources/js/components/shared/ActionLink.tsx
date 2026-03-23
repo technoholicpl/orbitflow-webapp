@@ -1,7 +1,7 @@
-import { cn } from '@/lib/utils'
 import { Link } from "@inertiajs/react"
-import type { CommonProps } from '@/types/common'
 import type { ComponentPropsWithoutRef } from 'react'
+import { cn } from '@/lib/utils'
+import type { CommonProps } from '@/types/common'
 
 interface ActionLink extends CommonProps, ComponentPropsWithoutRef<'a'> {
     themeColor?: boolean

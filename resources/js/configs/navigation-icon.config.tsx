@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import {
     PiHouseLineDuotone,
     PiArrowsInDuotone,
@@ -17,7 +18,6 @@ import {
     PiCheckSquareDuotone,
     PiGearDuotone,
 } from 'react-icons/pi'
-import type { JSX } from 'react'
 
 export type NavigationIcons = Record<string, JSX.Element>
 

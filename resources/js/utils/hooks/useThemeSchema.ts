@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { useThemeStore } from '@/store/themeStore'
 import presetThemeSchemaConfig from '@/configs/preset-theme-schema.config'
+import { useThemeStore } from '@/store/themeStore'
 
 export type ThemeVariables = Record<
     'primary' | 'primaryDeep' | 'primaryMild' | 'primarySubtle' | 'neutral',

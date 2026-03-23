@@ -1,9 +1,9 @@
 import { usePage, router } from '@inertiajs/react';
-import { Dropdown, Badge, Button, Notification, toast } from '@/components/ui';
-import { Bell, Mail, Check, X, Info } from 'lucide-react';
-import cn from '@/components/ui/utils/classNames';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { Bell, Mail, Check, X, Info } from 'lucide-react';
+import { Dropdown, Badge, Button, Notification, toast } from '@/components/ui';
+import cn from '@/components/ui/utils/classNames';
 
 dayjs.extend(relativeTime);
 

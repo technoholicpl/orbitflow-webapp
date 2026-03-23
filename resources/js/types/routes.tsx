@@ -1,5 +1,5 @@
-import { LayoutType } from './theme'
 import type { LazyExoticComponent, ReactNode, JSX } from 'react'
+import type { LayoutType } from './theme'
 
 export type PageHeaderProps = {
     title?: string | ReactNode | LazyExoticComponent<() => JSX.Element>

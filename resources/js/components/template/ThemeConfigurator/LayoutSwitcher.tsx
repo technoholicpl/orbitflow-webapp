@@ -1,6 +1,11 @@
 import classNames from 'classnames'
+import BlankSvg from '@/assets/svg/BlankSvg'
+import CollapsibleSideSvg from '@/assets/svg/CollapsibleSideSvg'
+import ContentOverlaySvg from '@/assets/svg/ContentOverlaySvg'
+import FrameLessSideSvg from '@/assets/svg/FrameLessSideSvg'
+import StackedSideSvg from '@/assets/svg/StackedSideSvg'
+import TopBarClassicSvg from '@/assets/svg/TopBarClassicSvg'
 import Segment from '@/components/ui/Segment'
-import { useThemeStore } from '@/store/themeStore'
 import {
     LAYOUT_COLLAPSIBLE_SIDE,
     LAYOUT_STACKED_SIDE,
@@ -9,12 +14,7 @@ import {
     LAYOUT_CONTENT_OVERLAY,
     LAYOUT_BLANK,
 } from '@/constants/theme.constant'
-import CollapsibleSideSvg from '@/assets/svg/CollapsibleSideSvg'
-import StackedSideSvg from '@/assets/svg/StackedSideSvg'
-import TopBarClassicSvg from '@/assets/svg/TopBarClassicSvg'
-import FrameLessSideSvg from '@/assets/svg/FrameLessSideSvg'
-import ContentOverlaySvg from '@/assets/svg/ContentOverlaySvg'
-import BlankSvg from '@/assets/svg/BlankSvg'
+import { useThemeStore } from '@/store/themeStore'
 import type { LayoutType } from '@/types/theme'
 
 const layouts = [

@@ -1,10 +1,10 @@
-import Menu from '@/components/ui/Menu'
-import Dropdown from '@/components/ui/Dropdown'
-import VerticalMenuIcon from './VerticalMenuIcon'
 import AuthorityCheck from '@/components/shared/AuthorityCheck'
+import Dropdown from '@/components/ui/Dropdown'
+import Menu from '@/components/ui/Menu'
 import type { CommonProps, TranslationFn } from '@/types/common'
-import type { Direction } from '@/types/theme'
 import type { NavigationTree } from '@/types/navigation'
+import type { Direction } from '@/types/theme'
+import VerticalMenuIcon from './VerticalMenuIcon'
 
 interface DefaultItemProps extends CommonProps {
     nav: NavigationTree

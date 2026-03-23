@@ -1,6 +1,6 @@
 import classNames from 'classnames'
-import { CommonProps } from '@/types/common'
 import type { ElementType, Ref } from 'react'
+import type { CommonProps } from '@/types/common'
 
 interface ContainerProps extends CommonProps {
     asElement?: ElementType

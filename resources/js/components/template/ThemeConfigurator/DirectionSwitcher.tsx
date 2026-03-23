@@ -1,8 +1,8 @@
 import Button from '@/components/ui/Button'
 import InputGroup from '@/components/ui/InputGroup'
-import useDirection from '@/utils/hooks/useDirection'
 import { THEME_ENUM } from '@/constants/theme.constant'
 import type { Direction } from '@/types/theme'
+import useDirection from '@/utils/hooks/useDirection'
 
 const dirList = [
     { value: THEME_ENUM.DIR_LTR, label: 'LTR' },

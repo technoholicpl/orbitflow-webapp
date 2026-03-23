@@ -1,13 +1,9 @@
 import { Link, usePage } from "@inertiajs/react"
-import { cn } from '@/lib/utils'
-import ScrollBar from '@/components/ui/ScrollBar'
 import Logo from '@/components/template/Logo'
 import VerticalMenuContent from '@/components/template/VerticalMenuContent'
-import { useThemeStore } from '@/store/themeStore'
-import { useRouteKeyStore } from '@/store/routeKeyStore'
-import navigationConfig from '@/configs/navigation.config'
+import ScrollBar from '@/components/ui/ScrollBar'
 import appConfig from '@/configs/app.config'
-import type { User } from '@/types'
+import navigationConfig from '@/configs/navigation.config'
 import {
     SIDE_NAV_WIDTH,
     SIDE_NAV_COLLAPSED_WIDTH,
@@ -15,6 +11,10 @@ import {
     HEADER_HEIGHT,
     LOGO_X_GUTTER,
 } from '@/constants/theme.constant'
+import { cn } from '@/lib/utils'
+import { useRouteKeyStore } from '@/store/routeKeyStore'
+import { useThemeStore } from '@/store/themeStore'
+import type { User } from '@/types'
 import type { Mode } from '@/types/theme'
 
 type SideNavProps = {

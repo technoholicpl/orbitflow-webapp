@@ -1,10 +1,10 @@
+import type { PageProps } from '@inertiajs/core'
+import { Link, usePage, router } from '@inertiajs/react'
+import type { JSX } from 'react'
+import { PiUserDuotone, PiSignOutDuotone } from 'react-icons/pi'
 import Avatar from '@/components/ui/Avatar'
 import Dropdown from '@/components/ui/Dropdown'
 import withHeaderItem from '@/utils/hoc/withHeaderItem'
-import { Link, usePage, router } from '@inertiajs/react'
-import { PiUserDuotone, PiSignOutDuotone } from 'react-icons/pi'
-import type { JSX } from 'react'
-import { PageProps } from '@inertiajs/core'
 
 type DropdownList = {
     label: string
@@ -24,7 +24,7 @@ interface AuthProps extends PageProps {
     isAdmin: boolean;
 }
 
-const _UserDropdown = () => {
+const UserDropdownBase = () => {
     const { auth, cp_prefix, isAdmin } = usePage<AuthProps>().props;
     const { user } = auth;
 
@@ -103,6 +103,6 @@ const _UserDropdown = () => {
     )
 }
 
-const UserDropdown = withHeaderItem(_UserDropdown)
+const UserDropdown = withHeaderItem(UserDropdownBase)
 
 export default UserDropdown

@@ -1,9 +1,9 @@
 import { Form } from '@inertiajs/react';
 import { useRef } from 'react';
+import { useState } from 'react';
 import ProfileController from '@/actions/App/Http/Controllers/Dashboard/Account/ProfileController';
 import Heading from '@/components/heading';
 import { Button, Dialog, Input, FormItem } from '@/components/ui';
-import { useState } from 'react';
 
 export default function DeleteUser() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);

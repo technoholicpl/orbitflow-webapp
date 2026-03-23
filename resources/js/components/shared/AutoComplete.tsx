@@ -1,5 +1,4 @@
-﻿import { ReactNode, ChangeEvent, useRef, useState, useEffect } from 'react'
-import {
+﻿import {
     autoUpdate,
     size,
     flip,
@@ -12,7 +11,10 @@ import {
     FloatingFocusManager,
     FloatingPortal,
 } from '@floating-ui/react'
-import Input, { InputProps } from '@/components/ui/Input'
+import type { ReactNode, ChangeEvent} from 'react';
+import { useRef, useState, useEffect } from 'react'
+import type { InputProps } from '@/components/ui/Input';
+import Input from '@/components/ui/Input'
 
 interface ItemProps {
     children: React.ReactNode

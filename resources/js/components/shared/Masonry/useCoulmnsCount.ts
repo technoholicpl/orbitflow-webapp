@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 
-import { Columns } from './types'
-import useWindowWidth from './useWindowWidth'
 import findBreakpoint from './breakpoints'
+import type { Columns } from './types'
+import useWindowWidth from './useWindowWidth'
 
 const DEFAULT_COLUMNS = 3
 

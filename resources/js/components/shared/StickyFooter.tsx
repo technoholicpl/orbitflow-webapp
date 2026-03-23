@@ -1,7 +1,7 @@
-import { useRef, useState, useEffect, ReactNode } from 'react'
 import classNames from 'classnames'
+import { useRef, useState, useEffect } from 'react'
+import type { HTMLAttributes , ReactNode } from 'react'
 import useDebounce from '@/utils/hooks/useDebounce'
-import type { HTMLAttributes } from 'react'
 
 interface StickyFooterProps
     extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {

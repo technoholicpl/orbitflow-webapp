@@ -1,14 +1,15 @@
 import classNames from 'classnames'
-import Drawer from '@/components/ui/Drawer'
 import { PiGearDuotone } from 'react-icons/pi'
-import SidePanelContent, { SidePanelContentProps } from './SidePanelContent'
-import withHeaderItem from '@/utils/hoc/withHeaderItem'
+import Drawer from '@/components/ui/Drawer'
 import { useThemeStore } from '@/store/themeStore'
 import type { CommonProps } from '@/types/common'
+import withHeaderItem from '@/utils/hoc/withHeaderItem'
+import SidePanelContent from './SidePanelContent'
+import type { SidePanelContentProps } from './SidePanelContent';
 
 type SidePanelProps = SidePanelContentProps & CommonProps
 
-const _SidePanel = (props: SidePanelProps) => {
+const SidePanelBase = (props: SidePanelProps) => {
     const { className, ...rest } = props
 
     const panelExpand = useThemeStore((state) => state.panelExpand)
@@ -53,6 +54,6 @@ const _SidePanel = (props: SidePanelProps) => {
     )
 }
 
-const SidePanel = withHeaderItem(_SidePanel)
+const SidePanel = withHeaderItem(SidePanelBase)
 
 export default SidePanel

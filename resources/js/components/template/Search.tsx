@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
-import { cn } from '@/lib/utils'
-import withHeaderItem from '@/utils/hoc/withHeaderItem'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import ScrollBar from '@/components/ui/ScrollBar'
 import navigationIcon from '@/configs/navigation-icon.config'
-const apiGetSearchResult = async <T,>(data: any): Promise<{ data: T }> => ({ data: [] as any });
+import { cn } from '@/lib/utils'
+import withHeaderItem from '@/utils/hoc/withHeaderItem'
+const apiGetSearchResult = async <T,>(data: any): Promise<T> => ([] as any);
 import debounce from 'lodash/debounce'
 import { HiOutlineSearch, HiChevronRight } from 'react-icons/hi'
 import { PiMagnifyingGlassDuotone } from 'react-icons/pi'
@@ -77,7 +77,7 @@ const ListItem = (props: {
     )
 }
 
-const _Search = ({ className }: { className?: string }) => {
+const SearchBase = ({ className }: { className?: string }) => {
     const [searchDialogOpen, setSearchDialogOpen] = useState(false)
     const [searchResult, setSearchResult] =
         useState<SearchResult[]>(recommendedSearch)
@@ -204,7 +204,7 @@ const _Search = ({ className }: { className?: string }) => {
     )
 }
 
-const Search = withHeaderItem(_Search)
+const Search = withHeaderItem(SearchBase)
 
 export default Search
 

@@ -1,9 +1,9 @@
 import { usePage } from '@inertiajs/react'
-import HorizontalMenuContent from './HorizontalMenuContent'
-import { useRouteKeyStore } from '@/store/routeKeyStore'
 import appConfig from '@/configs/app.config'
 import navigationConfig from '@/configs/navigation.config'
+import { useRouteKeyStore } from '@/store/routeKeyStore'
 import type { User } from '@/types'
+import HorizontalMenuContent from './HorizontalMenuContent'
 
 const HorizontalNav = ({
     translationSetup = appConfig.activeNavTranslation,

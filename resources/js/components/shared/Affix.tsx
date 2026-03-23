@@ -1,5 +1,5 @@
-import { useEffect, createRef } from 'react'
 import classNames from 'classnames'
+import { useEffect, useRef } from 'react'
 import type { CommonProps } from '@/types/common'
 
 type AffixStyles = {
@@ -15,12 +15,12 @@ interface AffixProps extends CommonProps {
 function Affix(props: AffixProps) {
     const { offset = 0, className, children } = props
 
-    const ref = createRef<HTMLDivElement>()
-    const prevStyle: AffixStyles = {
+    const ref = useRef<HTMLDivElement>(null)
+    const prevStyle = useRef<AffixStyles>({
         position: '',
         top: '',
         width: '',
-    }
+    })
 
     const checkPosition = (distanceToBody: number, width?: number) => {
         const scrollTop = window.scrollY
@@ -28,8 +28,8 @@ function Affix(props: AffixProps) {
         if (ref.current) {
             if (distanceToBody - scrollTop < offset) {
                 if (ref.current.style.position !== 'fixed') {
-                    for (const key in prevStyle) {
-                        prevStyle[key as keyof AffixStyles] =
+                    for (const key in prevStyle.current) {
+                        prevStyle.current[key as keyof AffixStyles] =
                             ref.current.style[key as keyof AffixStyles]
                     }
                     ref.current.style.position = 'fixed'
@@ -37,9 +37,9 @@ function Affix(props: AffixProps) {
                     ref.current.style.top = offset + 'px'
                 }
             } else {
-                for (const key in prevStyle) {
+                for (const key in prevStyle.current) {
                     ref.current.style[key as keyof AffixStyles] =
-                        prevStyle[key as keyof AffixStyles]
+                        prevStyle.current[key as keyof AffixStyles]
                 }
             }
         }
@@ -50,16 +50,17 @@ function Affix(props: AffixProps) {
             return
         }
 
-        if (ref.current) {
+        const currentRef = ref.current
+        if (currentRef) {
             const distanceToBody =
-                window.scrollY + ref.current.getBoundingClientRect().top
+                window.scrollY + currentRef.getBoundingClientRect().top
             const handleScroll = () => {
-                if (!ref.current) {
+                if (!currentRef) {
                     return
                 }
 
                 requestAnimationFrame(() => {
-                    checkPosition(distanceToBody, ref.current?.clientWidth)
+                    checkPosition(distanceToBody, currentRef.clientWidth)
                 })
             }
 
@@ -68,7 +69,7 @@ function Affix(props: AffixProps) {
                 window.removeEventListener('scroll', handleScroll)
             }
         }
-    })
+    }, [offset])
 
     return (
         <div ref={ref} className={classNames('z-10', className)}>

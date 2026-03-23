@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useCallback } from 'react'
-import { Command } from 'cmdk'
-import { Search, FileText, User, Briefcase, Command as CommandIcon, X } from 'lucide-react'
-import axios from 'axios'
 import { router } from '@inertiajs/react'
+import axios from 'axios'
+import { Command } from 'cmdk'
 import debounce from 'lodash/debounce'
+import { Search, FileText, User, Briefcase, Command as CommandIcon, X } from 'lucide-react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useQuickActionsStore } from '@/store/quickActionsStore'
 

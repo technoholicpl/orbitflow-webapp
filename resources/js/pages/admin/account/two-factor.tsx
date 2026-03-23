@@ -6,8 +6,8 @@ import ConfirmsPassword from '@/components/confirms-password';
 import TwoFactorRecoveryCodes from '@/components/two-factor-recovery-codes';
 import TwoFactorSetupModal from '@/components/two-factor-setup-modal';
 import { Button, Tag } from '@/components/ui';
-import AdminLayout from '@/layouts/adminlayout';
 import AdminAccountLayout from '@/layouts/account/admin-layout';
+import AdminLayout from '@/layouts/adminlayout';
 import { useTwoFactorAuth } from '@/utils/hooks/use-two-factor-auth';
 
 interface AuthProps extends PageProps {

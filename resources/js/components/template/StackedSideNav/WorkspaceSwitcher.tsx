@@ -1,8 +1,8 @@
-import React from 'react'
 import { router, usePage } from '@inertiajs/react'
+import React from 'react'
 import { Avatar, Dropdown, Badge, Notification, toast } from '@/components/ui'
-import type { User } from '@/types'
 import workspaceRoutes from '@/routes/workspace'
+import type { User } from '@/types'
 
 const WorkspaceSwitcher = () => {
     const { props: pageProps } = usePage<{ auth: { user: User }, isAdmin: boolean }>()

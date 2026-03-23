@@ -1,8 +1,8 @@
-import ModeSwitcher from './ModeSwitcher'
-import LayoutSwitcher from './LayoutSwitcher'
-import ThemeSwitcher from './ThemeSwitcher'
-import DirectionSwitcher from './DirectionSwitcher'
 import CopyButton from './CopyButton'
+import DirectionSwitcher from './DirectionSwitcher'
+import LayoutSwitcher from './LayoutSwitcher'
+import ModeSwitcher from './ModeSwitcher'
+import ThemeSwitcher from './ThemeSwitcher'
 
 export type ThemeConfiguratorProps = {
     callBackClose?: () => void

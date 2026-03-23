@@ -3,6 +3,8 @@ import {
     Edit2, Plus, Trash2, Activity
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { ActionTypeForm } from '@/components/action-types/action-type-form';
+import { actionIcons } from '@/components/action-types/icon-picker';
 import Heading from '@/components/heading';
 import {
     Button,
@@ -14,8 +16,6 @@ import {
 import DashboardLayout from '@/layouts/DashboardLayout';
 import SettingsLayout from '@/layouts/settings/layout';
 import workspace from '@/routes/workspace';
-import { actionIcons } from '@/components/action-types/icon-picker';
-import { ActionTypeForm } from '@/components/action-types/action-type-form';
 
 interface ActionType {
     id: number;

@@ -1,7 +1,8 @@
 ﻿import { useState } from 'react'
-import { Input, InputProps } from '@/components/ui/Input'
-import { HiOutlineEyeOff, HiOutlineEye } from 'react-icons/hi'
 import type { MouseEvent, Ref } from 'react'
+import { HiOutlineEyeOff, HiOutlineEye } from 'react-icons/hi'
+import type { InputProps } from '@/components/ui/Input';
+import { Input } from '@/components/ui/Input'
 
 interface PasswordInputProps extends InputProps {
     onVisibleChange?: (visible: boolean) => void

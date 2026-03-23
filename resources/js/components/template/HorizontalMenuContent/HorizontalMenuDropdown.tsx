@@ -1,4 +1,3 @@
-import { useEffect, useState, useRef, useContext, createContext } from 'react'
 import {
     autoUpdate,
     flip,
@@ -25,6 +24,7 @@ import {
     useTypeahead,
     useTransitionStyles,
 } from '@floating-ui/react'
+import { useEffect, useState, useRef, useContext, createContext } from 'react'
 import type {
     CSSProperties,
     HTMLProps,

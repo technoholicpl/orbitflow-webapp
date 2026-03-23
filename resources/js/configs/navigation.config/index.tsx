@@ -1,3 +1,4 @@
+import WorkspaceSwitcher from '@/components/template/StackedSideNav/WorkspaceSwitcher'
 import {
     NAV_ITEM_TYPE_TITLE,
     NAV_ITEM_TYPE_ITEM,
@@ -5,7 +6,6 @@ import {
 } from '@/constants/navigation.constant'
 
 import type { NavigationConfig } from '@/types/navigation'
-import WorkspaceSwitcher from '@/components/template/StackedSideNav/WorkspaceSwitcher'
 
 
 const getAdminNavigationConfig = (prefix: string): NavigationConfig => ({

@@ -1,15 +1,20 @@
-import React, { useState } from 'react'
 import { Head, useForm, router } from '@inertiajs/react'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import React, { useState } from 'react'
 import 'dayjs/locale/pl'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pl')
 
-import AdminLayout from '@/layouts/adminlayout'
-import { store, update, destroy } from '@/routes/admin/plans'
-import { update as updateFeatures } from '@/routes/admin/plans/features'
+import { 
+    HiOutlineTrash, 
+    HiOutlinePencil, 
+    HiOutlinePlus, 
+    HiOutlineAdjustments,
+    HiOutlineCheckCircle,
+    HiOutlineClock
+} from 'react-icons/hi'
 import { 
     Button, 
     Input, 
@@ -26,14 +31,9 @@ import {
 } from '@/components/ui'
 import DatePicker from '@/components/ui/DatePicker'
 import cn from '@/components/ui/utils/classNames'
-import { 
-    HiOutlineTrash, 
-    HiOutlinePencil, 
-    HiOutlinePlus, 
-    HiOutlineAdjustments,
-    HiOutlineCheckCircle,
-    HiOutlineClock
-} from 'react-icons/hi'
+import AdminLayout from '@/layouts/adminlayout'
+import { store, update, destroy } from '@/routes/admin/plans'
+import { update as updateFeatures } from '@/routes/admin/plans/features'
 
 interface Feature {
     id: number

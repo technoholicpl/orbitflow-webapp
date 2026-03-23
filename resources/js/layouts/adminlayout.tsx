@@ -1,17 +1,17 @@
-import { ReactNode } from 'react'
+import type { PageProps } from '@inertiajs/core'
 import { Head, usePage } from '@inertiajs/react'
-import StackedSideNav from '@/components/template/StackedSideNav'
+import type { ReactNode } from 'react'
 import Header from '@/components/template/Header'
-import MobileNav from '@/components/template/MobileNav'
-import UserProfileDropdown from '@/components/template/UserProfileDropdown'
 import LayoutBase from '@/components/template/LayoutBase'
-import useResponsive from '@/utils/hooks/useResponsive'
-import { LAYOUT_STACKED_SIDE } from '@/constants/theme.constant'
-import ConfigProvider from '@/components/ui/ConfigProvider'
-import { themeConfig } from '@/configs/theme.config'
-import { getAdminNavigationConfig } from '@/configs/navigation.config'
+import MobileNav from '@/components/template/MobileNav'
+import StackedSideNav from '@/components/template/StackedSideNav'
 import ModeSwitcher from '@/components/template/ThemeConfigurator/ModeSwitcher'
-import { PageProps } from '@inertiajs/core'
+import UserProfileDropdown from '@/components/template/UserProfileDropdown'
+import ConfigProvider from '@/components/ui/ConfigProvider'
+import { getAdminNavigationConfig } from '@/configs/navigation.config'
+import { themeConfig } from '@/configs/theme.config'
+import { LAYOUT_STACKED_SIDE } from '@/constants/theme.constant'
+import useResponsive from '@/utils/hooks/useResponsive'
 
 interface AuthProps extends PageProps {
     auth: { user: any };
@@ -25,7 +25,7 @@ interface AdminLayoutProps {
 
 const AdminLayout = ({ children, title = 'Admin Panel' }: AdminLayoutProps) => {
     const { larger, smaller } = useResponsive()
-    const { auth, cp_prefix } = usePage<AuthProps>().props
+    const { cp_prefix } = usePage<AuthProps>().props
 
     return (
         <ConfigProvider

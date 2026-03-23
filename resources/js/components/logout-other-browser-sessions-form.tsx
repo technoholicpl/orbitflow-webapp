@@ -1,8 +1,8 @@
-import { Form, usePage } from '@inertiajs/react';
-import { useRef, useState } from 'react';
-import { Button, Dialog, Input, FormItem } from '@/components/ui';
+import { Form } from '@inertiajs/react';
 import { Monitor, Smartphone, Trash2 } from 'lucide-react';
+import { useRef, useState } from 'react';
 import Heading from '@/components/heading';
+import { Button, Dialog, Input, FormItem } from '@/components/ui';
 
 interface Session {
     id: string;

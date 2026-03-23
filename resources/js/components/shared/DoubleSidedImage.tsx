@@ -1,6 +1,6 @@
-import { useThemeStore } from '@/store/themeStore'
-import { THEME_ENUM } from '@/constants/theme.constant'
 import type { DetailedHTMLProps, ImgHTMLAttributes } from 'react'
+import { THEME_ENUM } from '@/constants/theme.constant'
+import { useThemeStore } from '@/store/themeStore'
 
 interface DoubleSidedImageProps
     extends DetailedHTMLProps<

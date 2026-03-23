@@ -1,19 +1,19 @@
 import { useState, useEffect, Fragment } from 'react'
-import Menu from '@/components/ui/Menu'
-import VerticalSingleMenuItem from './VerticalSingleMenuItem'
-import VerticalCollapsedMenuItem from './VerticalCollapsedMenuItem'
 import AuthorityCheck from '@/components/shared/AuthorityCheck'
+import Menu from '@/components/ui/Menu'
 import { themeConfig } from '@/configs/theme.config'
 import {
     NAV_ITEM_TYPE_TITLE,
     NAV_ITEM_TYPE_COLLAPSE,
     NAV_ITEM_TYPE_ITEM,
 } from '@/constants/navigation.constant'
+import type { TranslationFn } from '@/types/common'
+import type { NavigationTree } from '@/types/navigation'
+import type { Direction } from '@/types/theme'
 import useMenuActive from '@/utils/hooks/useMenuActive'
 import useTranslation from '@/utils/hooks/useTranslation'
-import { Direction } from '@/types/theme'
-import type { NavigationTree } from '@/types/navigation'
-import type { TranslationFn } from '@/types/common'
+import VerticalCollapsedMenuItem from './VerticalCollapsedMenuItem'
+import VerticalSingleMenuItem from './VerticalSingleMenuItem'
 
 export interface VerticalMenuContentProps {
     collapsed?: boolean

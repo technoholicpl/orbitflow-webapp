@@ -3,8 +3,8 @@ import { Form, Head } from '@inertiajs/react';
 import { useRef } from 'react';
 import PasswordController from '@/actions/App/Http/Controllers/Dashboard/Account/PasswordController';
 import { Button, Input, FormItem } from '@/components/ui';
-import DashboardLayout from '@/layouts/DashboardLayout';
 import AccountLayout from '@/layouts/account/layout';
+import DashboardLayout from '@/layouts/DashboardLayout';
 import { edit } from '@/routes/user-password';
 import type { BreadcrumbItem } from '@/types';
 

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
+import type { ChangeEvent, KeyboardEvent, ClipboardEvent } from 'react'
 import Input from '@/components/ui/Input'
 import { cn } from '@/lib/utils'
-import type { ChangeEvent, KeyboardEvent, ClipboardEvent } from 'react'
 
 interface OTPInputProps {
     length?: number

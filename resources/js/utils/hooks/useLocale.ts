@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
 import i18n from 'i18next'
+import { useEffect } from 'react'
 import { useLocaleStore } from '@/store/localeStore'
 
 const useLocale = () => {

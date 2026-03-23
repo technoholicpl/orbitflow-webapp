@@ -1,8 +1,8 @@
 import { useForm } from '@inertiajs/react';
+import axios from 'axios';
 import React, { useRef, useState } from 'react';
 import { Button, Dialog, Input, FormItem } from '@/components/ui';
 import { store } from '@/routes/password/confirm';
-import axios from 'axios';
 
 interface ConfirmsPasswordProps {
     title?: string;

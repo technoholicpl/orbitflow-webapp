@@ -1,4 +1,5 @@
-import { LegacyRef, useEffect, useRef, useState } from 'react'
+import type { LegacyRef} from 'react';
+import { useEffect, useRef, useState } from 'react'
 
 type Options = {
     offset?: string

@@ -1,5 +1,5 @@
-import React from 'react'
 import { Link, usePage } from '@inertiajs/react'
+import React from 'react'
 import { HiOutlineSparkles, HiOutlineArrowRight } from 'react-icons/hi'
 import { index as subscriptionRoute } from '@/routes/workspace/subscription'
 

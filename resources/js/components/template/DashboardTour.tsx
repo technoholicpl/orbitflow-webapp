@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { driver } from 'driver.js';
 import { usePage } from '@inertiajs/react';
 import axios from 'axios';
+import { driver } from 'driver.js';
+import React, { useEffect } from 'react';
 
 const DashboardTour = () => {
     const { auth } = usePage<any>().props;

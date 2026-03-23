@@ -1,4 +1,4 @@
-import { BreakPointSpec, BreakPoints, BreakPointsArray } from './types'
+import type { BreakPointSpec, BreakPoints, BreakPointsArray } from './types'
 
 const defaultBreakpoints = [640, 786, 1024, 1280, 1536]
 

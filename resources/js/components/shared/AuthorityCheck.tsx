@@ -1,5 +1,5 @@
-import useAuthority from '@/utils/hooks/useAuthority'
 import type { CommonProps } from '@/types/common'
+import useAuthority from '@/utils/hooks/useAuthority'
 
 interface AuthorityCheckProps extends CommonProps {
     userAuthority: string[]

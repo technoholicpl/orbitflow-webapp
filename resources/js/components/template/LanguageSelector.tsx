@@ -1,15 +1,15 @@
+import classNames from 'classnames'
 import { useMemo } from 'react'
+import { HiCheck } from 'react-icons/hi'
 import Avatar from '@/components/ui/Avatar'
 import Dropdown from '@/components/ui/Dropdown'
-import classNames from 'classnames'
-import withHeaderItem from '@/utils/hoc/withHeaderItem'
 import { useLocaleStore } from '@/store/localeStore'
-import { HiCheck } from 'react-icons/hi'
 import type { CommonProps } from '@/types/common'
+import withHeaderItem from '@/utils/hoc/withHeaderItem'
 
 const languageList = [{ label: 'English', value: 'en', flag: 'US' }]
 
-const _LanguageSelector = ({ className }: CommonProps) => {
+const LanguageSelectorBase = ({ className }: CommonProps) => {
     const { currentLang: locale, setLang } = useLocaleStore((state) => state)
 
     const selectLangFlag = useMemo(() => {
@@ -52,6 +52,6 @@ const _LanguageSelector = ({ className }: CommonProps) => {
     )
 }
 
-const LanguageSelector = withHeaderItem(_LanguageSelector)
+const LanguageSelector = withHeaderItem(LanguageSelectorBase)
 
 export default LanguageSelector

@@ -1,10 +1,10 @@
 import { Head } from '@inertiajs/react'
 import { Clock, CheckCircle2, ListTodo, Plus, Calendar as CalendarIcon } from 'lucide-react'
+import UsageWidget from '@/components/dashboard/UsageWidget';
 import AdaptiveCard from '@/components/shared/AdaptiveCard'
 import { Card, Button } from '@/components/ui';
 import { AnimatedShinyButton } from "@/components/ui/animated-shiny-button"
 import DashboardLayout from '@/layouts/DashboardLayout';
-import UsageWidget from '@/components/dashboard/UsageWidget';
 
 interface UsageItem {
     label: string

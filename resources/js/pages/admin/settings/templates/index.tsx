@@ -1,6 +1,14 @@
-import React, { useState } from 'react'
 import { Head, useForm, router } from '@inertiajs/react'
-import AdminLayout from '@/layouts/adminlayout'
+import * as LucideIcons from 'lucide-react'
+import React, { useState } from 'react'
+import { 
+    HiOutlineTrash, 
+    HiOutlinePencil, 
+    HiOutlinePlus,
+    HiOutlineTerminal,
+    HiOutlineCheckCircle,
+    HiOutlineX
+} from 'react-icons/hi'
 import { 
     Button, 
     Input, 
@@ -12,15 +20,7 @@ import {
     Drawer,
     Switcher
 } from '@/components/ui'
-import { 
-    HiOutlineTrash, 
-    HiOutlinePencil, 
-    HiOutlinePlus,
-    HiOutlineTerminal,
-    HiOutlineCheckCircle,
-    HiOutlineX
-} from 'react-icons/hi'
-import * as LucideIcons from 'lucide-react'
+import AdminLayout from '@/layouts/adminlayout'
 import { store, update, destroy } from '@/routes/admin/templates'
 
 interface Task {

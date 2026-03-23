@@ -1,7 +1,8 @@
-﻿import { PatternFormat, PatternFormatProps } from 'react-number-format'
-import Input from '@/components/ui/Input'
-import type { ReactNode, ComponentType } from 'react'
+﻿import type { ReactNode, ComponentType } from 'react'
+import type { PatternFormatProps } from 'react-number-format';
+import { PatternFormat } from 'react-number-format'
 import type { InputProps } from '@/components/ui'
+import Input from '@/components/ui/Input'
 
 interface InputAffix {
     inputSuffix?: string | ReactNode

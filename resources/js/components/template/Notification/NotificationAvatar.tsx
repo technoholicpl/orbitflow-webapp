@@ -1,11 +1,11 @@
-import Avatar from '@/components/ui/Avatar'
-import acronym from '@/utils/acronym'
-import useRandomBgColor from '@/utils/hooks/useRandomBgColor'
 import {
     HiOutlineCalendar,
     HiOutlineClipboardCheck,
     HiOutlineBan,
 } from 'react-icons/hi'
+import Avatar from '@/components/ui/Avatar'
+import acronym from '@/utils/acronym'
+import useRandomBgColor from '@/utils/hooks/useRandomBgColor'
 
 const imagePath = '/img/avatars/'
 

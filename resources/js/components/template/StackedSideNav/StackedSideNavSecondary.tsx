@@ -1,8 +1,8 @@
-import ScrollBar from '@/components/ui/ScrollBar'
-import { cn } from '@/lib/utils'
-import { HEADER_HEIGHT, DIR_LTR, DIR_RTL } from '@/constants/theme.constant'
-import VerticalMenuContent from '@/components/template/VerticalMenuContent'
 import { HiOutlineArrowSmLeft, HiOutlineArrowSmRight } from 'react-icons/hi'
+import VerticalMenuContent from '@/components/template/VerticalMenuContent'
+import ScrollBar from '@/components/ui/ScrollBar'
+import { HEADER_HEIGHT, DIR_LTR, DIR_RTL } from '@/constants/theme.constant'
+import { cn } from '@/lib/utils'
 import type { NavigationTree } from '@/types/navigation'
 import type { Direction } from '@/types/theme'
 

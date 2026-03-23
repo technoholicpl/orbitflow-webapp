@@ -1,17 +1,17 @@
-import React, { useState } from 'react'
 import { Head, useForm, router } from '@inertiajs/react'
-import { update as updateRoute } from '@/routes/workspace/subscription'
-import SettingsLayout from '@/layouts/settings/layout'
-import { Button, Card, Badge, Notification, toast, Tag, Input } from '@/components/ui'
-import { HiOutlineCheck, HiOutlineSparkles, HiOutlineCalendar, HiOutlineClock } from 'react-icons/hi'
-import cn from '@/components/ui/utils/classNames'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import React, { useState } from 'react'
+import { HiOutlineCheck, HiOutlineSparkles, HiOutlineCalendar, HiOutlineClock } from 'react-icons/hi'
+import { Button, Card, Badge, Notification, toast, Tag, Input } from '@/components/ui'
+import cn from '@/components/ui/utils/classNames'
+import DashboardLayout from '@/layouts/DashboardLayout'
+import SettingsLayout from '@/layouts/settings/layout'
+import { update as updateRoute } from '@/routes/workspace/subscription'
 import 'dayjs/locale/pl'
 
 dayjs.extend(relativeTime)
 dayjs.locale('pl')
-import DashboardLayout from '@/layouts/DashboardLayout'
 import axios from 'axios'
 
 interface Feature {

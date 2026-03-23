@@ -1,8 +1,11 @@
+import type { PageProps } from '@inertiajs/core';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { 
     Edit2, Plus, Trash2, Activity
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { ActionTypeForm } from '@/components/action-types/action-type-form';
+import { actionIcons } from '@/components/action-types/icon-picker';
 import Heading from '@/components/heading';
 import {
     Button,
@@ -13,9 +16,6 @@ import {
 } from '@/components/ui';
 import AdminLayout from '@/layouts/adminlayout';
 import AdminSettingsLayout from '@/layouts/settings/admin-layout';
-import { actionIcons } from '@/components/action-types/icon-picker';
-import { ActionTypeForm } from '@/components/action-types/action-type-form';
-import { PageProps } from '@inertiajs/core';
 
 interface ActionType {
     id: number;

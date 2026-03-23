@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
 import { Head, useForm } from '@inertiajs/react'
-import AdminLayout from '@/layouts/adminlayout'
-import { Button, Table, Card, Dialog, Input, Notification, toast, Checkbox } from '@/components/ui'
+import React, { useState } from 'react'
 import { HiOutlineAdjustments } from 'react-icons/hi'
+import { Button, Table, Card, Dialog, Input, Notification, toast, Checkbox } from '@/components/ui'
+import AdminLayout from '@/layouts/adminlayout'
 import { update as updateLimits } from '@/routes/admin/workspaces/limits'
 
 interface Feature {

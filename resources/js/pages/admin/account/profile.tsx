@@ -4,8 +4,8 @@ import React from 'react';
 import Heading from '@/components/heading';
 import LogoutOtherBrowserSessionsForm from '@/components/logout-other-browser-sessions-form';
 import { Button, Input, FormItem } from '@/components/ui';
-import AdminLayout from '@/layouts/adminlayout';
 import AdminAccountLayout from '@/layouts/account/admin-layout';
+import AdminLayout from '@/layouts/adminlayout';
 
 interface AuthProps extends PageProps {
     auth: {

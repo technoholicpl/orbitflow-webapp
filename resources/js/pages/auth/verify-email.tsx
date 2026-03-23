@@ -1,8 +1,8 @@
 import { useForm, Head } from '@inertiajs/react';
-import { Button, Notification, toast } from '@/components/ui';
-import AuthLayout from '@/layouts/auth-layout';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/InputOTP/InputOTP';
 import { useState } from 'react';
+import { Button, Notification, toast } from '@/components/ui';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/InputOTP/InputOTP';
+import AuthLayout from '@/layouts/auth-layout';
 
 export default function VerifyEmail({ status }: { status?: string }) {
     const { data, setData, post, processing, errors } = useForm({

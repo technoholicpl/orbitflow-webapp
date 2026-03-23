@@ -1,12 +1,12 @@
 import { createContext, useContext } from 'react'
-import {
+import type { ReactNode } from 'react'
+import type {
     PageContainerHeader,
     PageContainerBody,
     PageContainerFooter,
 } from '@/components/template/PageContainer'
 import type { PageContainerProps } from '@/components/template/PageContainer'
-import { LayoutType } from '@/types/theme'
-import type { ReactNode } from 'react'
+import type { LayoutType } from '@/types/theme'
 
 export type PageContainerReassembleProps = {
     defaultClass: string

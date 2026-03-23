@@ -1,18 +1,18 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { router } from '@inertiajs/react'
 import React, { useState, useEffect } from 'react'
-import Drawer from '@/components/ui/Drawer'
+import { useForm, Controller, useFieldArray } from 'react-hook-form'
+import { HiPlus, HiTrash, HiOfficeBuilding, HiUser, HiGlobeAlt } from 'react-icons/hi'
+import * as zod from 'zod'
+import { toast, Notification } from '@/components/ui'
 import Button from '@/components/ui/Button'
-import Input from '@/components/ui/Input'
-import FormItem from '@/components/ui/Form/FormItem'
+import Drawer from '@/components/ui/Drawer'
 import FormContainer from '@/components/ui/Form/FormContainer'
+import FormItem from '@/components/ui/Form/FormItem'
+import Input from '@/components/ui/Input'
 import Segment from '@/components/ui/Segment'
 import SegmentItem from '@/components/ui/Segment/SegmentItem'
 import Upload from '@/components/ui/Upload'
-import { HiPlus, HiTrash, HiOfficeBuilding, HiUser, HiGlobeAlt } from 'react-icons/hi'
-import { useForm, Controller } from 'react-hook-form'
-import * as zod from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { router } from '@inertiajs/react'
-import { toast, Notification } from '@/components/ui'
 
 interface Brand {
     id?: string | number
@@ -47,8 +47,6 @@ const validationSchema = zod.object({
 
 const ClientCreateDrawer = ({ isOpen, onClose, client }: ClientCreateDrawerProps) => {
     const isEdit = !!client
-    const [clientType, setClientType] = useState<string[]>(['business'])
-    const [brands, setBrands] = useState<Brand[]>([])
 
     const {
         handleSubmit,
@@ -56,6 +54,7 @@ const ClientCreateDrawer = ({ isOpen, onClose, client }: ClientCreateDrawerProps
         reset,
         formState: { errors, isSubmitting },
         setValue,
+        watch,
     } = useForm({
         resolver: zodResolver(validationSchema),
         defaultValues: {
@@ -72,61 +71,37 @@ const ClientCreateDrawer = ({ isOpen, onClose, client }: ClientCreateDrawerProps
         },
     })
 
+    const { fields: brands, append, remove } = useFieldArray({
+        control,
+        name: 'brands',
+    })
+
+    const clientType = watch('type')
+
     useEffect(() => {
         if (isOpen) {
-            if (client) {
-                reset({
-                    type: client.type || 'business',
-                    company_name: client.company_name || '',
-                    tax_id: client.tax_id || '',
-                    first_name: client.first_name || '',
-                    last_name: client.last_name || '',
-                    email: client.email || '',
-                    phone: client.phone || '',
-                    website: client.website || '',
-                    note: client.note || '',
-                    brands: client.brands || [],
-                })
-                setClientType([client.type || 'business'])
-                setBrands(client.brands || [])
-            } else {
-                reset({
-                    type: 'business',
-                    company_name: '',
-                    tax_id: '',
-                    first_name: '',
-                    last_name: '',
-                    email: '',
-                    phone: '',
-                    website: '',
-                    note: '',
-                    brands: [],
-                })
-                setClientType(['business'])
-                setBrands([])
-            }
+            reset({
+                type: client?.type || 'business',
+                company_name: client?.company_name || '',
+                tax_id: client?.tax_id || '',
+                first_name: client?.first_name || '',
+                last_name: client?.last_name || '',
+                email: client?.email || '',
+                phone: client?.phone || '',
+                website: client?.website || '',
+                note: client?.note || '',
+                brands: client?.brands || [],
+            })
         }
     }, [isOpen, reset, client])
 
     const onClientTypeChange = (val: string[]) => {
-        setClientType(val)
         setValue('type', val[0] as 'business' | 'individual')
     }
 
-    const addBrand = () => {
-        setBrands([...brands, { name: '', description: '', website: '' }])
-    }
-
-    const removeBrand = (index: number) => {
-        const newBrands = [...brands]
-        newBrands.splice(index, 1)
-        setBrands(newBrands)
-    }
-
     const onFormSubmit = (data: any) => {
-        const submitData = { ...data, brands }
         if (isEdit) {
-            router.put(`/clients/${client.id}`, submitData, {
+            router.put(`/clients/${client.id}`, data, {
                 onSuccess: () => {
                     onClose()
                     toast.push(
@@ -137,7 +112,7 @@ const ClientCreateDrawer = ({ isOpen, onClose, client }: ClientCreateDrawerProps
                 }
             })
         } else {
-            router.post('/clients', submitData, {
+            router.post('/clients', data, {
                 onSuccess: () => {
                     onClose()
                     toast.push(
@@ -171,7 +146,7 @@ const ClientCreateDrawer = ({ isOpen, onClose, client }: ClientCreateDrawerProps
                     <FormContainer>
                         <div className="mb-6 flex justify-center">
                             <Segment 
-                                value={clientType} 
+                                value={[clientType]} 
                                 onChange={(val: string | string[]) => onClientTypeChange(Array.isArray(val) ? val : [val])}
                                 size="sm"
                             >
@@ -199,7 +174,7 @@ const ClientCreateDrawer = ({ isOpen, onClose, client }: ClientCreateDrawerProps
                                 </div>
                             </Upload>
 
-                            {clientType[0] === 'business' ? (
+                            {clientType === 'business' ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <FormItem label="Nazwa firmy" invalid={Boolean(errors.company_name)} errorMessage={errors.company_name?.message} asterisk>
                                         <Controller
@@ -284,46 +259,49 @@ const ClientCreateDrawer = ({ isOpen, onClose, client }: ClientCreateDrawerProps
 
                                 <div className="space-y-4">
                                     {brands.map((brand, index) => (
-                                        <div key={index} className="p-4 border dark:border-gray-700 rounded-lg relative bg-gray-50 dark:bg-gray-800/50">
+                                        <div key={brand.id} className="p-4 border dark:border-gray-700 rounded-lg relative bg-gray-50 dark:bg-gray-800/50">
                                             <Button 
                                                 size="xs" 
                                                 variant="plain" 
                                                 className="absolute top-2 right-2 text-red-500 hover:text-red-600"
                                                 icon={<HiTrash />}
-                                                onClick={() => removeBrand(index)}
+                                                onClick={() => remove(index)}
                                                 type="button"
                                             />
                                             <div className="grid grid-cols-1 gap-3 mt-2">
-                                                <Input 
-                                                    size="sm"
-                                                    placeholder="Nazwa marki" 
-                                                    value={brand.name}
-                                                    onChange={(e) => {
-                                                        const newBrands = [...brands]
-                                                        newBrands[index].name = e.target.value
-                                                        setBrands(newBrands)
-                                                    }}
+                                                <Controller
+                                                    name={`brands.${index}.name`}
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input 
+                                                            {...field}
+                                                            size="sm"
+                                                            placeholder="Nazwa marki" 
+                                                        />
+                                                    )}
                                                 />
-                                                <Input 
-                                                    size="sm"
-                                                    placeholder="Opis" 
-                                                    value={brand.description}
-                                                    onChange={(e) => {
-                                                        const newBrands = [...brands]
-                                                        newBrands[index].description = e.target.value
-                                                        setBrands(newBrands)
-                                                    }}
+                                                <Controller
+                                                    name={`brands.${index}.description`}
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input 
+                                                            {...field}
+                                                            size="sm"
+                                                            placeholder="Opis" 
+                                                        />
+                                                    )}
                                                 />
-                                                <Input 
-                                                    size="sm"
-                                                    prefix={<HiGlobeAlt />}
-                                                    placeholder="https://" 
-                                                    value={brand.website}
-                                                    onChange={(e) => {
-                                                        const newBrands = [...brands]
-                                                        newBrands[index].website = e.target.value
-                                                        setBrands(newBrands)
-                                                    }}
+                                                <Controller
+                                                    name={`brands.${index}.website`}
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input 
+                                                            {...field}
+                                                            size="sm"
+                                                            prefix={<HiGlobeAlt />}
+                                                            placeholder="https://" 
+                                                        />
+                                                    )}
                                                 />
                                             </div>
                                         </div>
@@ -333,7 +311,7 @@ const ClientCreateDrawer = ({ isOpen, onClose, client }: ClientCreateDrawerProps
                                         variant="default" 
                                         size="sm" 
                                         icon={<HiPlus />}
-                                        onClick={addBrand}
+                                        onClick={() => append({ name: '', description: '', website: '' })}
                                         block
                                     >
                                         Dodaj markę

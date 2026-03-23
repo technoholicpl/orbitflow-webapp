@@ -1,8 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import * as zod from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { usePage } from '@inertiajs/react'
+import axios from 'axios'
+import dayjs from 'dayjs'
+import React, { useState, useEffect, useMemo } from 'react'
+import { useForm, Controller } from 'react-hook-form'
+import {
+    HiMinus,
+    HiPlus,
+} from 'react-icons/hi'
+import * as zod from 'zod'
 import {
     Input,
     Button,
@@ -13,17 +19,6 @@ import {
     TimeInput,
     Tooltip,
 } from '@/components/ui'
-import {
-    HiClock,
-    HiCalendar,
-    HiDocumentText,
-    HiBriefcase,
-    HiClipboardList,
-    HiMinus,
-    HiPlus,
-} from 'react-icons/hi'
-import axios from 'axios'
-import dayjs from 'dayjs'
 
 const validationSchema = zod.object({
     project_id: zod.number().min(1, 'Projekt jest wymagany'),
@@ -40,8 +35,7 @@ interface TimeEntryFormProps {
     isSubmitting?: boolean
     defaultValues?: any
 }
-
-const TimeEntryForm = ({ onSubmit, isSubmitting, defaultValues }: TimeEntryFormProps) => {
+const TimeEntryForm = ({ onSubmit, defaultValues }: TimeEntryFormProps) => {
     const { props } = usePage<any>()
     const { workspace_projects = [] } = props
     

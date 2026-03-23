@@ -1,19 +1,19 @@
-import { useEffect, useState, useRef } from 'react'
+import { router } from '@inertiajs/react'
 import classNames from 'classnames'
-import withHeaderItem from '@/utils/hoc/withHeaderItem'
-import Dropdown from '@/components/ui/Dropdown'
-import ScrollBar from '@/components/ui/ScrollBar'
-import Spinner from '@/components/ui/Spinner'
+import { useEffect, useState, useRef } from 'react'
+import { HiOutlineMailOpen } from 'react-icons/hi'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
+import Dropdown from '@/components/ui/Dropdown'
+import type { DropdownRef } from '@/components/ui/Dropdown'
+import ScrollBar from '@/components/ui/ScrollBar'
+import Spinner from '@/components/ui/Spinner'
+import withHeaderItem from '@/utils/hoc/withHeaderItem'
+import useResponsive from '@/utils/hooks/useResponsive'
+import isLastChild from '@/utils/isLastChild'
 import NotificationAvatar from './NotificationAvatar'
 import NotificationToggle from './NotificationToggle'
-import { HiOutlineMailOpen } from 'react-icons/hi'
-import isLastChild from '@/utils/isLastChild'
-import useResponsive from '@/utils/hooks/useResponsive'
-import { router } from '@inertiajs/react'
 
-import type { DropdownRef } from '@/components/ui/Dropdown'
 
 type NotificationList = {
     id: string
@@ -30,7 +30,7 @@ type NotificationList = {
 
 const notificationHeight = 'h-[280px]'
 
-const _Notification = ({ className }: { className?: string }) => {
+const NotificationBase = ({ className }: { className?: string }) => {
     const [notificationList, setNotificationList] = useState<
         NotificationList[]
     >([])
@@ -205,7 +205,7 @@ const _Notification = ({ className }: { className?: string }) => {
     )
 }
 
-const Notification = withHeaderItem(_Notification)
+const Notification = withHeaderItem(NotificationBase)
 
 export default Notification
 

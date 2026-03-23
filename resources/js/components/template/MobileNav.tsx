@@ -1,15 +1,16 @@
 import { usePage } from '@inertiajs/react'
-import { useState, Suspense, lazy } from 'react'
 import classNames from 'classnames'
-import Drawer from '@/components/ui/Drawer'
+import { useState, Suspense, lazy } from 'react'
 import NavToggle from '@/components/shared/NavToggle'
-import { DIR_RTL } from '@/constants/theme.constant'
-import withHeaderItem, { WithHeaderItemProps } from '@/utils/hoc/withHeaderItem'
-import navigationConfig from '@/configs/navigation.config'
+import Drawer from '@/components/ui/Drawer'
 import appConfig from '@/configs/app.config'
-import { useThemeStore } from '@/store/themeStore'
+import navigationConfig from '@/configs/navigation.config'
+import { DIR_RTL } from '@/constants/theme.constant'
 import { useRouteKeyStore } from '@/store/routeKeyStore'
+import { useThemeStore } from '@/store/themeStore'
 import type { User } from '@/types'
+import withHeaderItem from '@/utils/hoc/withHeaderItem'
+import type { WithHeaderItemProps } from '@/utils/hoc/withHeaderItem';
 
 const VerticalMenuContent = lazy(
     () => import('@/components/template/VerticalMenuContent'),

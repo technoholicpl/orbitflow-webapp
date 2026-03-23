@@ -1,7 +1,8 @@
-import { Children, ReactNode, isValidElement, useMemo } from 'react'
+import type { ReactNode} from 'react';
+import { Children, isValidElement, useMemo } from 'react'
 
+import type { Columns } from './types'
 import useColumnsCount from './useCoulmnsCount'
-import { Columns } from './types'
 
 const createEmptyColumns = (count: number): Array<[]> => {
     return Array.from({ length: count }, () => [])

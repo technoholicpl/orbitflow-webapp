@@ -1,13 +1,13 @@
-import HorizontalMenuDropdownTrigger from './HorizontalMenuDropdownTrigger'
+import { TbChevronDown } from 'react-icons/tb'
+import AuthorityCheck from '@/components/shared/AuthorityCheck'
+import type { TranslationFn } from '@/types/common'
+import type { NavigationTree } from '@/types/navigation'
+import type { Direction } from '@/types/theme'
+import useMenuActive from '@/utils/hooks/useMenuActive'
+import useTranslation from '@/utils/hooks/useTranslation'
 import HorizontalMenuDropdown from './HorizontalMenuDropdown'
 import HorizontalMenuDropdownContent from './HorizontalMenuDropdownContent'
-import AuthorityCheck from '@/components/shared/AuthorityCheck'
-import useTranslation from '@/utils/hooks/useTranslation'
-import useMenuActive from '@/utils/hooks/useMenuActive'
-import { TbChevronDown } from 'react-icons/tb'
-import { Direction } from '@/types/theme'
-import type { NavigationTree } from '@/types/navigation'
-import type { TranslationFn } from '@/types/common'
+import HorizontalMenuDropdownTrigger from './HorizontalMenuDropdownTrigger'
 
 type HorizontalMenuContentProps = {
     routeKey: string

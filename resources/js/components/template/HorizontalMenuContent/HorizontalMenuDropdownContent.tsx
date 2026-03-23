@@ -1,18 +1,18 @@
 import { useState } from 'react'
+import type { ReactNode, HTMLProps } from 'react'
+import { TbCircle } from 'react-icons/tb'
+import AuthorityCheck from '@/components/shared/AuthorityCheck'
 import Avatar from '@/components/ui/Avatar'
 import Dropdown from '@/components/ui/Dropdown'
-import HorizontalMenuNavLink from './HorizontalMenuNavLink'
-import AuthorityCheck from '@/components/shared/AuthorityCheck'
-import { cn } from '@/lib/utils'
+import navigationIcon from '@/configs/navigation-icon.config'
 import {
     NAV_ITEM_TYPE_COLLAPSE,
     NAV_ITEM_TYPE_ITEM,
 } from '@/constants/navigation.constant'
-import navigationIcon from '@/configs/navigation-icon.config'
-import { TbCircle } from 'react-icons/tb'
+import { cn } from '@/lib/utils'
 import type { CommonProps, TranslationFn } from '@/types/common'
 import type { NavigationTree, HorizontalMenuMeta } from '@/types/navigation'
-import type { ReactNode, HTMLProps } from 'react'
+import HorizontalMenuNavLink from './HorizontalMenuNavLink'
 
 interface LayoutProps extends CommonProps {
     navigationTree: NavigationTree[]

@@ -1,7 +1,7 @@
 import classNames from 'classnames'
+import type { Ref } from 'react'
 import { HiCheckCircle } from 'react-icons/hi'
 import type { CommonProps } from '@/types/common'
-import type { Ref } from 'react'
 
 interface PresetSegmentItemOptionProps extends CommonProps {
     active: boolean

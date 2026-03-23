@@ -1,24 +1,25 @@
+import type { PageProps } from '@inertiajs/core'
 import { usePage } from '@inertiajs/react'
+import isEmpty from 'lodash/isEmpty'
 import { useState } from 'react'
+import appConfig from '@/configs/app.config'
+import { getAdminNavigationConfig, userNavigationConfig } from '@/configs/navigation.config'
 import {
     SPLITTED_SIDE_NAV_MINI_WIDTH,
     STACKED_SIDE_NAV_SECONDARY_WIDTH,
     DIR_LTR,
     DIR_RTL,
 } from '@/constants/theme.constant'
-import StackedSideNavMini, { SelectedMenuItem } from './StackedSideNavMini'
-import StackedSideNavSecondary from './StackedSideNavSecondary'
-import useResponsive from '@/utils/hooks/useResponsive'
-import { useThemeStore } from '@/store/themeStore'
 import { useRouteKeyStore } from '@/store/routeKeyStore'
-import { getAdminNavigationConfig, userNavigationConfig } from '@/configs/navigation.config'
-import appConfig from '@/configs/app.config'
+import { useThemeStore } from '@/store/themeStore'
 import type { User } from '@/types'
-import isEmpty from 'lodash/isEmpty'
-import useTranslation from '@/utils/hooks/useTranslation'
 import type { TranslationFn } from '@/types/common'
-import { NavigationTree } from '@/types/navigation'
-import { PageProps } from '@inertiajs/core'
+import type { NavigationTree } from '@/types/navigation'
+import useResponsive from '@/utils/hooks/useResponsive'
+import useTranslation from '@/utils/hooks/useTranslation'
+import StackedSideNavMini from './StackedSideNavMini'
+import type { SelectedMenuItem } from './StackedSideNavMini';
+import StackedSideNavSecondary from './StackedSideNavSecondary'
 
 interface AuthProps extends PageProps {
     auth: { user: User };

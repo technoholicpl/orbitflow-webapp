@@ -11,10 +11,7 @@ interface LogoProps {
 
 const Logo = (props: LogoProps) => {
     const {
-        type = 'full',
-        mode = 'light',
         className,
-        imgClass,
         style,
         logoWidth = 'auto',
     } = props

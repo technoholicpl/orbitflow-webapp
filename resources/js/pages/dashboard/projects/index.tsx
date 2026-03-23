@@ -1,12 +1,12 @@
 import { Head, usePage, router } from '@inertiajs/react'
+import dayjs from 'dayjs';
 import { useState } from 'react';
+import { HiPlus, HiClock, HiPlay, HiStop } from 'react-icons/hi';
 import ProjectCreateDrawer from '@/components/shared/ProjectCreateDrawer'
+import TimeEntryModal from '@/components/shared/TimeEntryModal';
+import { Button, Notification, toast } from '@/components/ui';
 import WorkTime from '@/components/WorkTime'
 import DashboardLayout from '@/layouts/DashboardLayout';
-import TimeEntryModal from '@/components/shared/TimeEntryModal';
-import { HiPlus, HiClock, HiPlay, HiStop } from 'react-icons/hi';
-import { Button, Notification, toast } from '@/components/ui';
-import dayjs from 'dayjs';
 import { cn } from '@/lib/utils';
 
 interface Project {

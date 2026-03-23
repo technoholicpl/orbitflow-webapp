@@ -1,8 +1,8 @@
-import { cn } from '@/lib/utils'
-import HorizontalMenuNavLink from './HorizontalMenuNavLink'
-import type { CommonProps } from '@/types/common'
-import type { HorizontalMenuNavLinkProps } from './HorizontalMenuNavLink'
 import type { ButtonHTMLAttributes, Ref } from 'react'
+import { cn } from '@/lib/utils'
+import type { CommonProps } from '@/types/common'
+import HorizontalMenuNavLink from './HorizontalMenuNavLink'
+import type { HorizontalMenuNavLinkProps } from './HorizontalMenuNavLink'
 
 interface HorizontalMenuDropdownTriggerCommonProps extends CommonProps {
     active?: boolean

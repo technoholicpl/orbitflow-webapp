@@ -46,11 +46,11 @@ export default function TwoFactorChallenge() {
         };
     }, [showRecoveryInput]);
 
-    const toggleRecoveryMode = (clearErrors: () => void): void => {
+    const toggleRecoveryMode = useMemo(() => (clearErrors: () => void): void => {
         setShowRecoveryInput(!showRecoveryInput);
         clearErrors();
         setCode('');
-    };
+    }, [showRecoveryInput]);
 
     return (
         <AuthLayout

@@ -1,9 +1,9 @@
 ﻿import { useMemo } from 'react'
-import Tooltip from '@/components/ui/Tooltip'
 import Avatar from '@/components/ui/Avatar'
+import type { AvatarProps, AvatarGroupProps } from '@/components/ui/Avatar'
+import Tooltip from '@/components/ui/Tooltip'
 import acronym from '@/utils/acronym'
 import useRandomBgColor from '@/utils/hooks/useRandomBgColor'
-import type { AvatarProps, AvatarGroupProps } from '@/components/ui/Avatar'
 
 type User = Record<string, string>
 

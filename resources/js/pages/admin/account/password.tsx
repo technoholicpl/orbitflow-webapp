@@ -4,8 +4,8 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import { useRef } from 'react';
 import Heading from '@/components/heading';
 import { Button, Input, FormItem } from '@/components/ui';
-import AdminLayout from '@/layouts/adminlayout';
 import AdminAccountLayout from '@/layouts/account/admin-layout';
+import AdminLayout from '@/layouts/adminlayout';
 
 
 interface AuthProps extends PageProps {

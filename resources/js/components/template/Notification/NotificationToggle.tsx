@@ -1,6 +1,6 @@
-import { cn } from '@/lib/utils'
-import Badge from '@/components/ui/Badge'
 import { PiBellDuotone } from 'react-icons/pi'
+import Badge from '@/components/ui/Badge'
+import { cn } from '@/lib/utils'
 
 const NotificationToggle = ({
     className,

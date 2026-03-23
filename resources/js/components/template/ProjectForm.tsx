@@ -1,17 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import * as zod from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { usePage } from '@inertiajs/react'
-import {
-    Input,
-    Button,
-    Select,
-    FormItem,
-    FormContainer,
-    Notification,
-    toast,
-} from '@/components/ui'
+import React, { useEffect, useMemo } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import {
     HiArrowNarrowDown,
     HiArrowNarrowUp,
@@ -22,8 +12,19 @@ import {
     HiOfficeBuilding,
     HiBriefcase,
 } from 'react-icons/hi'
-import { OptionProps, SingleValueProps, components } from 'react-select'
+import type { OptionProps, SingleValueProps} from 'react-select';
+import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
+import * as zod from 'zod'
+import {
+    Input,
+    Button,
+    Select,
+    FormItem,
+    FormContainer,
+    Notification,
+    toast,
+} from '@/components/ui'
 
 const { Option, SingleValue } = components
 
@@ -77,7 +78,7 @@ const CustomPrioritySingleValue = (props: SingleValueProps<any>) => {
     )
 }
 
-const ProjectForm = ({ onSubmit, isSubmitting, defaultValues }: ProjectFormProps) => {
+const ProjectForm = ({ onSubmit, defaultValues }: ProjectFormProps) => {
     const { props } = usePage<any>()
     const { 
         workspace_clients = [], 
