@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { usePage } from '@inertiajs/react'
 import React, { useEffect, useMemo } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, useWatch } from 'react-hook-form'
 import {
     HiArrowNarrowDown,
     HiArrowNarrowUp,
@@ -89,8 +89,8 @@ const ProjectForm = ({ onSubmit, defaultValues }: ProjectFormProps) => {
     const {
         handleSubmit,
         control,
-        watch,
         setValue,
+        watch,
         formState: { errors },
     } = useForm<ProjectFormSchema>({
         resolver: zodResolver(validationSchema),
@@ -116,7 +116,15 @@ const ProjectForm = ({ onSubmit, defaultValues }: ProjectFormProps) => {
         )
     }
 
-    const selectedClientId = watch('client_id')
+    const selectedClientId = useWatch({
+        control,
+        name: 'client_id',
+    })
+
+    const currentBrandId = useWatch({
+        control,
+        name: 'brand_id',
+    })
 
     const availableBrands = useMemo(() => {
         const client = workspace_clients.find((c: any) => c.id === selectedClientId)
@@ -126,12 +134,11 @@ const ProjectForm = ({ onSubmit, defaultValues }: ProjectFormProps) => {
     useEffect(() => {
         if (selectedClientId) {
             // Reset brand if not in available brands
-            const currentBrandId = watch('brand_id')
             if (currentBrandId && !availableBrands.find((b: any) => b.id === currentBrandId)) {
                 setValue('brand_id', null)
             }
         }
-    }, [selectedClientId, availableBrands, setValue, watch])
+    }, [selectedClientId, availableBrands, setValue, currentBrandId])
 
     const clientOptions = workspace_clients.map((c: any) => ({
         label: c.company_name || `${c.first_name} ${c.last_name}`,

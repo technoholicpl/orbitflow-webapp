@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { router } from '@inertiajs/react'
 import React, { useEffect } from 'react'
-import { useForm, Controller, useFieldArray } from 'react-hook-form'
+import { useForm, Controller, useFieldArray, useWatch } from 'react-hook-form'
 import { HiPlus, HiTrash, HiOfficeBuilding, HiUser, HiGlobeAlt } from 'react-icons/hi'
 import * as zod from 'zod'
 import { toast, Notification } from '@/components/ui'
@@ -46,7 +46,6 @@ const ClientCreateDrawer = ({ isOpen, onClose, client }: ClientCreateDrawerProps
         reset,
         formState: { errors, isSubmitting },
         setValue,
-        watch,
     } = useForm({
         resolver: zodResolver(validationSchema),
         defaultValues: {
@@ -68,7 +67,11 @@ const ClientCreateDrawer = ({ isOpen, onClose, client }: ClientCreateDrawerProps
         name: 'brands',
     })
 
-    const clientType = watch('type')
+    const clientType = useWatch({
+        control,
+        name: 'type',
+        defaultValue: client?.type || 'business',
+    })
 
     useEffect(() => {
         if (isOpen) {

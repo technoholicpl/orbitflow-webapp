@@ -71,7 +71,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('two-factor', [TwoFactorAuthenticationController::class, 'show'])->name('two-factor.show')
             ->middleware('verified');
 
-        Route::post('confirm-password', [ConfirmablePasswordController::class, 'store'])->name('password.confirm');
+        Route::post('confirm-password', [ConfirmablePasswordController::class, 'store'])->name('dashboard.password.confirm');
     });
 
     // Workspace Settings

@@ -26,7 +26,21 @@ dayjs.extend(utc);
 
 const GlobalTimer = () => {
     const { current_timer, workspace_projects, auth } = usePage<any>().props;
-    const [seconds, setSeconds] = useState(0);
+    const [prevTimerId, setPrevTimerId] = useState<number | undefined>(current_timer?.id);
+    const [seconds, setSeconds] = useState(() =>
+        current_timer && !current_timer.needs_recovery
+            ? Math.max(0, dayjs.utc().diff(dayjs.utc(current_timer.started_at), 'second'))
+            : 0
+    );
+
+    if (current_timer?.id !== prevTimerId) {
+        setPrevTimerId(current_timer?.id);
+        setSeconds(
+            current_timer && !current_timer.needs_recovery
+                ? Math.max(0, dayjs.utc().diff(dayjs.utc(current_timer.started_at), 'second'))
+                : 0
+        );
+    }
     const [isInfoOpen, setIsInfoOpen] = useState(false);
     const [isRecoveryOpenOverride, setIsRecoveryOpenOverride] = useState<boolean | null>(null);
     const isRecoveryOpen = isRecoveryOpenOverride ?? !!current_timer?.needs_recovery;
@@ -73,14 +87,14 @@ const GlobalTimer = () => {
     useEffect(() => {
         let interval: any;
         if (current_timer && !current_timer.needs_recovery) {
-            // Initial sync
-            setSeconds(Math.max(0, dayjs.utc().diff(dayjs.utc(current_timer.started_at), 'second')));
-            
             interval = setInterval(() => {
-                setSeconds(Math.max(0, dayjs.utc().diff(dayjs.utc(current_timer.started_at), 'second')));
+                setSeconds(
+                    Math.max(
+                        0,
+                        dayjs.utc().diff(dayjs.utc(current_timer.started_at), 'second')
+                    )
+                );
             }, 1000);
-        } else {
-            setSeconds(0);
         }
         return () => clearInterval(interval);
     }, [current_timer]);

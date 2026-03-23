@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { usePage } from '@inertiajs/react'
 import dayjs from 'dayjs'
-import React, { useState, useEffect, useMemo } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import React, { useState, useMemo } from 'react'
+import { useForm, Controller, useWatch } from 'react-hook-form'
 import {
     HiMinus,
     HiPlus,
@@ -46,7 +46,6 @@ const TimeEntryForm = ({ onSubmit, defaultValues }: TimeEntryFormProps) => {
     const {
         handleSubmit,
         control,
-        watch,
         setValue,
         formState: { errors },
     } = useForm<TimeEntryFormSchema>({
@@ -58,7 +57,10 @@ const TimeEntryForm = ({ onSubmit, defaultValues }: TimeEntryFormProps) => {
         },
     })
 
-    const selectedProjectId = watch('project_id')
+    const selectedProjectId = useWatch({
+        control,
+        name: 'project_id',
+    })
     const selectedProject = useMemo(() => 
         workspace_projects.find((p: any) => p.id === selectedProjectId),
     [selectedProjectId, workspace_projects])
